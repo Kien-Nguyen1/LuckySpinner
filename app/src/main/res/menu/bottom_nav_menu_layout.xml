@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/channelListFragment"
+        android:title="Channel"
+        android:icon="@drawable/ic_channel"/>
+
+    <item android:id="@+id/spinnerListFragment"
+        android:title="Spinner List"
+        android:icon="@drawable/ic_spinner_list"/>
+
+</menu>
