@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "117472960960",
+    "project_id": "lifespinner-16a81",
+    "storage_bucket": "lifespinner-16a81.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:117472960960:android:96dae5d4a73ea9fe602825",
+        "android_client_info": {
+          "package_name": "com.example.luckyspinner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBiI9gW1yRBwBeLmcK4ie0loLDmuGn4UQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
