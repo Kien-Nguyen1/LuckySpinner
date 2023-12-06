@@ -8,8 +8,8 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.example.luckyspinner.network.TelegramApiClient
-import com.example.luckyspinner.util.Constants.Companion.CHAT_ID
-import com.example.luckyspinner.util.Constants.Companion.MESSAGE
+import com.example.luckyspinner.util.Constants.CHAT_ID
+import com.example.luckyspinner.util.Constants.MESSAGE
 import com.example.luckyspinner.util.makeStatusNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
