@@ -11,13 +11,6 @@
         android:label="fragment_channel_list"
         tools:layout="@layout/fragment_channel_list" >
         <action
-            android:id="@+id/action_channelListFragment_to_spinnerListFragment2"
-            app:destination="@id/spinnerListFragment"
-            app:enterAnim="@anim/slide_in_left"
-            app:exitAnim="@anim/slide_out_right"
-            app:popEnterAnim="@anim/slide_in_right"
-            app:popExitAnim="@anim/slide_in_left"/>
-        <action
             android:id="@+id/action_channelListFragment_to_addChannelFragment"
             app:destination="@id/addChannelFragment"
             app:enterAnim="@anim/slide_in_right"
@@ -97,6 +90,13 @@
         <action
             android:id="@+id/action_channelFragment_to_memberListFragment"
             app:destination="@id/memberListFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_channelFragment_to_spinnerListFragment"
+            app:destination="@id/spinnerListFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"

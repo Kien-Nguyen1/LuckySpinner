@@ -4,11 +4,7 @@ import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
-import androidx.core.view.size
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
-import com.example.luckyspinner.R
 import com.example.luckyspinner.databinding.ActivityMainBinding
 import com.example.luckyspinner.repositories.TelegramRepository
 import com.example.luckyspinner.util.Constants
@@ -26,16 +22,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setUpViewModel()
-        setUpBottomNavMenu()
-        Constants.deviceId = Settings.Secure.getString(
+        Constants.DEVICE_ID = Settings.Secure.getString(
             contentResolver,
             Settings.Secure.ANDROID_ID
         )
-    }
-    private fun setUpBottomNavMenu() {
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
-        binding.bottomNavMenu.setupWithNavController(navController)
     }
 
     private fun setUpViewModel() {

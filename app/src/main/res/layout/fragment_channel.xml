@@ -21,10 +21,20 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/btn_spinner_list"
+        android:src="@drawable/ic_spinner_list"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title_channel_fragment"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/rv_event_list_of_channel"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/btn_member_list_channel_fragment"
         android:src="@drawable/ic_member_list"
         app:layout_constraintTop_toBottomOf="@+id/tv_title_channel_fragment"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/rv_event_list_of_channel"
         android:layout_margin="20dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
