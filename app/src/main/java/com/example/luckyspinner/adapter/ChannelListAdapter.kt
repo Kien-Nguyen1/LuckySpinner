@@ -6,12 +6,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.luckyspinner.databinding.ListChannelBinding
+import com.example.luckyspinner.databinding.TitleSpinnerOrChannelItemBinding
 import com.example.luckyspinner.models.Channel
 
 class ChannelListAdapter : RecyclerView.Adapter<ChannelListAdapter.ChannelListViewHolder>() {
 
-    inner class ChannelListViewHolder(val binding: ListChannelBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class ChannelListViewHolder(val binding: TitleSpinnerOrChannelItemBinding) : RecyclerView.ViewHolder(binding.root)
 
     private val diffCallback = object : DiffUtil.ItemCallback<Channel>() {
         override fun areItemsTheSame(oldItem: Channel, newItem: Channel): Boolean {
@@ -33,7 +33,7 @@ class ChannelListAdapter : RecyclerView.Adapter<ChannelListAdapter.ChannelListVi
     override fun getItemCount() = channels.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChannelListViewHolder {
-        return ChannelListViewHolder(ListChannelBinding.inflate(
+        return ChannelListViewHolder(TitleSpinnerOrChannelItemBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
@@ -43,7 +43,7 @@ class ChannelListAdapter : RecyclerView.Adapter<ChannelListAdapter.ChannelListVi
     override fun onBindViewHolder(holder: ChannelListViewHolder, position: Int) {
         holder.binding.apply {
             val channel = channels[position]
-            channelName.text = channel.nameChannel
+            tvTitleListOrChannelItem.text = channel.nameChannel
         }
     }
 }
