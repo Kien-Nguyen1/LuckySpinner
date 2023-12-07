@@ -1,18 +1,14 @@
 package com.example.luckyspinner.viewmodels
 
-import android.provider.Settings
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.luckyspinner.models.Channel
 import com.example.luckyspinner.util.Constants
+import com.example.luckyspinner.util.Constants.FS_USER_CHANNEL
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ChannelListViewModel : ViewModel() {
     var channelList = MutableLiveData<List<Channel>>()
@@ -24,7 +20,7 @@ class ChannelListViewModel : ViewModel() {
      fun  getChannels(id : String) {
         val cList : MutableList<Channel> = ArrayList()
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/$id/${Constants.FS_USER_CHANNEL}")
+        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/$FS_USER_CHANNEL")
             .get()
             .addOnCompleteListener {
                 if (it.isSuccessful) {
@@ -52,10 +48,12 @@ class ChannelListViewModel : ViewModel() {
     }
 
     fun getChannelFromFirestore(doc : DocumentSnapshot) : Channel {
-            doc.data!!.let {
-                val id = doc.id
-                val name = it["nameChannel"].toString()
-                return Channel(id, name)
-            }
+        doc.data!!.let {
+            val id = doc.id
+            val name = it["nameChannel"].toString()
+            return Channel(id, name)
+        }
     }
+
+
 }

@@ -20,7 +20,8 @@ object Constants {
     const val TAG_OUTPUT = "TAG_OUTPUT"
     const val FS_LIST_CHANNEL = "listchannel"
     const val FIRE_STORE = "Fire Store"
-    const val FS_USER_CHANNEL = "userchannel"
+    const val FS_USER_CHANNEL = "channels"
+    const val FS_USER_SPINNER = "spinners"
     const val EMPTY_STRING = ""
 
     const val DELAY_TIME_MILLIS: Long = 3000
