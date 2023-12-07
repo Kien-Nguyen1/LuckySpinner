@@ -23,7 +23,7 @@ class ChannelListViewModel : ViewModel() {
      fun  getChannels(id : String) {
         val cList : MutableList<Channel> = ArrayList()
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/$/$")
+        db.collection(Constants.FS_LIST_CHANNEL+"/$id/${Constants.FS_USER_CHANNEL}")
             .get()
             .addOnCompleteListener {
                 if (it.isSuccessful) {
