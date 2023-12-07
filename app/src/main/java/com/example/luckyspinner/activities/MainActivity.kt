@@ -26,16 +26,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setUpViewModel()
-        setUpBottomNavMenu()
-        Constants.deviceId = Settings.Secure.getString(
+        Constants.DEVICE_ID = Settings.Secure.getString(
             contentResolver,
             Settings.Secure.ANDROID_ID
         )
-    }
-    private fun setUpBottomNavMenu() {
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
-        binding.bottomNavMenu.setupWithNavController(navController)
     }
 
     private fun setUpViewModel() {

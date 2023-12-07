@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.luckyspinner.models.Channel
 import com.example.luckyspinner.util.Constants
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import kotlinx.coroutines.Dispatchers
@@ -32,8 +33,10 @@ class ChannelListViewModel : ViewModel() {
                             Constants.FIRE_STORE,
                             document.id + " => " + document.data
                         )
-                        val  c = Channel.getChannelFromFirestore(document)
-                        cList.add(c)
+                        if (document.exists()) {
+                            val  c = getChannelFromFirestore(document)
+                            cList.add(c)
+                        }
                     }
                     channelList.value = cList
 
@@ -48,5 +51,11 @@ class ChannelListViewModel : ViewModel() {
             }
     }
 
-
+    fun getChannelFromFirestore(doc : DocumentSnapshot) : Channel {
+            doc.data!!.let {
+                val id = doc.id
+                val name = it["nameChannel"].toString()
+                return Channel(id, name)
+            }
+    }
 }

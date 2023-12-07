@@ -24,5 +24,5 @@ object Constants {
     const val EMPTY_STRING = ""
 
     const val DELAY_TIME_MILLIS: Long = 3000
-    lateinit var deviceId : String
+    lateinit var DEVICE_ID : String
 }

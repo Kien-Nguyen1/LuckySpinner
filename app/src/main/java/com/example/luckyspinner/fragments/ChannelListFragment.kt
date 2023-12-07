@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -17,7 +18,6 @@ import com.example.luckyspinner.util.Constants.EMPTY_STRING
 import com.example.luckyspinner.viewmodels.ChannelListViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.newCoroutineContext
 
 class ChannelListFragment : Fragment() {
     private lateinit var binding : FragmentChannelListBinding
@@ -47,13 +47,9 @@ class ChannelListFragment : Fragment() {
         viewModel.channelList.observe(viewLifecycleOwner) {
             channelAdapter.channels = it
         }
-//        binding.btnAdd.setOnClickListener {
-//            findNavController().navigate(R.id.channelFragment, Bundle().apply {
-//                putString("KEY_ID", EMPTY_STRING)
-//            })
-//        }
-
-
+        binding.btnAddChannel.setOnClickListener {
+            findNavController().navigate(R.id.addChannelFragment)
+        }
     }
 
     private fun setupRecycleView() {
