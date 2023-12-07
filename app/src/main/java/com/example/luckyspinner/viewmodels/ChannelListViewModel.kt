@@ -1,5 +1,6 @@
 package com.example.luckyspinner.viewmodels
 
+import android.provider.Settings
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,17 +19,11 @@ class ChannelListViewModel : ViewModel() {
 
     val db = FirebaseFirestore.getInstance()
 
-    init {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO){
-                getChannels()
-            }
-        }
-    }
 
-     fun  getChannels() {
+     fun  getChannels(id : String) {
         val cList : MutableList<Channel> = ArrayList()
-        db.collection(Constants.FS_LIST_CHANNEL)
+
+        db.collection(Constants.FS_LIST_CHANNEL+"/$/$")
             .get()
             .addOnCompleteListener {
                 if (it.isSuccessful) {
@@ -52,5 +47,6 @@ class ChannelListViewModel : ViewModel() {
 
             }
     }
+
 
 }
