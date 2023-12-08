@@ -54,8 +54,6 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             Log.d("kien", "click add channel")
             openAddChannelDialog(Gravity.CENTER)
         }
-
-
     }
     private fun openAddChannelDialog(gravity: Int) {
         val binding : AddChannelLayoutBinding = AddChannelLayoutBinding.inflate(layoutInflater)

@@ -93,6 +93,4 @@ class ChannelListViewModel : ViewModel() {
             return Channel(id, name)
         }
     }
-
-
 }
