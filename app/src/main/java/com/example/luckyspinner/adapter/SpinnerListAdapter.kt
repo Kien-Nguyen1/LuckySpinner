@@ -9,10 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.TitleSpinnerOrChannelItemBinding
 import com.example.luckyspinner.models.Spinner
 
-class SpinnerListAdapter(private val listener: ListFoodListener) : RecyclerView.Adapter<SpinnerListAdapter.SpinnerListViewHolder>() {
+class SpinnerListAdapter(private val listener: Listener) : RecyclerView.Adapter<SpinnerListAdapter.SpinnerListViewHolder>() {
 
-    interface ListFoodListener {
+    interface Listener {
         fun onItemClick(id: String)
+        fun onDeleteItem(id: String)
+
     }
 
     inner class SpinnerListViewHolder(val binding: TitleSpinnerOrChannelItemBinding) : RecyclerView.ViewHolder(binding.root)

@@ -10,6 +10,8 @@ import com.example.luckyspinner.repositories.TelegramRepository
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.viewmodels.TelegramViewModel
 import com.example.luckyspinner.viewmodels.TelegramViewModelProviderFactory
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -26,6 +28,14 @@ class MainActivity : AppCompatActivity() {
             contentResolver,
             Settings.Secure.ANDROID_ID
         )
+        val currentDateTime = LocalDateTime.now()
+
+
+        // Format the date and time using a formatter
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val formattedDateTime: String = currentDateTime.format(formatter)
+
+        println("Here come  $formattedDateTime")
     }
 
     private fun setUpViewModel() {

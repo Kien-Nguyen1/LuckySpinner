@@ -6,19 +6,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.luckyspinner.R
-import com.example.luckyspinner.adapter.ChannelListAdapter
 import com.example.luckyspinner.adapter.SpinnerListAdapter
 import com.example.luckyspinner.databinding.FragmentSpinnerListBinding
+import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.viewmodels.SpinnerListViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
-class SpinnerListFragment : Fragment(), SpinnerListAdapter.ListFoodListener {
+class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
     private val viewModel by viewModels<SpinnerListViewModel>()
     private lateinit var binding : FragmentSpinnerListBinding
     private lateinit var spinnerAdapter : SpinnerListAdapter
+    private lateinit var idChannel : String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,11 +36,14 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.ListFoodListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecycleView()
+        idChannel = arguments?.getString(Constants.ID_CHANNEL_KEY).toString()
 
         viewModel.spinnerList.observe(viewLifecycleOwner) {
             spinnerAdapter.spinners = it
         }
-
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.getSpinners(idChannel)
+        }
 
     }
     private fun setupRecycleView() {
@@ -49,8 +56,15 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.ListFoodListener {
 
     override fun onItemClick(id: String) {
         findNavController().navigate(R.id.elementListInSpinnerFragment, Bundle().apply {
-            putString("KEY", id)
+            putString(Constants.ID_CHANNEL_KEY, idChannel)
+            putString(Constants.ID_SPINNER_KEY, id)
         })
+    }
+
+    override fun onDeleteItem(id: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.deleteSpinner(idChannel, id)
+        }
     }
 
 }

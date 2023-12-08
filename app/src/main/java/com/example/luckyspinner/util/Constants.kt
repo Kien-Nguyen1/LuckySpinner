@@ -22,7 +22,17 @@ object Constants {
     const val FIRE_STORE = "Fire Store"
     const val FS_USER_CHANNEL = "channels"
     const val FS_USER_SPINNER = "spinners"
+    const val FS_USER_EVENT = "events"
+    const val FS_USER_ELEMENT_SPINNER = "elementSpinners"
+
+
+
+
     const val EMPTY_STRING = ""
+    const val ID_SPINNER_KEY = "ID_SPINNER_KEY"
+    const val ID_CHANNEL_KEY = "ID_CHANNEL_KEY"
+    const val ID_EVENT_KEY = "ID_EVENT_KEY"
+
 
     const val DELAY_TIME_MILLIS: Long = 3000
     lateinit var DEVICE_ID : String

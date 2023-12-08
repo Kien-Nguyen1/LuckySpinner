@@ -11,13 +11,6 @@
         android:label="fragment_channel_list"
         tools:layout="@layout/fragment_channel_list" >
         <action
-            android:id="@+id/action_channelListFragment_to_addChannelFragment"
-            app:destination="@id/addChannelFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
-        <action
             android:id="@+id/action_channelListFragment_to_channelFragment2"
             app:destination="@id/channelFragment"
             app:enterAnim="@anim/slide_in_right"
@@ -31,13 +24,6 @@
         android:label="fragment_spinner_list"
         tools:layout="@layout/fragment_spinner_list" >
         <action
-            android:id="@+id/action_spinnerListFragment_to_addElementFragment"
-            app:destination="@id/addElementFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
-        <action
             android:id="@+id/action_spinnerListFragment_to_elementListInSpinnerFragment"
             app:destination="@id/elementListInSpinnerFragment"
             app:enterAnim="@anim/slide_in_right"
@@ -46,28 +32,10 @@
             app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
-        android:id="@+id/addElementFragment"
-        android:name="com.example.luckyspinner.fragments.AddElementFragment"
-        android:label="fragment_add_element"
-        tools:layout="@layout/fragment_add_element" />
-    <fragment
         android:id="@+id/elementListInSpinnerFragment"
         android:name="com.example.luckyspinner.fragments.ElementListInSpinnerFragment"
         android:label="fragment_element_list_in_spinner"
-        tools:layout="@layout/fragment_element_list_in_spinner" >
-        <action
-            android:id="@+id/action_elementListInSpinnerFragment_to_addElementFragment"
-            app:destination="@id/addElementFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
-    </fragment>
-    <fragment
-        android:id="@+id/addChannelFragment"
-        android:name="com.example.luckyspinner.fragments.AddChannelFragment"
-        android:label="fragment_add_channel"
-        tools:layout="@layout/fragment_add_channel" />
+        tools:layout="@layout/fragment_element_list_in_spinner" />
     <fragment
         android:id="@+id/channelFragment"
         android:name="com.example.luckyspinner.fragments.ChannelFragment"
@@ -137,13 +105,5 @@
         android:id="@+id/memberListFragment"
         android:name="com.example.luckyspinner.fragments.MemberListFragment"
         android:label="fragment_member_list"
-        tools:layout="@layout/fragment_member_list" >
-        <action
-            android:id="@+id/action_memberListFragment_to_addElementFragment"
-            app:destination="@id/addElementFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
-    </fragment>
+        tools:layout="@layout/fragment_member_list" />
 </navigation>

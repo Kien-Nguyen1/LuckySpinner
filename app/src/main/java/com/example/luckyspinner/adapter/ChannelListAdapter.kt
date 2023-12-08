@@ -9,7 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.TitleSpinnerOrChannelItemBinding
 import com.example.luckyspinner.models.Channel
 
-class ChannelListAdapter : RecyclerView.Adapter<ChannelListAdapter.ChannelListViewHolder>() {
+class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter<ChannelListAdapter.ChannelListViewHolder>() {
+    interface Listener {
+        fun onItemClick(id: String)
+        fun onDeleteItem(id: String)
+    }
 
     inner class ChannelListViewHolder(val binding: TitleSpinnerOrChannelItemBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -44,6 +48,9 @@ class ChannelListAdapter : RecyclerView.Adapter<ChannelListAdapter.ChannelListVi
         holder.binding.apply {
             val channel = channels[position]
             tvTitleListOrChannelItem.text = channel.nameChannel
+            root.setOnClickListener {
+                listener.onItemClick(channel.idChannel)
+            }
         }
     }
 }
