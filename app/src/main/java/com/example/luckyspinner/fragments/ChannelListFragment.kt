@@ -26,37 +26,37 @@ import com.example.luckyspinner.viewmodels.ChannelListViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ChannelListFragment : Fragment() {
+class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     private lateinit var binding : FragmentChannelListBinding
     private val viewModel : ChannelListViewModel by viewModels()
     private lateinit var channelAdapter : ChannelListAdapter
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentChannelListBinding.inflate(inflater, container, false)
-
+        setupRecycleView()
+        viewModel.channelList.observe(viewLifecycleOwner) {
+            channelAdapter.channels = it
+        }
         // Inflate the layout for this fragment
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupRecycleView()
 
         lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.getChannels(Constants.DEVICE_ID)
+            viewModel.getChannels()
         }
-        viewModel.channelList.observe(viewLifecycleOwner) {
-            channelAdapter.channels = it
-        }
+
         binding.btnAddChannel.setOnClickListener {
             Log.d("kien", "click add channel")
             openAddChannelDialog(Gravity.CENTER)
         }
-    }
 
+
+    }
     private fun openAddChannelDialog(gravity: Int) {
         val binding : AddChannelLayoutBinding = AddChannelLayoutBinding.inflate(layoutInflater)
         val dialog = Dialog(requireContext())
@@ -101,9 +101,21 @@ class ChannelListFragment : Fragment() {
 
     private fun setupRecycleView() {
         binding.rvChannelList.apply {
-            channelAdapter = ChannelListAdapter()
+            channelAdapter = ChannelListAdapter(this@ChannelListFragment)
             adapter = channelAdapter
             layoutManager = LinearLayoutManager(context)
+        }
+    }
+
+    override fun onItemClick(id: String) {
+        findNavController().navigate(R.id.spinnerListFragment, Bundle().apply {
+            putString(Constants.ID_CHANNEL_KEY, id)
+        })
+    }
+
+    override fun onDeleteItem(id: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.deleteChannel(id)
         }
     }
 }

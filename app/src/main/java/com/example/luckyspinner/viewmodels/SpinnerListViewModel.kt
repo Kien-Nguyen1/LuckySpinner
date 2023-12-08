@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.luckyspinner.models.Spinner
 import com.example.luckyspinner.util.Constants
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import kotlinx.coroutines.Dispatchers
@@ -14,20 +16,14 @@ import kotlinx.coroutines.launch
 class SpinnerListViewModel : ViewModel() {
     var spinnerList = MutableLiveData<List<Spinner>>()
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            getSpinners()
-        }
-    }
 
     val db = FirebaseFirestore.getInstance()
 
 
-    fun  getSpinners() {
+    fun  getSpinners(idChannel : String) {
         val sList : MutableList<Spinner> = ArrayList()
-        val mokeChannelId = "asd"
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/mokeChannelId/${Constants.FS_USER_SPINNER}")
+        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
             .get()
             .addOnCompleteListener {
                 if (it.isSuccessful) {
@@ -51,5 +47,16 @@ class SpinnerListViewModel : ViewModel() {
 
             }
     }
-
+    fun deleteSpinner(idChannel : String, idSpinner : String) {
+        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
+            .document(idSpinner)
+            .delete()
+            .addOnSuccessListener {
+                Log.d(
+                    Constants.FIRE_STORE,
+                    "DocumentSnapshot successfully deleted!"
+                )
+            }
+            .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error deleting document", e) }
+    }
 }
