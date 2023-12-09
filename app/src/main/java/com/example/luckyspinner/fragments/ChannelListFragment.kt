@@ -16,13 +16,16 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.ChannelListAdapter
 import com.example.luckyspinner.databinding.AddChannelLayoutBinding
 import com.example.luckyspinner.databinding.FragmentChannelListBinding
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.viewmodels.ChannelListViewModel
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -53,6 +56,35 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         binding.btnAddChannel.setOnClickListener {
             Log.d("kien", "click add channel")
             openAddChannelDialog(Gravity.CENTER)
+        }
+
+        val itemTouchHelperCallBack = object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder,
+            ): Boolean {
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val channel = channelAdapter.differ.currentList[position]
+                viewModel.deleteChannel(channel.idChannel)
+                Snackbar.make(view, "Deleted Channel Successfully!", Snackbar.LENGTH_SHORT).apply {
+                    setAction("Undo") {
+                        viewModel.addChannel(channel.idChannel, channel.idChannel)
+                    }
+                    show()
+                }
+            }
+        }
+
+        ItemTouchHelper(itemTouchHelperCallBack).apply {
+            attachToRecyclerView(binding.rvChannelList)
         }
     }
     private fun openAddChannelDialog(gravity: Int) {

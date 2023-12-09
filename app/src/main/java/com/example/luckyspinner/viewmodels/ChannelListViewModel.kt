@@ -17,10 +17,7 @@ import kotlinx.coroutines.launch
 
 class ChannelListViewModel : ViewModel() {
     var channelList = MutableLiveData<List<Channel>>()
-
-
     val db = FirebaseFirestore.getInstance()
-
 
      fun  getChannels() {
         val cList : MutableList<Channel> = ArrayList()
@@ -52,7 +49,6 @@ class ChannelListViewModel : ViewModel() {
             }
     }
     fun  deleteChannel(id : String) {
-
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/$FS_USER_CHANNEL")
             .document(id)
             .delete()
@@ -66,7 +62,6 @@ class ChannelListViewModel : ViewModel() {
                     Log.w(Constants.FIRE_STORE, "Error deleting document", e)
                 }
             })
-
     }
 
     var isSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>(null)

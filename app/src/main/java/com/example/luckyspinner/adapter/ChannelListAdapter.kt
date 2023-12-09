@@ -27,7 +27,7 @@ class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter
         }
     }
 
-    private val differ = AsyncListDiffer(this, diffCallback)
+    val differ = AsyncListDiffer(this, diffCallback)
     var channels: List<Channel>
         get() = differ.currentList
         set(value) {
