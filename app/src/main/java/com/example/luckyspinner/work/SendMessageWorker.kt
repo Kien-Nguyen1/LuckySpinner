@@ -15,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.random.Random
 
 class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
@@ -22,7 +23,13 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
     override suspend fun doWork(): Result {
         val chatId = inputData.getString(CHAT_ID)
         val message = inputData.getString(MESSAGE)
-
+        val mokeList = ArrayList<Int>()
+        mokeList.apply {
+            add(1)
+            add(2)
+            add(3)
+        }
+        val randomInt = Random.nextInt(mokeList.size)
         return try {
             withContext(Dispatchers.IO) {
                 TelegramApiClient.telegramApi.sendMessage(chatId!!, message!!)
@@ -34,5 +41,8 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
             print("${Log.e("TAG", e.message.toString())}")
             return Result.failure()
         }
+    }
+    private fun setupRandom() {
+
     }
 }

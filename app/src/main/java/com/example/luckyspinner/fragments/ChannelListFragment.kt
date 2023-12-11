@@ -33,6 +33,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     private lateinit var binding : FragmentChannelListBinding
     private val viewModel : ChannelListViewModel by viewModels()
     private lateinit var channelAdapter : ChannelListAdapter
+    private lateinit var addDialog : Dialog
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -42,12 +43,30 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         viewModel.channelList.observe(viewLifecycleOwner) {
             channelAdapter.channels = it
         }
+        viewModel.isAddingSuccess.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    Toast.makeText(context, "Add Channel Successfully!", Toast.LENGTH_SHORT).show()
+                    addDialog.dismiss()
+                }
+                else
+                {
+                    Toast.makeText(context, "Add Channel Fail!!", Toast.LENGTH_SHORT).show()
+                }
+                lifecycleScope.launch(Dispatchers.IO) {
+                    viewModel.getChannels()
+                }
+            }
+        }
         // Inflate the layout for this fragment
         return binding.root
     }
 
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        findNavController().navigate(R.id.addTimeEventFragment)
 
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.getChannels()
@@ -102,11 +121,11 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     }
     private fun openAddChannelDialog(gravity: Int) {
         val binding : AddChannelLayoutBinding = AddChannelLayoutBinding.inflate(layoutInflater)
-        val dialog = Dialog(requireContext())
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(binding.root)
+        addDialog = Dialog(requireContext())
+        addDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        addDialog.setContentView(binding.root)
 
-        val window : Window = dialog.window!!
+        val window : Window = addDialog.window!!
         window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
@@ -114,7 +133,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         windowAttribute.gravity = gravity
         window.attributes = windowAttribute
 
-        dialog.show()
+        addDialog.show()
 
         viewModel.context = requireContext()
 
@@ -127,23 +146,6 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             }
         }
 
-        viewModel.isAddingSuccess.observe(viewLifecycleOwner) {
-            it?.let {
-                if (it) {
-                    Toast.makeText(context, "Add Channel Successfully!", Toast.LENGTH_SHORT).show()
-                    dialog.dismiss()
-                }
-                else
-                {
-                    Toast.makeText(context, "Add Channel Fail!!", Toast.LENGTH_SHORT).show()
-                }
-                viewModel.isAddingSuccess.removeObservers(viewLifecycleOwner)
-                viewModel.isAddingSuccess.value = null
-                lifecycleScope.launch(Dispatchers.IO) {
-                    viewModel.getChannels()
-                }
-            }
-        }
     }
 
     private fun setupRecycleView() {
