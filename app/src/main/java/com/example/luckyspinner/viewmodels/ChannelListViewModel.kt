@@ -19,6 +19,9 @@ import kotlinx.coroutines.launch
 class ChannelListViewModel : ViewModel() {
     var channelList = MutableLiveData<List<Channel>>()
     val db = FirebaseFirestore.getInstance()
+    var isAddingSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>(null)
+    lateinit var context: Context
+    var isDeleteSuccess  : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>(null)
 
      fun  getChannels() {
         val cList : MutableList<Channel> = ArrayList()
@@ -57,17 +60,17 @@ class ChannelListViewModel : ViewModel() {
             .addOnSuccessListener(object : OnSuccessListener<Void?> {
                 override fun onSuccess(aVoid: Void?) {
                     Log.d(Constants.FIRE_STORE, "DocumentSnapshot successfully deleted!")
+                    isDeleteSuccess.value = true
                 }
             })
             .addOnFailureListener(object : OnFailureListener {
                 override fun onFailure(e: Exception) {
                     Log.w(Constants.FIRE_STORE, "Error deleting document", e)
+                    isDeleteSuccess.value = false
                 }
             })
     }
 
-    var isSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>(null)
-    lateinit var context: Context
     fun addChannel(channelId: String, nameChannel: String) = viewModelScope.launch {
         val channel = Channel(channelId, nameChannel)
         db.collection(Constants.FS_LIST_CHANNEL + "/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}")
@@ -75,12 +78,12 @@ class ChannelListViewModel : ViewModel() {
             .set(channel)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    isSuccess.value = true
+                    isAddingSuccess.value = true
                 }
             }
             .addOnFailureListener { e ->
                 Log.e("error", e.message.toString())
-                isSuccess.value = false
+                isAddingSuccess.value = false
             }
     }
     fun getChannelFromFirestore(doc : DocumentSnapshot) : Channel {

@@ -74,17 +74,30 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 val position = viewHolder.adapterPosition
                 val channel = channelAdapter.differ.currentList[position]
                 viewModel.deleteChannel(channel.idChannel)
-                Snackbar.make(view, "Deleted Channel Successfully!", Snackbar.LENGTH_SHORT).apply {
-                    setAction("Undo") {
-                        viewModel.addChannel(channel.idChannel, channel.nameChannel)
+                viewModel.isDeleteSuccess.observe(viewLifecycleOwner) {
+                    it?.let {
+                        if(it) {
+                            Snackbar.make(view, "Deleted Channel Successfully!", Snackbar.LENGTH_SHORT).apply {
+                                setAction("Undo") {
+                                    viewModel.addChannel(channel.idChannel, channel.nameChannel)
+                                    viewModel.getChannels()
+                                }
+                                show()
+                            }
+                        }
+                        else {
+                            Toast.makeText(context, "Delete Channel Fail!!", Toast.LENGTH_SHORT).show()
+                        }
+                        viewModel.isDeleteSuccess.removeObservers(viewLifecycleOwner)
+                        viewModel.isDeleteSuccess.value = null
                     }
-                    show()
                 }
             }
         }
 
         ItemTouchHelper(itemTouchHelperCallBack).apply {
             attachToRecyclerView(binding.rvChannelList)
+            lifecycleScope
         }
     }
     private fun openAddChannelDialog(gravity: Int) {
@@ -114,19 +127,18 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             }
         }
 
-        viewModel.isSuccess.observe(viewLifecycleOwner) {
+        viewModel.isAddingSuccess.observe(viewLifecycleOwner) {
             it?.let {
                 if (it) {
                     Toast.makeText(context, "Add Channel Successfully!", Toast.LENGTH_SHORT).show()
-                    viewModel.getChannels()
                     dialog.dismiss()
                 }
                 else
                 {
                     Toast.makeText(context, "Add Channel Fail!!", Toast.LENGTH_SHORT).show()
                 }
-                viewModel.isSuccess.removeObservers(viewLifecycleOwner)
-                viewModel.isSuccess.value = null
+                viewModel.isAddingSuccess.removeObservers(viewLifecycleOwner)
+                viewModel.isAddingSuccess.value = null
                 lifecycleScope.launch(Dispatchers.IO) {
                     viewModel.getChannels()
                 }
