@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.work.Data
 import com.example.luckyspinner.databinding.FragmentAddTimeEventBinding
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import java.util.Calendar
@@ -27,27 +28,35 @@ class AddTimeEventFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getTimeAndDatePicker()
+
+        binding.btnDoneAddTimeEvent.setOnClickListener {
+            getTimeAndDatePicker()
+        }
     }
 
     private fun getTimeAndDatePicker() {
         val selectedHour: Int
         val selectedMinutes: Int
-        val is24HourFormat: Boolean
 
         if (Build.VERSION.SDK_INT >= 23) {
             selectedHour = binding.timePickerAddTimeEvent.hour
             selectedMinutes = binding.timePickerAddTimeEvent.minute
-            is24HourFormat = binding.timePickerAddTimeEvent.is24HourView
         } else {
             selectedHour = binding.timePickerAddTimeEvent.currentHour
             selectedMinutes = binding.timePickerAddTimeEvent.currentMinute
-            is24HourFormat = binding.timePickerAddTimeEvent.is24HourView
         }
+
+        val selectedDayOfWeek = binding.numberPickerAddTimeEvent.value
 
         val calendar = Calendar.getInstance()
         calendar.set(Calendar.HOUR_OF_DAY, selectedHour)
         calendar.set(Calendar.MINUTE, selectedMinutes)
+        calendar.set(Calendar.DAY_OF_WEEK, selectedDayOfWeek)
+
+        //thoi gian va ngay da duoc chon
+        val inputData = Data.Builder()
+            .putLong("selected_time", calendar.timeInMillis)
+            .build()
     }
 
     private fun setUpDatePicker() {
