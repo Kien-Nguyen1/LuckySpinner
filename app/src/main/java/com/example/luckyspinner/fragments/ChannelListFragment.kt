@@ -120,12 +120,15 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                     Toast.makeText(context, "Add Channel Successfully!", Toast.LENGTH_SHORT).show()
                     viewModel.getChannels()
                     dialog.dismiss()
-                    viewModel.isSuccess.value = null
                 }
                 else
                 {
                     Toast.makeText(context, "Add Channel Fail!!", Toast.LENGTH_SHORT).show()
-                    viewModel.isSuccess.value = null
+                }
+                viewModel.isSuccess.removeObservers(viewLifecycleOwner)
+                viewModel.isSuccess.value = null
+                lifecycleScope.launch(Dispatchers.IO) {
+                    viewModel.getChannels()
                 }
             }
         }

@@ -13,6 +13,7 @@ import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.launch
 
 class ChannelListViewModel : ViewModel() {
@@ -32,7 +33,8 @@ class ChannelListViewModel : ViewModel() {
                             document.id + " => " + document.data
                         )
                         if (document.exists()) {
-                            val  c = getChannelFromFirestore(document)
+                            val c = document.toObject<Channel>()
+//                            val  c = getChannelFromFirestore(document)
                             cList.add(c)
                         }
                     }
