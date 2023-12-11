@@ -76,7 +76,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 viewModel.deleteChannel(channel.idChannel)
                 Snackbar.make(view, "Deleted Channel Successfully!", Snackbar.LENGTH_SHORT).apply {
                     setAction("Undo") {
-                        viewModel.addChannel(channel.idChannel, channel.idChannel)
+                        viewModel.addChannel(channel.idChannel, channel.nameChannel)
                     }
                     show()
                 }
@@ -109,7 +109,8 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             lifecycleScope.launch(Dispatchers.IO) {
                 Log.d("kien", "click done add channel")
                 val channelId = binding.edtEnterChannelId.text.toString()
-                viewModel.addChannel(channelId, channelId)
+                val channelName = binding.edtEnterChannelName.text.toString()
+                viewModel.addChannel(channelId, channelName)
             }
         }
 
@@ -117,6 +118,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             it?.let {
                 if (it) {
                     Toast.makeText(context, "Add Channel Successfully!", Toast.LENGTH_SHORT).show()
+                    viewModel.getChannels()
                     dialog.dismiss()
                     viewModel.isSuccess.value = null
                 }
