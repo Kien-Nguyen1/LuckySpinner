@@ -15,6 +15,7 @@ import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.launch
 
 class ChannelViewModel : ViewModel() {
@@ -35,7 +36,8 @@ class ChannelViewModel : ViewModel() {
                             document.id + " => " + document.data
                         )
                         if (document.exists()) {
-                            val  e = getEventFromFirestore(document)
+                            val  e = document.toObject<Event>()
+//                            val  e = getEventFromFirestore(document)
                             list.add(e)
                         }
 
@@ -76,7 +78,7 @@ class ChannelViewModel : ViewModel() {
             val type = it[TYPE_EVENT_KEY].toString().toInt()
             val hour = it[HOUR_EVENT_KEY].toString().toInt()
             val minute = it[MINUTE_EVENT_KEY].toString().toInt()
-            return Event(id, type, hour, minute)
+            return Event(id, type, hour, minute, ArrayList(1))
         }
 
     }

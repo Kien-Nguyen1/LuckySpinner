@@ -1,6 +1,7 @@
 package com.example.luckyspinner.adapter
 
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -27,7 +28,7 @@ class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter
         }
     }
 
-    private val differ = AsyncListDiffer(this, diffCallback)
+    val differ = AsyncListDiffer(this, diffCallback)
     var channels: List<Channel>
         get() = differ.currentList
         set(value) {
@@ -50,6 +51,11 @@ class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter
             tvTitleListOrChannelItem.text = channel.nameChannel
             root.setOnClickListener {
                 listener.onItemClick(channel.idChannel)
+            }
+            if (position % 2 == 0) {
+                titleSpinnerOrChannelLayout.setBackgroundColor(Color.YELLOW)
+            } else {
+                titleSpinnerOrChannelLayout.setBackgroundColor(Color.BLUE)
             }
         }
     }
