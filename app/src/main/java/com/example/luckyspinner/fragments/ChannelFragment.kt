@@ -67,6 +67,4 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
             viewModel.deleteChannel(idChannel, id)
         }
     }
-
-
 }
