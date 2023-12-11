@@ -4,5 +4,6 @@ data class Event(
     val idEvent : String,
     val typeEvent : Int,
     val hour : Int,
-    val minute : Int
+    val minute : Int,
+    val listDay : List<Int>
 )
