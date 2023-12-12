@@ -22,6 +22,7 @@ import com.example.luckyspinner.adapter.EventListAdapter
 import com.example.luckyspinner.databinding.ChooseRandomSpinnerListLayoutBinding
 import com.example.luckyspinner.databinding.FragmentChannelBinding
 import com.example.luckyspinner.util.Constants
+import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
 import com.example.luckyspinner.viewmodels.ChannelViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,7 +56,20 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         }
 
         binding.btnAddEventOfChannel.setOnClickListener {
-            //
+            val direction = ChannelListFragmentDirections.actionChannelListFragmentToChannelFragment()
+            findNavController().navigate(direction)
+        }
+
+        binding.btnSpinnerList.setOnClickListener {
+            findNavController().navigate(R.id.spinnerListFragment, Bundle().apply {
+                putString(ID_CHANNEL_KEY, idChannel)
+            })
+        }
+
+        binding.btnMemberListChannel.setOnClickListener {
+            findNavController().navigate(R.id.memberListFragment, Bundle().apply {
+                putString(ID_CHANNEL_KEY, idChannel)
+            })
         }
     }
 
@@ -70,7 +84,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     }
 
     override fun onItemClick(id: String) {
-        findNavController().navigate(R.id.memberListFragment, Bundle().apply {
+        findNavController().navigate(R.id.editTimeEventFragment, Bundle().apply {
             putString(Constants.ID_CHANNEL_KEY, idChannel)
             putString(Constants.ID_EVENT_KEY, id)
         })

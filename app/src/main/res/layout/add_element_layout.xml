@@ -10,15 +10,6 @@
         android:layout_width="300dp"
         android:layout_height="250dp">
 
-        <ImageView
-            android:id="@+id/btn_back_add_element"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:src="@drawable/ic_back"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <TextView
             android:id="@+id/tv_name_title_add_element"
             android:layout_width="match_parent"
@@ -33,7 +24,7 @@
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@+id/btn_back_add_element" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/edt_enter_element"
