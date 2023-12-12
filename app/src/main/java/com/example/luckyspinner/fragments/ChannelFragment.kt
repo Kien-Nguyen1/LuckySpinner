@@ -32,7 +32,6 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     private lateinit var binding : FragmentChannelBinding
     private var idChannel : String? = null
     private lateinit var eventAdapter : EventListAdapter
-    private lateinit var addEventDialog : Dialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,25 +55,8 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         }
 
         binding.btnAddEventOfChannel.setOnClickListener {
-            openAddEventDiaLog(Gravity.CENTER)
+            //
         }
-    }
-
-    private fun openAddEventDiaLog(gravity: Int) {
-        val binding : ChooseRandomSpinnerListLayoutBinding = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
-        addEventDialog = Dialog(requireContext())
-        addEventDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        addEventDialog.setContentView(binding.root)
-
-        val window : Window = addEventDialog.window!!
-        window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
-        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-        val windowAttribute : WindowManager.LayoutParams = window.attributes
-        windowAttribute.gravity = gravity
-        window.attributes = windowAttribute
-
-        addEventDialog.show()
     }
 
     private fun setupRecycleView() {

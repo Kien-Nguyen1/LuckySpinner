@@ -1,11 +1,16 @@
 package com.example.luckyspinner.fragments
 
-import android.os.Build
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import androidx.fragment.app.viewModels
 import androidx.work.Constraints
 import androidx.work.Data
@@ -15,6 +20,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import com.example.luckyspinner.databinding.ChooseRandomSpinnerListLayoutBinding
 import com.example.luckyspinner.databinding.FragmentAddTimeEventBinding
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
@@ -29,6 +35,7 @@ class AddTimeEventFragment : Fragment() {
     private lateinit var binding : FragmentAddTimeEventBinding
     private lateinit var workManager: WorkManager
     private var channelId : String? = null
+    private lateinit var addEventDialog : Dialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,9 +51,26 @@ class AddTimeEventFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         workManager = WorkManager.getInstance(requireContext())
 
-        binding.btnDoneAddTimeEvent.setOnClickListener {
-            getTimeAndDatePicker()
+        binding.btnChooseRandomSpinner.setOnClickListener {
+            openAddEventDiaLog(Gravity.CENTER)
         }
+    }
+
+    private fun openAddEventDiaLog(gravity: Int) {
+        val binding : ChooseRandomSpinnerListLayoutBinding = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
+        addEventDialog = Dialog(requireContext())
+        addEventDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        addEventDialog.setContentView(binding.root)
+
+        val window : Window = addEventDialog.window!!
+        window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val windowAttribute : WindowManager.LayoutParams = window.attributes
+        windowAttribute.gravity = gravity
+        window.attributes = windowAttribute
+
+        addEventDialog.show()
     }
 
     private fun getTimeAndDatePicker() {
