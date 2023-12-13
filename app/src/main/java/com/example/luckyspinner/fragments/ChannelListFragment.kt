@@ -26,6 +26,7 @@ import com.example.luckyspinner.databinding.AddChannelLayoutBinding
 import com.example.luckyspinner.databinding.FragmentChannelListBinding
 import com.example.luckyspinner.models.Channel
 import com.example.luckyspinner.util.Constants
+import com.example.luckyspinner.util.Constants.CHANNEL_NAME
 import com.example.luckyspinner.viewmodels.ChannelListViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +35,7 @@ import kotlinx.coroutines.launch
 class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     private lateinit var binding : FragmentChannelListBinding
     private val viewModel : ChannelListViewModel by viewModels()
-    private lateinit var channelAdapter : ChannelListAdapter
+    private lateinit var channelListAdapter : ChannelListAdapter
     private lateinit var addDialog : Dialog
     private lateinit var deleteDialog : Dialog
     override fun onCreateView(
@@ -44,7 +45,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         binding = FragmentChannelListBinding.inflate(inflater, container, false)
         setupRecycleView()
         viewModel.channelList.observe(viewLifecycleOwner) {
-            channelAdapter.channels = it
+            channelListAdapter.channels = it
         }
         viewModel.isAddingSuccess.observe(viewLifecycleOwner) {
             it?.let {
@@ -67,8 +68,6 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        findNavController().navigate(R.id.channelFragment)
 
         viewModel.isDeleteSuccess.observe(viewLifecycleOwner) {
             it?.let {
@@ -105,11 +104,11 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                val channel = channelAdapter.differ.currentList[position]
+                val channel = channelListAdapter.differ.currentList[position]
                 viewModel.deleteChannel(channel.idChannel)
                 val channels : MutableList<Channel> = viewModel.channelList.value!!.toMutableList()
                 channels.removeAt(position)
-                channelAdapter.channels = channels
+                channelListAdapter.channels = channels
                 viewModel.channelList.value = channels
             }
         }
@@ -149,16 +148,17 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     private fun setupRecycleView() {
         val itemDecoration : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.rvChannelList.apply {
-            channelAdapter = ChannelListAdapter(this@ChannelListFragment)
-            adapter = channelAdapter
+            channelListAdapter = ChannelListAdapter(this@ChannelListFragment)
+            adapter = channelListAdapter
             layoutManager = LinearLayoutManager(context)
             addItemDecoration(itemDecoration)
         }
     }
 
-    override fun onItemClick(id: String) {
-        findNavController().navigate(R.id.spinnerListFragment, Bundle().apply {
+    override fun onItemClick(id: String, name : String) {
+        findNavController().navigate(R.id.channelFragment, Bundle().apply {
             putString(Constants.ID_CHANNEL_KEY, id)
+            putString(CHANNEL_NAME, name)
         })
     }
 

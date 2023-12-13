@@ -12,7 +12,7 @@ import com.example.luckyspinner.models.Spinner
 class SpinnerListAdapter(private val listener: Listener) : RecyclerView.Adapter<SpinnerListAdapter.SpinnerListViewHolder>() {
 
     interface Listener {
-        fun onItemClick(id: String)
+        fun onItemClick(id: String, title : String)
         fun onDeleteItem(id: String)
 
     }
@@ -51,7 +51,7 @@ class SpinnerListAdapter(private val listener: Listener) : RecyclerView.Adapter<
             val spinner = spinners[position]
             tvTitleListOrChannelItem.text = spinner.titleSpin
             root.setOnClickListener {
-                listener.onItemClick(spinner.idSpin)
+                listener.onItemClick(spinner.idSpin, spinner.titleSpin)
             }
         }
     }

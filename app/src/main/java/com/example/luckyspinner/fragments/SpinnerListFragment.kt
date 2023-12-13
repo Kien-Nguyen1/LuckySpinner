@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -19,9 +20,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.SpinnerListAdapter
+import com.example.luckyspinner.databinding.AddChannelLayoutBinding
 import com.example.luckyspinner.databinding.AddElementLayoutBinding
 import com.example.luckyspinner.databinding.FragmentSpinnerListBinding
 import com.example.luckyspinner.util.Constants
+import com.example.luckyspinner.util.Constants.SPINNER_TITLE
 import com.example.luckyspinner.viewmodels.SpinnerListViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,14 +42,31 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
         savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentSpinnerListBinding.inflate(inflater , container, false)
-        // Inflate the layout for this fragment
+
+        idChannel = arguments?.getString(Constants.ID_CHANNEL_KEY).toString()
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecycleView()
-        idChannel = arguments?.getString(Constants.ID_CHANNEL_KEY).toString()
+
+        viewModel.isAddingSpinnerSuccess.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    Toast.makeText(context, "Add Spinner Successfully!", Toast.LENGTH_SHORT).show()
+                    addSpinnerDiaLog.dismiss()
+                }
+                else
+                {
+                    Toast.makeText(context, "Add Spinner Fail!!", Toast.LENGTH_SHORT).show()
+                }
+                lifecycleScope.launch(Dispatchers.IO) {
+                    viewModel.getSpinners(idChannel)
+                }
+            }
+        }
 
         viewModel.spinnerList.observe(viewLifecycleOwner) {
             spinnerAdapter.spinners = it
@@ -58,15 +78,19 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
         binding.btnAddSpinner.setOnClickListener {
             openAddSpinnerDiaLog(Gravity.CENTER)
         }
+
+        binding.btnBackSpinnerList.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun openAddSpinnerDiaLog(gravity: Int) {
-        val binding : AddElementLayoutBinding = AddElementLayoutBinding.inflate(layoutInflater)
+        val binding : AddChannelLayoutBinding = AddChannelLayoutBinding.inflate(layoutInflater)
         addSpinnerDiaLog = Dialog(requireContext())
         addSpinnerDiaLog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         addSpinnerDiaLog.setContentView(binding.root)
 
-        binding.tvNameTitleAddElement.text = "Spinner Name"
+        binding.tvAddChannel.text = "Spinner Name"
 
         val window : Window = addSpinnerDiaLog.window!!
         window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
@@ -77,6 +101,16 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
         window.attributes = windowAttribute
 
         addSpinnerDiaLog.show()
+
+        viewModel.contextSpinnerList = requireContext()
+
+        binding.btnDoneAddChannel.setOnClickListener {
+            lifecycleScope.launch(Dispatchers.IO) {
+                val nameSpinner = binding.edtEnterChannelName.text.toString()
+                val idSpinner = binding.edtEnterChannelId.text.toString()
+                viewModel.addSpinner(idChannel, idSpinner, nameSpinner)
+            }
+        }
     }
 
     private fun setupRecycleView() {
@@ -89,10 +123,11 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
         }
     }
 
-    override fun onItemClick(id: String) {
+    override fun onItemClick(id: String, title : String) {
         findNavController().navigate(R.id.elementListInSpinnerFragment, Bundle().apply {
             putString(Constants.ID_CHANNEL_KEY, idChannel)
             putString(Constants.ID_SPINNER_KEY, id)
+            putString(SPINNER_TITLE, title)
         })
     }
 

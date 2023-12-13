@@ -30,14 +30,8 @@ object Constants {
     const val ID_SPINNER_KEY = "ID_SPINNER_KEY"
     const val ID_CHANNEL_KEY = "ID_CHANNEL_KEY"
     const val ID_EVENT_KEY = "ID_EVENT_KEY"
-
-    const val MONDAY = 0
-    const val TUESDAY = 1
-    const val WEDNESDAY = 2
-    const val THURSDAY = 3
-    const val FRIDAY = 4
-    const val SATURDAY = 5
-    const val SUNDAY = 6
+    const val CHANNEL_NAME = "CHANNEL_NAME"
+    const val SPINNER_TITLE = "SPINNER_TITLE"
 
     const val DELAY_TIME_MILLIS: Long = 3000
     lateinit var DEVICE_ID : String

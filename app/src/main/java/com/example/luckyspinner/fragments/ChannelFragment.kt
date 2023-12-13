@@ -22,6 +22,7 @@ import com.example.luckyspinner.adapter.EventListAdapter
 import com.example.luckyspinner.databinding.ChooseRandomSpinnerListLayoutBinding
 import com.example.luckyspinner.databinding.FragmentChannelBinding
 import com.example.luckyspinner.util.Constants
+import com.example.luckyspinner.util.Constants.CHANNEL_NAME
 import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
 import com.example.luckyspinner.viewmodels.ChannelViewModel
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +33,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     private val viewModel by viewModels<ChannelViewModel>()
     private lateinit var binding : FragmentChannelBinding
     private var idChannel : String? = null
+    private var nameChannel : String? = null
     private lateinit var eventAdapter : EventListAdapter
 
     override fun onCreateView(
@@ -40,8 +42,10 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     ): View? {
         binding = FragmentChannelBinding.inflate(inflater, container, false)
         idChannel = arguments?.getString(Constants.ID_CHANNEL_KEY)
+        nameChannel = arguments?.getString(CHANNEL_NAME)
 
-        // Inflate the layout for this fragment
+        binding.tvTitleChannelFragment.text = nameChannel
+
         return binding.root
     }
 
@@ -56,7 +60,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         }
 
         binding.btnAddEventOfChannel.setOnClickListener {
-            val direction = ChannelListFragmentDirections.actionChannelListFragmentToChannelFragment()
+            val direction = ChannelFragmentDirections.actionChannelFragmentToAddTimeEventFragment()
             findNavController().navigate(direction)
         }
 
@@ -85,7 +89,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
 
     override fun onItemClick(id: String) {
         findNavController().navigate(R.id.editTimeEventFragment, Bundle().apply {
-            putString(Constants.ID_CHANNEL_KEY, idChannel)
+            putString(ID_CHANNEL_KEY, idChannel)
             putString(Constants.ID_EVENT_KEY, id)
         })
     }

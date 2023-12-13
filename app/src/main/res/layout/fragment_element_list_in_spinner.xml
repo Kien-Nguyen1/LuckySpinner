@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:gravity="center_horizontal"
-        android:text="Danh sách các phần tử"
+        android:text="Spinner Name"
         android:textColor="@color/black"
         android:textSize="25sp"
         android:textStyle="bold"
@@ -38,6 +38,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        tools:listitem="@layout/element_in_spinner_item"
         app:layout_constraintTop_toBottomOf="@+id/tv_title_element_list_in_spinner" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

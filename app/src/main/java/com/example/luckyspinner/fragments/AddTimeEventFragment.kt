@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -53,6 +54,10 @@ class AddTimeEventFragment : Fragment() {
 
         binding.btnChooseRandomSpinner.setOnClickListener {
             openAddEventDiaLog(Gravity.CENTER)
+        }
+
+        binding.btnBackAddTimeEvent.setOnClickListener {
+            findNavController().popBackStack()
         }
     }
 

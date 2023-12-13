@@ -13,6 +13,7 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -58,6 +59,9 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             openAddMemberDiaLog(Gravity.CENTER)
         }
 
+        binding.btnBackMemberList.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun openAddMemberDiaLog(gravity: Int) {
