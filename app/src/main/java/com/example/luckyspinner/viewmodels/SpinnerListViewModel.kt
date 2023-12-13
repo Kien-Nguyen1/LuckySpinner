@@ -12,6 +12,7 @@ import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -34,8 +35,11 @@ class SpinnerListViewModel : ViewModel() {
                             Constants.FIRE_STORE,
                             document.id + " => " + document.data
                         )
-                        val  s = Spinner.getSpinnerFromFirestore(document)
-                        sList.add(s)
+                        if (document.exists()) {
+                            val  s = document.toObject<Spinner>()
+                            sList.add(s)
+                        }
+
                     }
                     spinnerList.value = sList
 
@@ -53,7 +57,7 @@ class SpinnerListViewModel : ViewModel() {
     fun addSpinner(idChannel: String, spinnerId: String, nameSpinner: String) = viewModelScope.launch {
         val spinner = Spinner(spinnerId, nameSpinner)
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
-            .document(idChannel)
+            .document(spinnerId)
             .set(spinner)
             .addOnCompleteListener {
                 if (it.isSuccessful) {

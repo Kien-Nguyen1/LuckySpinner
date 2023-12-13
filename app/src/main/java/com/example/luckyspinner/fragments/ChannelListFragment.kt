@@ -69,6 +69,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+//        findNavController().navigate(R.id.addTimeEventFragment)
         viewModel.isDeleteSuccess.observe(viewLifecycleOwner) {
             it?.let {
                 if(it) {

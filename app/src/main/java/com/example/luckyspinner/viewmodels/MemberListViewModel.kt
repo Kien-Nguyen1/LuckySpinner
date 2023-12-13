@@ -19,7 +19,7 @@ class MemberListViewModel : ViewModel() {
     fun  getMembers(idChannel : String) {
         val list : MutableList<Member> = ArrayList()
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
+        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_MEMBER}")
             .get()
             .addOnCompleteListener {
                 if (it.isSuccessful) {
@@ -49,6 +49,19 @@ class MemberListViewModel : ViewModel() {
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_MEMBER}")
             .document(idMember)
             .delete()
+            .addOnSuccessListener {
+                Log.d(
+                    Constants.FIRE_STORE,
+                    "DocumentSnapshot successfully deleted!"
+                )
+            }
+            .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error deleting document", e) }
+    }
+    fun addMember(idChannel: String, idMember: String, nameMember : String) {
+        val newMember = Member(idMember, nameMember)
+        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_MEMBER}")
+            .document(idMember)
+            .set(newMember)
             .addOnSuccessListener {
                 Log.d(
                     Constants.FIRE_STORE,

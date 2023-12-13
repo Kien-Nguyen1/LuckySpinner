@@ -81,6 +81,13 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         window.attributes = windowAttribute
 
         addMemberDialog.show()
+//        binding.btnDoneAddElement.setOnClickListener {
+//            lifecycleScope.launch(Dispatchers.IO) {
+//                val nameSpinner = binding.edtEnterChannelName.text.toString()
+//                val idSpinner = binding.edtEnterChannelId.text.toString()
+//                viewModel.addSpinner(idChannel, idSpinner, nameSpinner)
+//            }
+//        }
     }
 
     private fun setupRecycleView() {
