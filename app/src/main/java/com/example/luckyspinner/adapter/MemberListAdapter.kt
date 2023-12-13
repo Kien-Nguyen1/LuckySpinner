@@ -12,6 +12,8 @@ import com.example.luckyspinner.models.Member
 
 class MemberListAdapter(private val listener: Listener) : RecyclerView.Adapter<MemberListAdapter.MemberListViewHolder>() {
 
+    var isCheckedMember : Boolean = true
+
     interface Listener {
         fun onItemClick(id: String)
         fun onDeleteItem(id: String)
@@ -51,6 +53,7 @@ class MemberListAdapter(private val listener: Listener) : RecyclerView.Adapter<M
         holder.binding.apply {
             val spinner = members[position]
             tvMemberNameItem.text = spinner.nameMember
+            checkBoxMemberListItem.isChecked = isCheckedMember
             root.setOnClickListener {
                 listener.onItemClick(spinner.idMember)
             }

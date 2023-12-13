@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.adapter.MemberListAdapter
 import com.example.luckyspinner.adapter.SpinnerListAdapter
+import com.example.luckyspinner.databinding.AddChannelLayoutBinding
 import com.example.luckyspinner.databinding.AddElementLayoutBinding
 import com.example.luckyspinner.databinding.FragmentMemberListBinding
 import com.example.luckyspinner.util.Constants
@@ -62,15 +64,36 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         binding.btnBackMemberList.setOnClickListener {
             findNavController().popBackStack()
         }
+
+        binding.tvChooseAllMember.setOnClickListener {
+            memberAdapter.isCheckedMember = true
+        }
+
+        viewModel.isAddingMemberSuccess.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    Toast.makeText(context, "Add Spinner Successfully!", Toast.LENGTH_SHORT).show()
+                    addMemberDialog.dismiss()
+                }
+                else
+                {
+                    Toast.makeText(context, "Add Spinner Fail!!", Toast.LENGTH_SHORT).show()
+                }
+                viewModel.isAddingMemberSuccess.value = null
+                lifecycleScope.launch(Dispatchers.IO) {
+                    viewModel.getMembers(idChannel)
+                }
+            }
+        }
     }
 
     private fun openAddMemberDiaLog(gravity: Int) {
-        val binding : AddElementLayoutBinding = AddElementLayoutBinding.inflate(layoutInflater)
+        val binding : AddChannelLayoutBinding = AddChannelLayoutBinding.inflate(layoutInflater)
         addMemberDialog = Dialog(requireContext())
         addMemberDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         addMemberDialog.setContentView(binding.root)
 
-        binding.tvNameTitleAddElement.text = "Member Name"
+        binding.tvAddChannel.text = "Member Name"
 
         val window : Window = addMemberDialog.window!!
         window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
@@ -81,13 +104,12 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         window.attributes = windowAttribute
 
         addMemberDialog.show()
-//        binding.btnDoneAddElement.setOnClickListener {
-//            lifecycleScope.launch(Dispatchers.IO) {
-//                val nameSpinner = binding.edtEnterChannelName.text.toString()
-//                val idSpinner = binding.edtEnterChannelId.text.toString()
-//                viewModel.addSpinner(idChannel, idSpinner, nameSpinner)
-//            }
-//        }
+
+        binding.btnDoneAddChannel.setOnClickListener {
+            val memberName = binding.edtEnterChannelName.text.toString()
+            val memberId = binding.edtEnterChannelId.text.toString()
+            viewModel.addMember(idChannel, memberId, memberName)
+        }
     }
 
     private fun setupRecycleView() {
@@ -101,7 +123,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     }
 
     override fun onItemClick(id: String) {
-        TODO("Not yet implemented")
+        //
     }
 
     override fun onDeleteItem(id: String) {

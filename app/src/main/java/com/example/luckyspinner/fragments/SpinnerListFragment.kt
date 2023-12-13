@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.SpinnerListAdapter
 import com.example.luckyspinner.databinding.AddChannelLayoutBinding
-import com.example.luckyspinner.databinding.AddElementLayoutBinding
 import com.example.luckyspinner.databinding.FragmentSpinnerListBinding
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.SPINNER_TITLE
@@ -62,6 +61,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
                 {
                     Toast.makeText(context, "Add Spinner Fail!!", Toast.LENGTH_SHORT).show()
                 }
+                viewModel.isAddingSpinnerSuccess.value = null
                 lifecycleScope.launch(Dispatchers.IO) {
                     viewModel.getSpinners(idChannel)
                 }

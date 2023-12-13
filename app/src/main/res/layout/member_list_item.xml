@@ -23,7 +23,6 @@
         android:id="@+id/check_box_member_list_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:checked="true" />
+        android:layout_marginLeft="10dp" />
 
 </LinearLayout>

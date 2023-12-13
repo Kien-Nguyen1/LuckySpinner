@@ -1,5 +1,6 @@
 package com.example.luckyspinner.viewmodels
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,8 +12,8 @@ import com.google.firebase.firestore.toObject
 
 class MemberListViewModel : ViewModel() {
     var memberList = MutableLiveData<List<Member>>()
-
-
+    var isAddingMemberSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>(null)
+    lateinit var contextMemberList: Context
     private val db = FirebaseFirestore.getInstance()
 
 
@@ -62,12 +63,13 @@ class MemberListViewModel : ViewModel() {
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_MEMBER}")
             .document(idMember)
             .set(newMember)
-            .addOnSuccessListener {
-                Log.d(
-                    Constants.FIRE_STORE,
-                    "DocumentSnapshot successfully deleted!"
-                )
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    isAddingMemberSuccess.value = true
+                }
             }
-            .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error deleting document", e) }
+            .addOnFailureListener {
+                isAddingMemberSuccess.value = false
+            }
     }
 }
