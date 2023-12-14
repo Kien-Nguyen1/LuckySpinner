@@ -11,7 +11,7 @@
         android:label="fragment_channel_list"
         tools:layout="@layout/fragment_channel_list" >
         <action
-            android:id="@+id/action_channelListFragment_to_channelFragment2"
+            android:id="@+id/action_channelListFragment_to_channelFragment"
             app:destination="@id/channelFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
@@ -41,6 +41,7 @@
         android:name="com.example.luckyspinner.fragments.ChannelFragment"
         android:label="fragment_channel"
         tools:layout="@layout/fragment_channel" >
+
         <action
             android:id="@+id/action_channelFragment_to_addTimeEventFragment"
             app:destination="@id/addTimeEventFragment"
@@ -74,33 +75,12 @@
         android:id="@+id/addTimeEventFragment"
         android:name="com.example.luckyspinner.fragments.AddTimeEventFragment"
         android:label="fragment_add_time_event"
-        tools:layout="@layout/fragment_add_time_event" >
-        <action
-            android:id="@+id/action_addTimeEventFragment_to_chooseRandomSpinnerListFragment"
-            app:destination="@id/chooseRandomSpinnerListFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
-    </fragment>
-    <fragment
-        android:id="@+id/chooseRandomSpinnerListFragment"
-        android:name="com.example.luckyspinner.fragments.ChooseRandomSpinnerListFragment"
-        android:label="fragment_choose_random_spinner_list"
-        tools:layout="@layout/fragment_choose_random_spinner_list" />
+        tools:layout="@layout/fragment_add_time_event" />
     <fragment
         android:id="@+id/editTimeEventFragment"
         android:name="com.example.luckyspinner.fragments.EditTimeEventFragment"
         android:label="fragment_edit_time_event"
-        tools:layout="@layout/fragment_edit_time_event" >
-        <action
-            android:id="@+id/action_editTimeEventFragment_to_chooseRandomSpinnerListFragment"
-            app:destination="@id/chooseRandomSpinnerListFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
-    </fragment>
+        tools:layout="@layout/fragment_edit_time_event" />
     <fragment
         android:id="@+id/memberListFragment"
         android:name="com.example.luckyspinner.fragments.MemberListFragment"

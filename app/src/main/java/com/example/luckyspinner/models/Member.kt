@@ -1,7 +1,9 @@
 package com.example.luckyspinner.models
 
+import com.example.luckyspinner.util.Constants.EMPTY_STRING
+
 data class Member(
-    val idMember : String,
-    val nameMember : String,
-    val isSelect : Boolean = true
+    var idMember : String = EMPTY_STRING,
+    var nameMember : String = EMPTY_STRING,
+    var hasSelected : Boolean = true
 )

@@ -12,7 +12,7 @@ import com.example.luckyspinner.models.Channel
 
 class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter<ChannelListAdapter.ChannelListViewHolder>() {
     interface Listener {
-        fun onItemClick(id: String)
+        fun onItemClick(id: String, name : String)
         fun onDeleteItem(id: String)
     }
 
@@ -50,7 +50,7 @@ class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter
             val channel = channels[position]
             tvTitleListOrChannelItem.text = channel.nameChannel
             root.setOnClickListener {
-                listener.onItemClick(channel.idChannel)
+                listener.onItemClick(channel.idChannel, channel.nameChannel)
             }
             if (position % 2 == 0) {
                 titleSpinnerOrChannelLayout.setBackgroundColor(Color.YELLOW)

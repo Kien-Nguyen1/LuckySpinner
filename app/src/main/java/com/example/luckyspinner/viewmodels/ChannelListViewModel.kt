@@ -37,7 +37,6 @@ class ChannelListViewModel : ViewModel() {
                         )
                         if (document.exists()) {
                             val c = document.toObject<Channel>()
-//                            val  c = getChannelFromFirestore(document)
                             cList.add(c)
                         }
                     }

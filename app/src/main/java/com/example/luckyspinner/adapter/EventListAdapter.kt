@@ -51,7 +51,7 @@ class EventListAdapter(private val listener: Listener) : RecyclerView.Adapter<Ev
         holder.binding.apply {
             val event = events[position]
             tvTitleEventItem.text = event.typeEvent.toString() + event.hour.toString()
-            root.setOnClickListener {
+            btnEditEventItem.setOnClickListener {
                 listener.onItemClick(event.idEvent)
             }
         }
