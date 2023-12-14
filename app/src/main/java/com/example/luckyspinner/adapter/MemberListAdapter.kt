@@ -1,6 +1,7 @@
 package com.example.luckyspinner.adapter
 
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -62,6 +63,11 @@ class MemberListAdapter(private val listener: Listener) : RecyclerView.Adapter<M
             }
             root.setOnClickListener {
                 listener.onItemClick(member.idMember)
+            }
+            if (position % 2 == 0) {
+                root.setBackgroundColor(Color.parseColor("#f9f586"))
+            } else {
+                root.setBackgroundColor(Color.WHITE)
             }
         }
     }

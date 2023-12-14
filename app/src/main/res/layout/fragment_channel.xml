@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#e7f0fd"
     tools:context=".fragments.ChannelFragment">
 
     <ImageView
@@ -49,9 +50,12 @@
         android:id="@+id/rv_event_list_of_channel"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        android:background="@drawable/recycle_view_background"
+        tools:listitem="@layout/event_channel_item"
         app:layout_constraintTop_toBottomOf="@+id/btn_member_list_channel" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

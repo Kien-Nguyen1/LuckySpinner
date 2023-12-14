@@ -155,12 +155,10 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     }
 
     private fun setupRecycleView() {
-        val itemDecoration : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.rvMemberList.apply {
             memberAdapter = MemberListAdapter(this@MemberListFragment)
             adapter = memberAdapter
             layoutManager = LinearLayoutManager(context)
-            addItemDecoration(itemDecoration)
         }
     }
 

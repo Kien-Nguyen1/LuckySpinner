@@ -90,12 +90,10 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
     }
 
     private fun setupRecycleView() {
-        val itemDecoration : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.rvElementListInSpinner.apply {
             elementAdapter = ElementListInSpinnerAdapter(this@ElementListInSpinnerFragment)
             adapter = elementAdapter
             layoutManager = LinearLayoutManager(context)
-            addItemDecoration(itemDecoration)
         }
     }
 

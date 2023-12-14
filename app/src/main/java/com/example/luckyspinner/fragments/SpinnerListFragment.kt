@@ -136,12 +136,10 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
     }
 
     private fun setupRecycleView() {
-        val itemDecoration : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.rvSpinnerList.apply {
             spinnerAdapter = SpinnerListAdapter(this@SpinnerListFragment)
             adapter = spinnerAdapter
             layoutManager = LinearLayoutManager(context)
-            addItemDecoration(itemDecoration)
         }
     }
 

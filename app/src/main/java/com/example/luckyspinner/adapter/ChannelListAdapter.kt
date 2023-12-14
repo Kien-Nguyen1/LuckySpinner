@@ -4,9 +4,12 @@ package com.example.luckyspinner.adapter
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.luckyspinner.R
 import com.example.luckyspinner.databinding.TitleSpinnerOrChannelItemBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.models.Channel
@@ -59,9 +62,9 @@ class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter
                 listener.onItemClick(channel.idChannel, channel.nameChannel)
             }
             if (position % 2 == 0) {
-                titleSpinnerOrChannelLayout.setBackgroundColor(Color.YELLOW)
+                titleSpinnerOrChannelLayout.setBackgroundColor(Color.parseColor("#f9f586"))
             } else {
-                titleSpinnerOrChannelLayout.setBackgroundColor(Color.BLUE)
+                titleSpinnerOrChannelLayout.setBackgroundColor(Color.WHITE)
             }
         }
     }

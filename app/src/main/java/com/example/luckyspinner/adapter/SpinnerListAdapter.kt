@@ -1,6 +1,7 @@
 package com.example.luckyspinner.adapter
 
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -58,6 +59,11 @@ class SpinnerListAdapter(private val listener: Listener) : RecyclerView.Adapter<
             }
             root.setOnClickListener {
                 listener.onItemClick(spinner.idSpin, spinner.titleSpin)
+            }
+            if (position % 2 == 0) {
+                root.setBackgroundColor(Color.parseColor("#f9f586"))
+            } else {
+                root.setBackgroundColor(Color.WHITE)
             }
         }
     }
