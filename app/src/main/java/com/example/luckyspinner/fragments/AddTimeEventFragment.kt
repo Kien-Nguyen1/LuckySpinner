@@ -13,6 +13,7 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.Constraints
 import androidx.work.Data
@@ -75,6 +76,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         workManager = WorkManager.getInstance(requireContext())
+
         binding.btnDoneAddTimeEvent.setOnClickListener {
             getTimeAndDatePicker()
         }
@@ -82,6 +84,9 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
             chooseSpinnerDialog.show()
         }
 
+        binding.btnBackAddTimeEvent.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
     private fun setupChooseSpinnerDialog(gravity: Int) {
         setUpRecycleView()
@@ -192,7 +197,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
     }
 
     override fun onItemClick(id: String) {
-        TODO("Not yet implemented")
+        //
     }
 
     override fun onDeleteItem(id: String) {

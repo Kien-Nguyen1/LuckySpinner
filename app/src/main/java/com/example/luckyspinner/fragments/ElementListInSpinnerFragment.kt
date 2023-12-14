@@ -17,13 +17,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.ElementListInSpinnerAdapter
-import com.example.luckyspinner.adapter.SpinnerListAdapter
-import com.example.luckyspinner.databinding.AddElementLayoutBinding
+import com.example.luckyspinner.databinding.AddChannelLayoutBinding
 import com.example.luckyspinner.databinding.FragmentElementListInSpinnerBinding
-import com.example.luckyspinner.util.Constants
-import com.example.luckyspinner.util.Constants.EMPTY_STRING
 import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
 import com.example.luckyspinner.util.Constants.ID_SPINNER_KEY
 import com.example.luckyspinner.util.Constants.SPINNER_TITLE
@@ -75,12 +71,12 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
     }
 
     private fun openAddElementInSpinnerDiaLog(gravity: Int) {
-        val binding : AddElementLayoutBinding = AddElementLayoutBinding.inflate(layoutInflater)
+        val binding : AddChannelLayoutBinding = AddChannelLayoutBinding.inflate(layoutInflater)
         addElementInSpinnerDiaLog = Dialog(requireContext())
         addElementInSpinnerDiaLog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         addElementInSpinnerDiaLog.setContentView(binding.root)
 
-        binding.tvNameTitleAddElement.text = "Tên phần tử"
+        binding.tvAddChannel.text = "Tên phần tử"
 
         val window : Window = addElementInSpinnerDiaLog.window!!
         window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)

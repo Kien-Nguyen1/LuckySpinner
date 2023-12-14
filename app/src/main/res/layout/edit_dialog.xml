@@ -8,14 +8,23 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="300dp"
-        android:layout_height="250dp">
+        android:layout_height="230dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_back_edit_dialog"
+            android:src="@drawable/ic_back"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_margin="10dp"/>
 
         <TextView
             android:id="@+id/tv_name_title_add_element"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="40dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
@@ -24,7 +33,9 @@
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/btn_back_edit_dialog"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
 
         <EditText
             android:id="@+id/edt_enter_element"
@@ -43,6 +54,16 @@
             android:layout_marginRight="40dp"
             android:src="@drawable/ic_done"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edt_enter_element" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_delete_element"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="40dp"
+            android:src="@drawable/ic_delete"
+            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/edt_enter_element" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,15 +1,10 @@
 package com.example.luckyspinner.fragments
 
-import android.app.Dialog
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import android.view.WindowManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -19,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.EventListAdapter
-import com.example.luckyspinner.databinding.ChooseRandomSpinnerListLayoutBinding
 import com.example.luckyspinner.databinding.FragmentChannelBinding
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.CHANNEL_NAME
@@ -75,6 +69,10 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
             findNavController().navigate(R.id.memberListFragment, Bundle().apply {
                 putString(ID_CHANNEL_KEY, idChannel)
             })
+        }
+
+        binding.btnBackChannelFragment.setOnClickListener {
+            findNavController().popBackStack()
         }
     }
 
