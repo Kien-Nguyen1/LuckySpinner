@@ -1,6 +1,7 @@
 package com.example.luckyspinner.fragments
 
 import android.app.Dialog
+import android.app.ProgressDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -19,9 +20,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.adapter.MemberListAdapter
-import com.example.luckyspinner.adapter.SpinnerListAdapter
 import com.example.luckyspinner.databinding.AddChannelLayoutBinding
-import com.example.luckyspinner.databinding.AddElementLayoutBinding
 import com.example.luckyspinner.databinding.FragmentMemberListBinding
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.viewmodels.MemberListViewModel
@@ -35,12 +34,15 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     private lateinit var memberAdapter : MemberListAdapter
     private lateinit var idChannel : String
     private lateinit var addMemberDialog : Dialog
+    private lateinit var progressDialog : ProgressDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentMemberListBinding.inflate(inflater , container, false)
+        progressDialog = ProgressDialog(requireContext())
+        viewModel.progressDialog = progressDialog
         // Inflate the layout for this fragment
         return binding.root
     }
@@ -52,6 +54,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
 
         viewModel.memberList.observe(viewLifecycleOwner) {
             memberAdapter.members = it
+            progressDialog.dismiss()
         }
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.getMembers(idChannel)
@@ -64,10 +67,10 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         binding.btnBackMemberList.setOnClickListener {
             findNavController().popBackStack()
         }
-
         binding.tvChooseAllMember.setOnClickListener {
-            memberAdapter.isCheckedMember = true
+            handleChooseAllMember()
         }
+
 
         viewModel.isAddingMemberSuccess.observe(viewLifecycleOwner) {
             it?.let {
@@ -108,7 +111,24 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         binding.btnDoneAddChannel.setOnClickListener {
             val memberName = binding.edtEnterChannelName.text.toString()
             val memberId = binding.edtEnterChannelId.text.toString()
+            progressDialog.show()
             viewModel.addMember(idChannel, memberId, memberName)
+        }
+    }
+    private fun handleChooseAllMember() {
+        progressDialog.show()
+        val list = viewModel.memberList.value ?: return
+        var isAllSelected = true
+        run breaking@{
+            list.forEach { member ->
+                if (!member.hasSelected) {
+                    isAllSelected = false
+                    return@breaking
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.updateForChooseAllMember(idChannel, list, !isAllSelected)
         }
     }
 
@@ -128,5 +148,11 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
 
     override fun onDeleteItem(id: String) {
         TODO("Not yet implemented")
+    }
+
+    override fun onCheckBoxSelected(id: String, position: Int, isSelected : Boolean) {
+        lifecycleScope.launch {
+            viewModel.updateCheckBoxForMember(idChannel, id, isSelected)
+        }
     }
 }

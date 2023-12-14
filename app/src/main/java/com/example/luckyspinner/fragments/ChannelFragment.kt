@@ -60,8 +60,9 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         }
 
         binding.btnAddEventOfChannel.setOnClickListener {
-            val direction = ChannelFragmentDirections.actionChannelFragmentToAddTimeEventFragment()
-            findNavController().navigate(direction)
+            findNavController().navigate(R.id.addTimeEventFragment, Bundle().apply {
+                putString(ID_CHANNEL_KEY, idChannel)
+            })
         }
 
         binding.btnSpinnerList.setOnClickListener {

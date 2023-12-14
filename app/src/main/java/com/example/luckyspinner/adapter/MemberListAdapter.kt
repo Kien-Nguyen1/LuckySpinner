@@ -7,16 +7,14 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.MemberListItemBinding
-import com.example.luckyspinner.databinding.TitleSpinnerOrChannelItemBinding
 import com.example.luckyspinner.models.Member
 
 class MemberListAdapter(private val listener: Listener) : RecyclerView.Adapter<MemberListAdapter.MemberListViewHolder>() {
 
-    var isCheckedMember : Boolean = true
-
     interface Listener {
         fun onItemClick(id: String)
         fun onDeleteItem(id: String)
+        fun onCheckBoxSelected(id: String, position: Int, isSelected : Boolean)
 
     }
 
@@ -51,11 +49,14 @@ class MemberListAdapter(private val listener: Listener) : RecyclerView.Adapter<M
 
     override fun onBindViewHolder(holder: MemberListViewHolder, position: Int) {
         holder.binding.apply {
-            val spinner = members[position]
-            tvMemberNameItem.text = spinner.nameMember
-            checkBoxMemberListItem.isChecked = isCheckedMember
+            val member = members[position]
+            tvMemberNameItem.text = member.nameMember
+            checkBoxMemberListItem.isChecked = member.hasSelected
+            checkBoxMemberListItem.setOnClickListener {
+                listener.onCheckBoxSelected(member.idMember, position, it.isSelected)
+            }
             root.setOnClickListener {
-                listener.onItemClick(spinner.idMember)
+                listener.onItemClick(member.idMember)
             }
         }
     }
