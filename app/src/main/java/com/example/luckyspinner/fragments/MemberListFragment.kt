@@ -21,7 +21,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.adapter.MemberListAdapter
 import com.example.luckyspinner.databinding.AddChannelLayoutBinding
+import com.example.luckyspinner.databinding.EditDialogBinding
 import com.example.luckyspinner.databinding.FragmentMemberListBinding
+import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.viewmodels.MemberListViewModel
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +37,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     private lateinit var idChannel : String
     private lateinit var addMemberDialog : Dialog
     private lateinit var progressDialog : ProgressDialog
+    private lateinit var editMemberDiaLog : Dialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,6 +72,25 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         }
         binding.tvChooseAllMember.setOnClickListener {
             handleChooseAllMember()
+        }
+
+        memberAdapter.onEditClickListener = object : OnEditClickListener{
+            override fun onEditClick(position: Int) {
+                val binding : EditDialogBinding = EditDialogBinding.inflate(layoutInflater)
+                editMemberDiaLog = Dialog(requireContext())
+                editMemberDiaLog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                editMemberDiaLog.setContentView(binding.root)
+
+                val window : Window = editMemberDiaLog.window!!
+                window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+                window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+                val windowAttribute : WindowManager.LayoutParams = window.attributes
+                windowAttribute.gravity = Gravity.CENTER
+                window.attributes = windowAttribute
+
+                editMemberDiaLog.show()
+            }
         }
 
 

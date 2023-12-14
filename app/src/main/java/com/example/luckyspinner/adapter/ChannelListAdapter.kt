@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.TitleSpinnerOrChannelItemBinding
+import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.models.Channel
 
 class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter<ChannelListAdapter.ChannelListViewHolder>() {
@@ -15,6 +16,8 @@ class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter
         fun onItemClick(id: String, name : String)
         fun onDeleteItem(id: String)
     }
+
+    lateinit var onEditClickListener: OnEditClickListener
 
     inner class ChannelListViewHolder(val binding: TitleSpinnerOrChannelItemBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -49,6 +52,9 @@ class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter
         holder.binding.apply {
             val channel = channels[position]
             tvTitleListOrChannelItem.text = channel.nameChannel
+            btnEditSpinnerOrChannel.setOnClickListener {
+                onEditClickListener.onEditClick(position)
+            }
             root.setOnClickListener {
                 listener.onItemClick(channel.idChannel, channel.nameChannel)
             }

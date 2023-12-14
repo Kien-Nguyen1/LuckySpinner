@@ -68,7 +68,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
                 viewModel.getSpinnerFromEvent(channelId, eventId)
             }
         }
-        setUpDatePicker()
         return binding.root
     }
 
@@ -110,13 +109,9 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
         val selectedHour: Int = binding.timePickerAddTimeEvent.hour
         val selectedMinutes: Int = binding.timePickerAddTimeEvent.minute
 
-        val selectedDayOfWeek = binding.numberPickerAddTimeEvent.value
-        println("Here day come $selectedDayOfWeek")
-
         val calendar = Calendar.getInstance()
         calendar.set(Calendar.HOUR_OF_DAY, selectedHour)
         calendar.set(Calendar.MINUTE, selectedMinutes)
-        calendar.set(Calendar.DAY_OF_WEEK, selectedDayOfWeek)
 
         val timeNow = Calendar.getInstance()
         val timeDiff = if (calendar < timeNow) {
@@ -185,15 +180,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
         viewModel.spinnerList.observe(viewLifecycleOwner) {
             randomSpinnerAdapter.spinners = it
         }
-    }
-
-
-    private fun setUpDatePicker() {
-        val dayOfWeek = arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "SunDay")
-
-        binding.numberPickerAddTimeEvent.minValue = 0
-        binding.numberPickerAddTimeEvent.maxValue = dayOfWeek.size - 1
-        binding.numberPickerAddTimeEvent.displayedValues = dayOfWeek
     }
 
     override fun onItemClick(id: String) {

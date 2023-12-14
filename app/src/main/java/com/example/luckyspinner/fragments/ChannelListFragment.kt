@@ -23,7 +23,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.ChannelListAdapter
 import com.example.luckyspinner.databinding.AddChannelLayoutBinding
+import com.example.luckyspinner.databinding.EditDialogBinding
 import com.example.luckyspinner.databinding.FragmentChannelListBinding
+import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.models.Channel
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.CHANNEL_NAME
@@ -37,6 +39,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     private val viewModel : ChannelListViewModel by viewModels()
     private lateinit var channelListAdapter : ChannelListAdapter
     private lateinit var addDialog : Dialog
+    private lateinit var editChannelDiaLog : Dialog
     private lateinit var deleteDialog : Dialog
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -88,6 +91,25 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         binding.btnAddChannel.setOnClickListener {
             Log.d("kien", "click add channel")
             openAddChannelDialog(Gravity.CENTER)
+        }
+
+        channelListAdapter.onEditClickListener = object  : OnEditClickListener{
+            override fun onEditClick(position: Int) {
+                val binding : EditDialogBinding = EditDialogBinding.inflate(layoutInflater)
+                editChannelDiaLog = Dialog(requireContext())
+                editChannelDiaLog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                editChannelDiaLog.setContentView(binding.root)
+
+                val window : Window = editChannelDiaLog.window!!
+                window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+                window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+                val windowAttribute : WindowManager.LayoutParams = window.attributes
+                windowAttribute.gravity = Gravity.CENTER
+                window.attributes = windowAttribute
+
+                editChannelDiaLog.show()
+            }
         }
 
         val itemTouchHelperCallBack = object : ItemTouchHelper.SimpleCallback(

@@ -21,7 +21,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.SpinnerListAdapter
 import com.example.luckyspinner.databinding.AddChannelLayoutBinding
+import com.example.luckyspinner.databinding.EditDialogBinding
 import com.example.luckyspinner.databinding.FragmentSpinnerListBinding
+import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.SPINNER_TITLE
 import com.example.luckyspinner.viewmodels.SpinnerListViewModel
@@ -35,6 +37,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
     private lateinit var spinnerAdapter : SpinnerListAdapter
     private lateinit var idChannel : String
     private lateinit var addSpinnerDiaLog : Dialog
+    private lateinit var editSpinnerDiaLog : Dialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -81,6 +84,25 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
 
         binding.btnBackSpinnerList.setOnClickListener {
             findNavController().popBackStack()
+        }
+
+        spinnerAdapter.onEditClickListener = object : OnEditClickListener{
+            override fun onEditClick(position: Int) {
+                val binding : EditDialogBinding = EditDialogBinding.inflate(layoutInflater)
+                editSpinnerDiaLog = Dialog(requireContext())
+                editSpinnerDiaLog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                editSpinnerDiaLog.setContentView(binding.root)
+
+                val window : Window = editSpinnerDiaLog.window!!
+                window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+                window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+                val windowAttribute : WindowManager.LayoutParams = window.attributes
+                windowAttribute.gravity = Gravity.CENTER
+                window.attributes = windowAttribute
+
+                editSpinnerDiaLog.show()
+            }
         }
     }
 

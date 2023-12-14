@@ -7,9 +7,12 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.TitleSpinnerOrChannelItemBinding
+import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.models.Spinner
 
 class SpinnerListAdapter(private val listener: Listener) : RecyclerView.Adapter<SpinnerListAdapter.SpinnerListViewHolder>() {
+
+    lateinit var onEditClickListener: OnEditClickListener
 
     interface Listener {
         fun onItemClick(id: String, title : String)
@@ -50,6 +53,9 @@ class SpinnerListAdapter(private val listener: Listener) : RecyclerView.Adapter<
         holder.binding.apply {
             val spinner = spinners[position]
             tvTitleListOrChannelItem.text = spinner.titleSpin
+            btnEditSpinnerOrChannel.setOnClickListener {
+                onEditClickListener.onEditClick(position)
+            }
             root.setOnClickListener {
                 listener.onItemClick(spinner.idSpin, spinner.titleSpin)
             }
