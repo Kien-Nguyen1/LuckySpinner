@@ -4,45 +4,174 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.Data
-import androidx.work.Worker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.example.luckyspinner.models.ElementSpinner
+import com.example.luckyspinner.models.Member
+import com.example.luckyspinner.models.Spinner
 import com.example.luckyspinner.network.TelegramApiClient
+import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.CHAT_ID
+import com.example.luckyspinner.util.Constants.ID_EVENT_KEY
 import com.example.luckyspinner.util.Constants.MESSAGE
 import com.example.luckyspinner.util.makeStatusNotification
-import kotlinx.coroutines.CoroutineScope
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
     private lateinit var outputData : Data
+
+
     override suspend fun doWork(): Result {
+
+        val db = FirebaseFirestore.getInstance()
+        val sList : MutableList<Spinner> = ArrayList()
+        val mList : MutableList<Member> = ArrayList()
         val chatId = inputData.getString(CHAT_ID)
-        val message = inputData.getString(MESSAGE)
-        val mokeList = ArrayList<Int>()
-        mokeList.apply {
-            add(1)
-            add(2)
-            add(3)
+        val channelId = inputData.getString(Constants.ID_CHANNEL_KEY)
+        val eventId = inputData.getString(ID_EVENT_KEY)
+        val deviceId = inputData.getString("deviceId")
+        var messageSpinner = "1"
+        var messageMember = "1"
+        var hasHandleRandomSpinner : Boolean? = null
+        var hasHandleRandomMember : Boolean = false
+        var countDelay = 0
+
+        fun  getElement(idChannel : String?, idSpinner : String?, spinnerName : String, isLast : Boolean) {
+            val list = ArrayList<ElementSpinner>()
+
+            db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}/$idSpinner/${Constants.FS_USER_ELEMENT_SPINNER}")
+                .get()
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        println("Here get elements come ${it.result.size()}")
+                        for (document : QueryDocumentSnapshot in it.result) {
+                            Log.d(
+                                Constants.FIRE_STORE,
+                                document.id + " => " + document.data
+                            )
+                            if (document.exists()) {
+                                val  e = document.toObject<ElementSpinner>()
+                                list.add(e)
+                            }
+                        }
+                        val randomInt = Random.nextInt(list.size)
+                        messageSpinner += "\n For ${spinnerName} : ${list[randomInt].nameElement} is random chooser."
+                        if (isLast) {
+                            hasHandleRandomSpinner = (hasHandleRandomSpinner == null)
+                            println("Here come sadasd $hasHandleRandomSpinner")
+                        }
+
+                    } else {
+                        Log.w(
+                            Constants.FIRE_STORE,
+                            "Error getting documents.",
+                            it.exception
+                        )
+                    }
+
+                }
         }
-        val randomInt = Random.nextInt(mokeList.size)
-        return try {
-            withContext(Dispatchers.IO) {
-                TelegramApiClient.telegramApi.sendMessage(chatId!!, message!!)
-                outputData = workDataOf(CHAT_ID to chatId, MESSAGE to message)
-                makeStatusNotification("Send message successfully!", applicationContext)
-                return@withContext Result.success(outputData)
+        fun handleForLoopElement() {
+            sList.forEachIndexed { index, spinner ->
+                getElement(channelId, spinner.idSpin, spinner.titleSpin, index == sList.size - 1)
             }
-        } catch (e: Exception) {
-            print("${Log.e("TAG", e.message.toString())}")
-            return Result.failure()
         }
-    }
-    private fun setupRandom() {
+        fun getSpinnerFromEvent(idChannel: String?, idEvent: String?) {
+            db.collection(Constants.FS_LIST_CHANNEL+"/$deviceId/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_SPINNER}")
+                .get()
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        println("Here we go getSpin")
+                        println(it.result.size())
+                        for (document : QueryDocumentSnapshot in it.result) {
+                            Log.d(
+                                Constants.FIRE_STORE,
+                                document.id + " => " + document.data
+                            )
+                            if (document.exists()) {
+                                val  s = document.toObject<Spinner>()
+                                if (s.hasSelected) sList.add(s)
+                            }
+                        }
+                        handleForLoopElement()
+
+                    } else {
+                        Log.w(
+                            Constants.FIRE_STORE,
+                            "Error getting documents.",
+                            it.exception
+                        )
+                    }
+
+                }
+        }
+
+        fun  getMembers(idChannel : String?) {
+            db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_MEMBER}")
+                .get()
+                .addOnCompleteListener {
+                    println("Here come getMembers")
+                    println(it.result.size())
+                    if (it.result.size() == 0) {
+                        messageMember = "Can not get members"
+                        return@addOnCompleteListener
+                    }
+                    if (it.isSuccessful) {
+                        it.result.forEachIndexed { index, document ->
+                            Log.d(
+                                Constants.FIRE_STORE,
+                                document.id + " => " + document.data
+                            )
+                            if (document.exists()) {
+                                val m = document.toObject<Member>()
+                                if (m.hasSelected)  mList.add(m)
+                            }
+                            if (index == it.result.size() - 1) {
+                                hasHandleRandomMember = true
+                                val randomInt = Random.nextInt(mList.size)
+                                messageMember = "The random member : ${mList[randomInt].nameMember}"
+                            }
+                        }
+
+                    } else {
+                        Log.w(
+                            Constants.FIRE_STORE,
+                            "Error getting documents.",
+                            it.exception
+                        )
+                    }
+                }
+        }
+        getMembers(channelId)
+        getSpinnerFromEvent(channelId, eventId)
+
+        suspend fun sendMessage() : Result {
+            return try {
+                withContext(Dispatchers.IO) {
+                    if ((hasHandleRandomSpinner != true) || !hasHandleRandomMember) {
+                        delay(1000)
+                        if (++countDelay > 10) return@withContext Result.retry()
+                        return@withContext sendMessage()
+                    }
+                    val message = messageMember + messageSpinner
+                    TelegramApiClient.telegramApi.sendMessage(chatId!!, message)
+                    outputData = workDataOf(CHAT_ID to chatId, MESSAGE to message)
+                    makeStatusNotification("Send message successfully!", applicationContext)
+                    return@withContext Result.success(outputData)
+                }
+            } catch (e: Exception) {
+                print("${Log.e("TAG", e.message.toString())}")
+                return Result.failure()
+            }
+        }
+        return sendMessage()
 
     }
 }

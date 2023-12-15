@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.EventChannelItemBinding
 import com.example.luckyspinner.models.Event
+import com.example.luckyspinner.util.Constants
 
 class EventListAdapter(private val listener: Listener) : RecyclerView.Adapter<EventListAdapter.EventListViewHolder>() {
 
@@ -50,7 +51,8 @@ class EventListAdapter(private val listener: Listener) : RecyclerView.Adapter<Ev
     override fun onBindViewHolder(holder: EventListViewHolder, position: Int) {
         holder.binding.apply {
             val event = events[position]
-            tvTitleEventItem.text = event.typeEvent.toString() + event.hour.toString()
+            val typeEvent = if (event.typeEvent == Constants.EVENT_TYPE_EVERY_DAY) "Every day" else "Just Once"
+            tvTitleEventItem.text = "$typeEvent : Time: ${event.hour} : ${event.minute}"
             btnEditEventItem.setOnClickListener {
                 listener.onItemClick(event.idEvent)
             }

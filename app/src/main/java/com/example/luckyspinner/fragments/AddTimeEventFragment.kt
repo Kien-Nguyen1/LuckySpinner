@@ -1,6 +1,7 @@
 package com.example.luckyspinner.fragments
 
 import android.app.Dialog
+import android.app.ProgressDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -15,9 +16,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.Constraints
-import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -25,12 +27,14 @@ import androidx.work.workDataOf
 import com.example.luckyspinner.adapter.RandomSpinnerListAdapter
 import com.example.luckyspinner.databinding.ChooseRandomSpinnerListLayoutBinding
 import com.example.luckyspinner.databinding.FragmentAddTimeEventBinding
+import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.Duration
+import java.util.ArrayList
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
@@ -66,6 +70,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
             else {
                 viewModel.getSpinnerFromEvent(channelId, eventId)
             }
+            viewModel.getMembers(channelId, eventId)
         }
         setUpDatePicker()
         return binding.root
@@ -101,59 +106,87 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
 
 
     private fun getTimeAndDatePicker() {
+        workManager.cancelAllWork()
+        val progressDialog = ProgressDialog(context)
+        progressDialog.show()
 
         val selectedHour: Int = binding.timePickerAddTimeEvent.hour
         val selectedMinutes: Int = binding.timePickerAddTimeEvent.minute
+        val typeEvent = if (binding.btnSwitchModeAddTimeEvent.isChecked) Constants.EVENT_TYPE_EVERY_DAY else Constants.EVENT_TYPE_ONCE
 
-        val selectedDayOfWeek = binding.numberPickerAddTimeEvent.value
-        println("Here day come $selectedDayOfWeek")
+        viewModel.saveEvent(
+            channelId,
+            Event(
+                eventId!!,
+                typeEvent,
+                selectedHour,
+                selectedMinutes
+                )
+        )
+        val timeNow = Calendar.getInstance()
 
         val calendar = Calendar.getInstance()
         calendar.set(Calendar.HOUR_OF_DAY, selectedHour)
         calendar.set(Calendar.MINUTE, selectedMinutes)
-        calendar.set(Calendar.DAY_OF_WEEK, selectedDayOfWeek)
 
-        val timeNow = Calendar.getInstance()
-        val timeDiff = if (calendar < timeNow) {
+        println("so sanh ${calendar > timeNow}")
+        val durationDiff = if (calendar > timeNow) {
             Duration.between(timeNow.toInstant(), calendar.toInstant())
         } else {
             calendar.add(Calendar.DAY_OF_MONTH, 1)
-            Duration.between(calendar.toInstant(), timeNow.toInstant())
+            Duration.between(timeNow.toInstant(), calendar.toInstant())
         }
-
-        workManager.cancelAllWork()
-
-        println("Here come calendar:  $calendar")
-
-
-        //thoi gian va ngay da duoc chon
-        val inputData = Data.Builder()
-            .putLong("selected_time", calendar.timeInMillis)
-            .build()
 
         val constraints = Constraints(requiredNetworkType = NetworkType.CONNECTED, requiresBatteryNotLow = true)
+        val listSpinnerId = ArrayList<String>()
+        val listMemberId = ArrayList<String>()
+        val listMemberName = ArrayList<String>()
+        val listSpinnerName = ArrayList<String>()
 
-
-        val workRequest  = PeriodicWorkRequestBuilder<SendMessageWorker>(16, TimeUnit.MINUTES)
-            .setInitialDelay(timeDiff)
-            .setInputData(
-                workDataOf(
-                    Constants.CHAT_ID to "-1002136709675",
-                    Constants.MESSAGE to "asdasdasdasd",
-//                    Constants.LIST_MEMBER to
-                )
-            )
-//            .addTag(WORK_TAG)
-            .setConstraints(constraints)
-            .build()
-        workManager.also {
-            it.enqueueUniquePeriodicWork(
-                eventId!!,
-                ExistingPeriodicWorkPolicy.UPDATE,
-                workRequest
-            )
+        viewModel.spinnerList.value?.forEach {
+            if (it.hasSelected) {
+                listSpinnerId.add(it.idSpin)
+                listSpinnerName.add(it.titleSpin)
+            }
         }
-        println("Here the work come!")
+        viewModel.memberList.value?.forEach {
+            if (it.hasSelected) {
+                listMemberId.add(it.idMember)
+                listMemberName.add(it.nameMember)
+            }
+        }
+
+        workManager.apply {
+            val data = workDataOf(
+                Constants.CHAT_ID to "-1002136709675",
+                Constants.ID_CHANNEL_KEY to channelId,
+                Constants.ID_EVENT_KEY to eventId,
+                "deviceId" to Constants.DEVICE_ID
+            )
+            val workRequest  = PeriodicWorkRequestBuilder<SendMessageWorker>(16, TimeUnit.MINUTES)
+                .setInitialDelay(durationDiff)
+                .setInputData(data)
+                .setConstraints(constraints)
+                .build()
+            val workRequestFake = OneTimeWorkRequestBuilder<SendMessageWorker>()
+                .setInputData(data)
+                .setConstraints(constraints)
+                .build()
+
+            if (binding.btnSwitchModeAddTimeEvent.isChecked) {
+                enqueueUniquePeriodicWork(
+                    eventId!!,
+                    ExistingPeriodicWorkPolicy.UPDATE,
+                    workRequest
+                )
+            } else {
+                enqueueUniqueWork(
+                    eventId!!,
+                    ExistingWorkPolicy.REPLACE,
+                    workRequestFake
+                )
+            }
+        }
         workManager.getWorkInfosForUniqueWorkLiveData(eventId!!)
             .observe(viewLifecycleOwner) {
                     workInfor ->
@@ -168,7 +201,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
                 }
 
             }
-
+        progressDialog.dismiss()
     }
     private fun setUpRecycleView() {
         bindingDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
@@ -199,7 +232,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
         TODO("Not yet implemented")
     }
 
-    override fun onCheckboxClick(id: String, position : Int) {
-        viewModel.checkBoxSpinner(channelId, eventId!!, id)
+    override fun onCheckboxClick(idSpinner: String, position : Int, hasSelected : Boolean) {
+        viewModel.checkBoxSpinner(channelId, eventId!!, idSpinner, hasSelected)
     }
 }

@@ -89,7 +89,7 @@ class MemberListViewModel : ViewModel() {
         }
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_MEMBER}")
             .document(idMember)
-            .update("hasSelected", isSelected )
+            .update("hasSelected", !isSelected )
             .addOnSuccessListener {
                 Log.d(
                     Constants.FIRE_STORE,

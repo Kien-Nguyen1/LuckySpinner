@@ -1,25 +1,17 @@
 package com.example.luckyspinner.viewmodels
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.luckyspinner.models.Channel
-import com.example.luckyspinner.models.ElementSpinner
 import com.example.luckyspinner.models.Event
-import com.example.luckyspinner.models.Spinner
 import com.example.luckyspinner.util.Constants
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.toObject
-import kotlinx.coroutines.launch
 
 class ChannelViewModel : ViewModel() {
-    var channelList = MutableLiveData<List<Event>>()
+    var eventList = MutableLiveData<List<Event>>()
     val db = FirebaseFirestore.getInstance()
 
 
@@ -42,7 +34,7 @@ class ChannelViewModel : ViewModel() {
                         }
 
                     }
-                    channelList.value = list
+                    eventList.value = list
 
                 } else {
                     Log.w(
@@ -55,7 +47,7 @@ class ChannelViewModel : ViewModel() {
             }
     }
 
-    fun  deleteChannel(idChannel: String?, idEvent : String) {
+    fun  deleteEvent(idChannel: String?, idEvent : String) {
 
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
             .document(idEvent)

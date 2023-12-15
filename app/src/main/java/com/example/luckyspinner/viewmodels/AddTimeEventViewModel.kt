@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.luckyspinner.models.ElementSpinner
+import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Member
 import com.example.luckyspinner.models.Spinner
 import com.example.luckyspinner.util.Constants
@@ -13,6 +15,7 @@ import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class AddTimeEventViewModel : ViewModel() {
@@ -24,7 +27,7 @@ class AddTimeEventViewModel : ViewModel() {
     fun  getMembers(idChannel : String?, idEvent : String?) {
         val list : MutableList<Member> = ArrayList()
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
+        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_MEMBER}")
             .get()
             .addOnCompleteListener {
                 if (it.isSuccessful) {
@@ -50,13 +53,19 @@ class AddTimeEventViewModel : ViewModel() {
 
             }
     }
+    fun editEvent(idChannel: String?, event : Event) {
+
+    }
     fun  getSpinnerFromEvent(idChannel : String?, idEvent : String?) {
         val sList : MutableList<Spinner> = ArrayList()
+        val workList : MutableList<Spinner> = ArrayList()
+        println("Here come from event")
 
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_SPINNER}")
             .get()
             .addOnCompleteListener {
                 if (it.isSuccessful) {
+                    println("getspin ${it.result.size()}")
                     for (document : QueryDocumentSnapshot in it.result) {
                         Log.d(
                             Constants.FIRE_STORE,
@@ -65,6 +74,9 @@ class AddTimeEventViewModel : ViewModel() {
                         if (document.exists()) {
                             val  s = document.toObject<Spinner>()
                             sList.add(s)
+                            if (s.hasSelected) {
+                                workList.add(s)
+                            }
                         }
 
                     }
@@ -81,6 +93,7 @@ class AddTimeEventViewModel : ViewModel() {
 
             }
     }
+
     fun  getSpinnerFromChannel(idChannel : String?, idEvent: String?) {
         val sList : MutableList<Spinner> = ArrayList()
 
@@ -99,9 +112,6 @@ class AddTimeEventViewModel : ViewModel() {
                         }
                     }
                     spinnerList.value = sList
-                    println("Hello from addOn")
-                    println(sList)
-                    println(idChannel)
                     viewModelScope.launch(Dispatchers.IO) {
                         saveListSpinner(idChannel, idEvent)
                     }
@@ -117,27 +127,39 @@ class AddTimeEventViewModel : ViewModel() {
             }
     }
     fun saveListSpinner(idChannel: String?, idEvent: String?) {
-        val sList  = spinnerList.value!!
+        val sList  = spinnerList.value ?: return
         val collectionRef = db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_SPINNER}")
         sList.forEach {
             collectionRef.document(it.idSpin)
             .set(it)
             .addOnSuccessListener {
-                println("Here come saveListSpinner")
+                println("Here come saveListSpinner success")
 
             }
             .addOnFailureListener {
-
+                saveListSpinner(idChannel, idEvent)
             }
         }
 
     }
-    fun checkBoxSpinner(idChannel: String?, idEvent : String, idSpinner : String) = viewModelScope.launch(Dispatchers.IO) {
+    fun checkBoxSpinner(idChannel: String?, idEvent : String, idSpinner : String, hasSelected : Boolean) = viewModelScope.launch(Dispatchers.IO) {
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_SPINNER}")
             .document(idSpinner)
-            .update("hasSelected", true)
+            .update("hasSelected", !hasSelected)
             .addOnSuccessListener {
+                println("Here come change success!$hasSelected")
                 getSpinnerFromEvent(idChannel, idEvent)
+            }
+    }
+
+    fun saveEvent(idChannel: String?, event : Event ) : Job = viewModelScope.launch(Dispatchers.IO) {
+
+        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
+            .document(event.idEvent)
+            .set(event)
+            .addOnSuccessListener {  }
+            .addOnFailureListener {
+                saveEvent(idChannel, event)
             }
     }
 }

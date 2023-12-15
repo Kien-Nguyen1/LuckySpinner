@@ -14,7 +14,7 @@ class RandomSpinnerListAdapter(private val listener: Listener) : RecyclerView.Ad
     interface Listener {
         fun onItemClick(id: String)
         fun onDeleteItem(id: String)
-        fun onCheckboxClick(id : String, position: Int)
+        fun onCheckboxClick(id : String, position: Int, hasSelected : Boolean)
 
     }
 
@@ -53,7 +53,7 @@ class RandomSpinnerListAdapter(private val listener: Listener) : RecyclerView.Ad
             tvTitle.text = spinner.titleSpin
             checkBoxSpinner.isChecked = spinner.hasSelected
             checkBoxSpinner.setOnClickListener {
-                listener.onCheckboxClick(spinner.idSpin, position)
+                listener.onCheckboxClick(spinner.idSpin, position, spinner.hasSelected)
             }
             root.setOnClickListener {
                 listener.onItemClick(spinner.idSpin)

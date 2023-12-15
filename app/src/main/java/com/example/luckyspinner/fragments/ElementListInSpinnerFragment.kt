@@ -22,6 +22,7 @@ import com.example.luckyspinner.adapter.ElementListInSpinnerAdapter
 import com.example.luckyspinner.adapter.SpinnerListAdapter
 import com.example.luckyspinner.databinding.AddElementLayoutBinding
 import com.example.luckyspinner.databinding.FragmentElementListInSpinnerBinding
+import com.example.luckyspinner.models.ElementSpinner
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.EMPTY_STRING
 import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
@@ -30,6 +31,7 @@ import com.example.luckyspinner.util.Constants.SPINNER_TITLE
 import com.example.luckyspinner.viewmodels.ElementListInSpinnerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 
 class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Listener {
@@ -49,6 +51,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         idChannel = arguments?.getString(ID_CHANNEL_KEY)
         idSpinner = arguments?.getString(ID_SPINNER_KEY)
         titleSpinner = arguments?.getString(SPINNER_TITLE)
+        viewModel.context = requireContext()
 
         binding.tvTitleElementListInSpinner.text = titleSpinner
         return binding.root
@@ -91,6 +94,12 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         window.attributes = windowAttribute
 
         addElementInSpinnerDiaLog.show()
+        binding.btnDoneAddElement.setOnClickListener {
+            viewModel.addElement(idChannel, idSpinner,
+                ElementSpinner(Calendar.getInstance().timeInMillis.toString(),
+                binding.edtEnterElement.text.toString()), addElementInSpinnerDiaLog
+            )
+        }
     }
 
     private fun setupRecycleView() {

@@ -17,6 +17,12 @@ object Constants {
 
     const val CHAT_ID = "CHAT_ID"
     const val MESSAGE = "MESSAGE"
+    const val LIST_MEMBER_ID = "LIST_MEMBER_ID"
+    const val LIST_MEMBER_NAME = "LIST_MEMBER_NAME"
+    const val LIST_SPINNER_ID = "LIST_SPINNER_ID"
+    const val LIST_SPINNER_NAME = "LIST_SPINNER_NAME"
+
+
     const val TAG_OUTPUT = "TAG_OUTPUT"
     const val FS_LIST_CHANNEL = "listchannel"
     const val FIRE_STORE = "Fire Store"
@@ -40,6 +46,9 @@ object Constants {
     const val FRIDAY = 4
     const val SATURDAY = 5
     const val SUNDAY = 6
+
+    const val EVENT_TYPE_ONCE = 0
+    const val EVENT_TYPE_EVERY_DAY = 1
 
     const val DELAY_TIME_MILLIS: Long = 3000
     lateinit var DEVICE_ID : String
