@@ -90,6 +90,10 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
                 window.attributes = windowAttribute
 
                 editMemberDiaLog.show()
+
+                binding.btnBackEditDialog.setOnClickListener {
+                    editMemberDiaLog.dismiss()
+                }
             }
         }
 

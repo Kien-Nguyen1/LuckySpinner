@@ -102,6 +102,10 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
                 window.attributes = windowAttribute
 
                 editSpinnerDiaLog.show()
+
+                binding.btnBackEditDialog.setOnClickListener {
+                    editSpinnerDiaLog.dismiss()
+                }
             }
         }
     }

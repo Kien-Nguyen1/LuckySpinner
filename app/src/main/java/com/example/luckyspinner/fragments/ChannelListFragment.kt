@@ -109,6 +109,10 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 window.attributes = windowAttribute
 
                 editChannelDiaLog.show()
+
+                binding.btnBackEditDialog.setOnClickListener {
+                    editChannelDiaLog.dismiss()
+                }
             }
         }
 
