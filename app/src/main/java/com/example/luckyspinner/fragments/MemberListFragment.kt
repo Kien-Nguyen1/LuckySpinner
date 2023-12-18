@@ -67,10 +67,11 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             openAddMemberDiaLog(Gravity.CENTER)
         }
 
-        binding.btnBackMemberList.setOnClickListener {
+        binding.toolBarMemberList.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
-        binding.tvChooseAllMember.setOnClickListener {
+
+        binding.ckbChooseAllMember.setOnClickListener {
             handleChooseAllMember()
         }
 
@@ -90,10 +91,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
                 window.attributes = windowAttribute
 
                 editMemberDiaLog.show()
-
-                binding.btnBackEditDialog.setOnClickListener {
-                    editMemberDiaLog.dismiss()
-                }
             }
         }
 
@@ -159,10 +156,12 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     }
 
     private fun setupRecycleView() {
+        val decorationItem : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.rvMemberList.apply {
             memberAdapter = MemberListAdapter(this@MemberListFragment)
             adapter = memberAdapter
             layoutManager = LinearLayoutManager(context)
+            addItemDecoration(decorationItem)
         }
     }
 

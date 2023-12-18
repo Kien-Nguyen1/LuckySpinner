@@ -8,16 +8,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="300dp"
-        android:layout_height="230dp">
-
-        <ImageView
-            android:id="@+id/btn_back_edit_dialog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:src="@drawable/ic_back"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="200dp">
 
         <TextView
             android:id="@+id/tv_name_title_add_element"
@@ -35,7 +26,7 @@
             android:textStyle="bold"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_back_edit_dialog" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/edt_enter_element"

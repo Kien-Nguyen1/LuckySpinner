@@ -29,6 +29,7 @@ import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.models.Channel
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.CHANNEL_NAME
+import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
 import com.example.luckyspinner.viewmodels.ChannelListViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
@@ -109,10 +110,6 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 window.attributes = windowAttribute
 
                 editChannelDiaLog.show()
-
-                binding.btnBackEditDialog.setOnClickListener {
-                    editChannelDiaLog.dismiss()
-                }
             }
         }
 
@@ -180,10 +177,15 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     }
 
     override fun onItemClick(id: String, name : String) {
-        findNavController().navigate(R.id.channelFragment, Bundle().apply {
-            putString(Constants.ID_CHANNEL_KEY, id)
-            putString(CHANNEL_NAME, name)
-        })
+        val direction = ChannelListFragmentDirections
+            .actionChannelListFragmentToChannelFragment()
+            .actionId
+
+        val bundle = Bundle().apply {
+            putString(ID_CHANNEL_KEY, id)
+        }
+
+        findNavController().navigate(direction, bundle)
     }
 
     override fun onDeleteItem(id: String) {

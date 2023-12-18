@@ -6,40 +6,36 @@
     android:layout_height="match_parent"
     tools:context=".fragments.ElementListInSpinnerFragment">
 
-    <ImageView
-        android:id="@+id/btn_back_element_list_in_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:src="@drawable/ic_back"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tv_title_element_list_in_spinner"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_element_list_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center_horizontal"
-        android:text="Spinner Name"
-        android:textColor="@color/black"
-        android:textSize="25sp"
-        android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_back_element_list_in_spinner" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:liftOnScroll="true">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/tool_bar_element_list_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_back"
+            app:title="Spinner Name" />
+
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_element_list_in_spinner"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="10dp"
+        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        tools:listitem="@layout/element_in_spinner_item"
-        app:layout_constraintTop_toBottomOf="@+id/tv_title_element_list_in_spinner" />
+        app:layout_constraintTop_toBottomOf="@+id/app_bar_element_list_spinner"
+        tools:listitem="@layout/element_in_spinner_item" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_add_element_list_in_spinner"

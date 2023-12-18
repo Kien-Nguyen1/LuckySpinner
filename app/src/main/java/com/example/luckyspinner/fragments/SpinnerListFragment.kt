@@ -25,6 +25,8 @@ import com.example.luckyspinner.databinding.EditDialogBinding
 import com.example.luckyspinner.databinding.FragmentSpinnerListBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.util.Constants
+import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
+import com.example.luckyspinner.util.Constants.ID_SPINNER_KEY
 import com.example.luckyspinner.util.Constants.SPINNER_TITLE
 import com.example.luckyspinner.viewmodels.SpinnerListViewModel
 import kotlinx.coroutines.Dispatchers
@@ -82,7 +84,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
             openAddSpinnerDiaLog(Gravity.CENTER)
         }
 
-        binding.btnBackSpinnerList.setOnClickListener {
+        binding.toolBarSpinnerList.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
 
@@ -102,10 +104,6 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
                 window.attributes = windowAttribute
 
                 editSpinnerDiaLog.show()
-
-                binding.btnBackEditDialog.setOnClickListener {
-                    editSpinnerDiaLog.dismiss()
-                }
             }
         }
     }
@@ -148,11 +146,17 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
     }
 
     override fun onItemClick(id: String, title : String) {
-        findNavController().navigate(R.id.elementListInSpinnerFragment, Bundle().apply {
-            putString(Constants.ID_CHANNEL_KEY, idChannel)
-            putString(Constants.ID_SPINNER_KEY, id)
+        val direction = SpinnerListFragmentDirections
+            .actionSpinnerListFragmentToElementListInSpinnerFragment()
+            .actionId
+
+        val bundle = Bundle().apply {
+            putString(ID_CHANNEL_KEY, idChannel)
+            putString(ID_SPINNER_KEY, id)
             putString(SPINNER_TITLE, title)
-        })
+        }
+
+        findNavController().navigate(direction, bundle)
     }
 
     override fun onDeleteItem(id: String) {

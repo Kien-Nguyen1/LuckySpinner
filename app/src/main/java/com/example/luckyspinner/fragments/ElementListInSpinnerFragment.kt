@@ -46,7 +46,6 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         idSpinner = arguments?.getString(ID_SPINNER_KEY)
         titleSpinner = arguments?.getString(SPINNER_TITLE)
 
-        binding.tvTitleElementListInSpinner.text = titleSpinner
         return binding.root
     }
 
@@ -61,7 +60,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
             viewModel.getElement(idChannel, idSpinner)
         }
 
-        binding.btnBackElementListInSpinner.setOnClickListener {
+        binding.toolBarElementListSpinner.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
 

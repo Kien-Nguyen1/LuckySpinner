@@ -38,8 +38,6 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         idChannel = arguments?.getString(Constants.ID_CHANNEL_KEY)
         nameChannel = arguments?.getString(CHANNEL_NAME)
 
-        binding.tvTitleChannelFragment.text = nameChannel
-
         return binding.root
     }
 
@@ -53,41 +51,61 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
             viewModel.getEvents(idChannel)
         }
 
+        val bundle = Bundle().apply {
+            putString(ID_CHANNEL_KEY, idChannel)
+        }
+
         binding.btnAddEventOfChannel.setOnClickListener {
-            findNavController().navigate(R.id.addTimeEventFragment, Bundle().apply {
-                putString(ID_CHANNEL_KEY, idChannel)
-            })
+            val direction = ChannelFragmentDirections
+                .actionChannelFragmentToAddTimeEventFragment()
+                .actionId
+
+            findNavController().navigate(direction, bundle)
         }
 
-        binding.btnSpinnerList.setOnClickListener {
-            findNavController().navigate(R.id.spinnerListFragment, Bundle().apply {
-                putString(ID_CHANNEL_KEY, idChannel)
-            })
-        }
-
-        binding.btnMemberListChannel.setOnClickListener {
-            findNavController().navigate(R.id.memberListFragment, Bundle().apply {
-                putString(ID_CHANNEL_KEY, idChannel)
-            })
-        }
-
-        binding.btnBackChannelFragment.setOnClickListener {
+        binding.toolBarChannel.setNavigationOnClickListener {
             findNavController().popBackStack()
+        }
+
+        binding.toolBarChannel.setOnMenuItemClickListener { menuItem ->
+            when(menuItem.itemId) {
+                R.id.spinnerListFragment -> {
+                    val direction = ChannelFragmentDirections
+                        .actionChannelFragmentToSpinnerListFragment()
+                        .actionId
+
+                    findNavController().navigate(direction, bundle)
+                    true
+                }
+
+                R.id.memberListFragment -> {
+                    val direction = ChannelFragmentDirections
+                        .actionChannelFragmentToMemberListFragment()
+                        .actionId
+
+                    findNavController().navigate(direction, bundle)
+                    true
+                }
+
+                else -> false
+            }
         }
     }
 
     private fun setupRecycleView() {
-        val itemDecoration : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.rvEventListOfChannel.apply {
             eventAdapter = EventListAdapter(this@ChannelFragment)
             adapter = eventAdapter
             layoutManager = LinearLayoutManager(context)
-            addItemDecoration(itemDecoration)
         }
     }
 
     override fun onItemClick(id: String) {
-        findNavController().navigate(R.id.editTimeEventFragment, Bundle().apply {
+        val direction = ChannelFragmentDirections
+            .actionChannelFragmentToAddTimeEventFragment()
+            .actionId
+
+        findNavController().navigate(direction, Bundle().apply {
             putString(ID_CHANNEL_KEY, idChannel)
             putString(Constants.ID_EVENT_KEY, id)
         })

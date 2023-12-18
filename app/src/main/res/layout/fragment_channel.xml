@@ -4,47 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#e7f0fd"
     tools:context=".fragments.ChannelFragment">
 
-    <ImageView
-        android:id="@+id/btn_back_channel_fragment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:src="@drawable/ic_back"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tv_title_channel_fragment"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_channel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="Channel Name"
-        android:textSize="30sp"
+        app:liftOnScroll="true"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_back_channel_fragment" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <ImageView
-        android:id="@+id/btn_spinner_list"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_spinner_list"
-        app:layout_constraintBottom_toTopOf="@+id/rv_event_list_of_channel"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_title_channel_fragment" />
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/tool_bar_channel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
+            app:menu="@menu/menu_channel_layout"
+            app:navigationIcon="@drawable/ic_back"
+            app:title="Channel Name" />
 
-    <ImageView
-        android:id="@+id/btn_member_list_channel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:src="@drawable/ic_member_list"
-        app:layout_constraintBottom_toTopOf="@+id/rv_event_list_of_channel"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_title_channel_fragment" />
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_event_list_of_channel"
@@ -52,11 +32,11 @@
         android:layout_height="0dp"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:background="@drawable/recycle_view_background"
-        tools:listitem="@layout/event_channel_item"
-        app:layout_constraintTop_toBottomOf="@+id/btn_member_list_channel" />
+        app:layout_constraintTop_toBottomOf="@+id/app_bar_channel"
+        tools:listitem="@layout/event_channel_item" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_add_event_of_channel"
