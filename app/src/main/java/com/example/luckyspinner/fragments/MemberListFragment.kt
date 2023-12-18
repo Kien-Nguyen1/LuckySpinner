@@ -1,60 +1,183 @@
 package com.example.luckyspinner.fragments
 
+import android.app.Dialog
+import android.app.ProgressDialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.luckyspinner.R
+import android.view.Window
+import android.view.WindowManager
+import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.luckyspinner.adapter.MemberListAdapter
+import com.example.luckyspinner.databinding.AddChannelLayoutBinding
+import com.example.luckyspinner.databinding.EditDialogBinding
+import com.example.luckyspinner.databinding.FragmentMemberListBinding
+import com.example.luckyspinner.interfaces.OnEditClickListener
+import com.example.luckyspinner.util.Constants
+import com.example.luckyspinner.viewmodels.MemberListViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [MemberListFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class MemberListFragment : Fragment(R.layout.fragment_member_list) {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+class MemberListFragment : Fragment(), MemberListAdapter.Listener {
+    private val viewModel by viewModels<MemberListViewModel>()
+    private lateinit var binding : FragmentMemberListBinding
+    private lateinit var memberAdapter : MemberListAdapter
+    private lateinit var idChannel : String
+    private lateinit var addMemberDialog : Dialog
+    private lateinit var progressDialog : ProgressDialog
+    private lateinit var editMemberDiaLog : Dialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
+        binding = FragmentMemberListBinding.inflate(inflater , container, false)
+        progressDialog = ProgressDialog(requireContext())
+        viewModel.progressDialog = progressDialog
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_member_list, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MemberListFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MemberListFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupRecycleView()
+        idChannel = arguments?.getString(Constants.ID_CHANNEL_KEY).toString()
+
+        viewModel.memberList.observe(viewLifecycleOwner) {
+            memberAdapter.members = it
+            progressDialog.dismiss()
+        }
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.getMembers(idChannel)
+        }
+
+        binding.btnAddMemberList.setOnClickListener {
+            openAddMemberDiaLog(Gravity.CENTER)
+        }
+
+        binding.appBarMemberList.apply {
+            toolBar.setNavigationOnClickListener {
+                findNavController().popBackStack()
+            }
+        }
+
+        binding.ckbChooseAllMember.setOnClickListener {
+            handleChooseAllMember()
+        }
+
+        memberAdapter.onEditClickListener = object : OnEditClickListener{
+            override fun onEditClick(position: Int) {
+                val binding : EditDialogBinding = EditDialogBinding.inflate(layoutInflater)
+                editMemberDiaLog = Dialog(requireContext())
+                editMemberDiaLog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                editMemberDiaLog.setContentView(binding.root)
+
+                val window : Window = editMemberDiaLog.window!!
+                window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+                window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+                val windowAttribute : WindowManager.LayoutParams = window.attributes
+                windowAttribute.gravity = Gravity.CENTER
+                window.attributes = windowAttribute
+
+                editMemberDiaLog.show()
+            }
+        }
+
+
+        viewModel.isAddingMemberSuccess.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    Toast.makeText(context, "Add Spinner Successfully!", Toast.LENGTH_SHORT).show()
+                    addMemberDialog.dismiss()
+                }
+                else
+                {
+                    Toast.makeText(context, "Add Spinner Fail!!", Toast.LENGTH_SHORT).show()
+                }
+                viewModel.isAddingMemberSuccess.value = null
+                lifecycleScope.launch(Dispatchers.IO) {
+                    viewModel.getMembers(idChannel)
                 }
             }
+        }
+    }
+
+    private fun openAddMemberDiaLog(gravity: Int) {
+        val binding : AddChannelLayoutBinding = AddChannelLayoutBinding.inflate(layoutInflater)
+        addMemberDialog = Dialog(requireContext())
+        addMemberDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        addMemberDialog.setContentView(binding.root)
+
+        binding.tvAddChannel.text = "Member Name"
+
+        val window : Window = addMemberDialog.window!!
+        window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val windowAttribute : WindowManager.LayoutParams = window.attributes
+        windowAttribute.gravity = gravity
+        window.attributes = windowAttribute
+
+        addMemberDialog.show()
+
+        binding.btnDoneAddChannel.setOnClickListener {
+            val memberName = binding.edtEnterChannelName.text.toString()
+            val memberId = binding.edtEnterChannelId.text.toString()
+            progressDialog.show()
+            viewModel.addMember(idChannel, memberId, memberName)
+        }
+    }
+    private fun handleChooseAllMember() {
+        progressDialog.show()
+        val list = viewModel.memberList.value ?: return
+        var isAllSelected = true
+        run breaking@{
+            list.forEach { member ->
+                if (!member.hasSelected) {
+                    isAllSelected = false
+                    return@breaking
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.updateForChooseAllMember(idChannel, list, !isAllSelected)
+        }
+    }
+
+    private fun setupRecycleView() {
+        val decorationItem : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+        binding.rvMemberList.apply {
+            memberAdapter = MemberListAdapter(this@MemberListFragment)
+            adapter = memberAdapter
+            layoutManager = LinearLayoutManager(context)
+            addItemDecoration(decorationItem)
+        }
+    }
+
+    override fun onItemClick(id: String) {
+        //
+    }
+
+    override fun onDeleteItem(id: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onCheckBoxSelected(id: String, position: Int, isSelected : Boolean) {
+        lifecycleScope.launch {
+            viewModel.updateCheckBoxForMember(idChannel, id, isSelected)
+        }
     }
 }

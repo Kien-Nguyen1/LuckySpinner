@@ -1,60 +1,127 @@
 package com.example.luckyspinner.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.R
+import com.example.luckyspinner.adapter.EventListAdapter
+import com.example.luckyspinner.databinding.FragmentChannelBinding
+import com.example.luckyspinner.util.Constants
+import com.example.luckyspinner.util.Constants.CHANNEL_NAME
+import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
+import com.example.luckyspinner.viewmodels.ChannelViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ChannelFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class ChannelFragment : Fragment(R.layout.fragment_channel) {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+class ChannelFragment : Fragment(), EventListAdapter.Listener {
+    private val viewModel by viewModels<ChannelViewModel>()
+    private lateinit var binding: FragmentChannelBinding
+    private var idChannel: String? = null
+    private var nameChannel: String? = null
+    private lateinit var eventAdapter: EventListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_channel, container, false)
+        binding = FragmentChannelBinding.inflate(inflater, container, false)
+        idChannel = arguments?.getString(ID_CHANNEL_KEY)
+        nameChannel = arguments?.getString(CHANNEL_NAME)
+
+        binding.appBarChannel.apply {
+            toolBar.title = nameChannel
+        }
+
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ChannelFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ChannelFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupRecycleView()
+        viewModel.eventList.observe(viewLifecycleOwner) {
+            eventAdapter.events = it
+        }
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.getEvents(idChannel)
+        }
+
+        val bundle = Bundle().apply {
+            putString(ID_CHANNEL_KEY, idChannel)
+        }
+
+        binding.btnAddEventOfChannel.setOnClickListener {
+            val direction = ChannelFragmentDirections
+                .actionChannelFragmentToAddTimeEventFragment()
+                .actionId
+
+            findNavController().navigate(direction, bundle)
+        }
+
+        binding.appBarChannel.apply {
+            toolBar.setNavigationOnClickListener {
+                findNavController().popBackStack()
+            }
+        }
+
+        binding.appBarChannel.apply {
+            toolBar.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.spinnerListFragment -> {
+                        val direction = ChannelFragmentDirections
+                            .actionChannelFragmentToSpinnerListFragment()
+                            .actionId
+
+                        findNavController().navigate(direction, bundle)
+                        true
+                    }
+
+                    R.id.memberListFragment -> {
+                        val direction = ChannelFragmentDirections
+                            .actionChannelFragmentToMemberListFragment()
+                            .actionId
+
+                        findNavController().navigate(direction, bundle)
+                        true
+                    }
+
+                    else -> false
                 }
             }
+        }
+    }
+
+    private fun setupRecycleView() {
+        binding.rvEventListOfChannel.apply {
+            eventAdapter = EventListAdapter(this@ChannelFragment)
+            adapter = eventAdapter
+            layoutManager = LinearLayoutManager(context)
+        }
+    }
+
+    override fun onItemClick(id: String) {
+        val direction = ChannelFragmentDirections
+            .actionChannelFragmentToAddTimeEventFragment()
+            .actionId
+
+        findNavController().navigate(direction, Bundle().apply {
+            putString(ID_CHANNEL_KEY, idChannel)
+            putString(Constants.ID_EVENT_KEY, id)
+        })
+    }
+
+    override fun onDeleteItem(id: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.deleteEvent(idChannel, id)
+        }
     }
 }

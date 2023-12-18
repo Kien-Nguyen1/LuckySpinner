@@ -10,12 +10,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.luckyspinner.R
-import com.example.luckyspinner.util.Constants.Companion.CHANNEL_ID
-import com.example.luckyspinner.util.Constants.Companion.DELAY_TIME_MILLIS
-import com.example.luckyspinner.util.Constants.Companion.NOTIFICATION_ID
-import com.example.luckyspinner.util.Constants.Companion.NOTIFICATION_TITLE
-import com.example.luckyspinner.util.Constants.Companion.VERBOSE_NOTIFICATION_CHANNEL_DESCRIPTION
-import com.example.luckyspinner.util.Constants.Companion.VERBOSE_NOTIFICATION_CHANNEL_NAME
+import com.example.luckyspinner.util.Constants.CHANNEL_ID
+import com.example.luckyspinner.util.Constants.DELAY_TIME_MILLIS
+import com.example.luckyspinner.util.Constants.NOTIFICATION_ID
+import com.example.luckyspinner.util.Constants.NOTIFICATION_TITLE
+import com.example.luckyspinner.util.Constants.VERBOSE_NOTIFICATION_CHANNEL_DESCRIPTION
+import com.example.luckyspinner.util.Constants.VERBOSE_NOTIFICATION_CHANNEL_NAME
 
 fun makeStatusNotification(message: String, context: Context) {
 

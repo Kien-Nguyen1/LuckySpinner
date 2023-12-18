@@ -1,60 +1,200 @@
 package com.example.luckyspinner.fragments
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
+import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.R
+import com.example.luckyspinner.adapter.ChannelListAdapter
+import com.example.luckyspinner.databinding.AddChannelLayoutBinding
+import com.example.luckyspinner.databinding.EditDialogBinding
+import com.example.luckyspinner.databinding.FragmentChannelListBinding
+import com.example.luckyspinner.interfaces.OnEditClickListener
+import com.example.luckyspinner.models.Channel
+import com.example.luckyspinner.util.Constants
+import com.example.luckyspinner.util.Constants.CHANNEL_NAME
+import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
+import com.example.luckyspinner.viewmodels.ChannelListViewModel
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ChannelListFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class ChannelListFragment : Fragment(R.layout.fragment_channel_list) {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
+class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
+    private lateinit var binding : FragmentChannelListBinding
+    private val viewModel : ChannelListViewModel by viewModels()
+    private lateinit var channelListAdapter : ChannelListAdapter
+    private lateinit var addDialog : Dialog
+    private lateinit var editChannelDiaLog : Dialog
+    private lateinit var deleteDialog : Dialog
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
+        binding = FragmentChannelListBinding.inflate(inflater, container, false)
+        setupRecycleView()
+        viewModel.channelList.observe(viewLifecycleOwner) {
+            channelListAdapter.channels = it
+        }
+        viewModel.isAddingSuccess.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    Toast.makeText(context, "Add Channel Successfully!", Toast.LENGTH_SHORT).show()
+                    addDialog.dismiss()
+                }
+                else
+                {
+                    Toast.makeText(context, "Add Channel Fail!!", Toast.LENGTH_SHORT).show()
+                }
+                lifecycleScope.launch(Dispatchers.IO) {
+                    viewModel.getChannels()
+                }
+                viewModel.isAddingSuccess.value = null
+            }
+        }
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_channel_list, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ChannelListFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ChannelListFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.isDeleteSuccess.observe(viewLifecycleOwner) {
+            it?.let {
+                if(it) {
+                    Snackbar.make(view, "Deleted Channel Successfully!", Snackbar.LENGTH_SHORT).show()
                 }
+                else {
+                    Toast.makeText(context, "Delete Channel Fail!!", Toast.LENGTH_SHORT).show()
+                }
+                viewModel.isDeleteSuccess.value = null
             }
+        }
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.getChannels()
+        }
+
+        binding.btnAddChannel.setOnClickListener {
+            Log.d("kien", "click add channel")
+            openAddChannelDialog(Gravity.CENTER)
+        }
+
+        channelListAdapter.onEditClickListener = object  : OnEditClickListener{
+            override fun onEditClick(position: Int) {
+                val binding : EditDialogBinding = EditDialogBinding.inflate(layoutInflater)
+                editChannelDiaLog = Dialog(requireContext())
+                editChannelDiaLog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                editChannelDiaLog.setContentView(binding.root)
+
+                val window : Window = editChannelDiaLog.window!!
+                window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+                window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+                val windowAttribute : WindowManager.LayoutParams = window.attributes
+                windowAttribute.gravity = Gravity.CENTER
+                window.attributes = windowAttribute
+
+                editChannelDiaLog.show()
+            }
+        }
+
+        val itemTouchHelperCallBack = object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder,
+            ): Boolean {
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val channel = channelListAdapter.differ.currentList[position]
+                viewModel.deleteChannel(channel.idChannel)
+                val channels : MutableList<Channel> = viewModel.channelList.value!!.toMutableList()
+                channels.removeAt(position)
+                channelListAdapter.channels = channels
+                viewModel.channelList.value = channels
+            }
+        }
+
+        ItemTouchHelper(itemTouchHelperCallBack).apply {
+            attachToRecyclerView(binding.rvChannelList)
+        }
+    }
+    private fun openAddChannelDialog(gravity: Int) {
+        val binding : AddChannelLayoutBinding = AddChannelLayoutBinding.inflate(layoutInflater)
+        addDialog = Dialog(requireContext())
+        addDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        addDialog.setContentView(binding.root)
+
+        val window : Window = addDialog.window!!
+        window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val windowAttribute : WindowManager.LayoutParams = window.attributes
+        windowAttribute.gravity = gravity
+        window.attributes = windowAttribute
+
+        addDialog.show()
+
+        viewModel.context = requireContext()
+
+        binding.btnDoneAddChannel.setOnClickListener {
+            lifecycleScope.launch(Dispatchers.IO) {
+                Log.d("kien", "click done add channel")
+                val channelId = binding.edtEnterChannelId.text.toString()
+                val channelName = binding.edtEnterChannelName.text.toString()
+                viewModel.addChannel(channelId, channelName)
+            }
+        }
+    }
+
+    private fun setupRecycleView() {
+        val itemDecoration : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+        binding.rvChannelList.apply {
+            channelListAdapter = ChannelListAdapter(this@ChannelListFragment)
+            adapter = channelListAdapter
+            layoutManager = LinearLayoutManager(context)
+            addItemDecoration(itemDecoration)
+        }
+    }
+
+    override fun onItemClick(id: String, name : String) {
+        val direction = ChannelListFragmentDirections
+            .actionChannelListFragmentToChannelFragment()
+            .actionId
+
+        val bundle = Bundle().apply {
+            putString(ID_CHANNEL_KEY, id)
+            putString(CHANNEL_NAME, name)
+        }
+
+        findNavController().navigate(direction, bundle)
+    }
+
+    override fun onDeleteItem(id: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.deleteChannel(id)
+        }
     }
 }

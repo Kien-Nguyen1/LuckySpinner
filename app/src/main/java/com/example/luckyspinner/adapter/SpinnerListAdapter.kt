@@ -1,0 +1,68 @@
+package com.example.luckyspinner.adapter
+
+
+import android.graphics.Color
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
+import com.example.luckyspinner.databinding.TitleSpinnerOrChannelItemBinding
+import com.example.luckyspinner.interfaces.OnEditClickListener
+import com.example.luckyspinner.models.Spinner
+
+class SpinnerListAdapter(private val listener: Listener) : RecyclerView.Adapter<SpinnerListAdapter.SpinnerListViewHolder>() {
+
+    lateinit var onEditClickListener: OnEditClickListener
+
+    interface Listener {
+        fun onItemClick(id: String, title : String)
+        fun onDeleteItem(id: String)
+
+    }
+
+    inner class SpinnerListViewHolder(val binding: TitleSpinnerOrChannelItemBinding) : RecyclerView.ViewHolder(binding.root)
+
+    private val diffCallback = object : DiffUtil.ItemCallback<Spinner>() {
+        override fun areItemsTheSame(oldItem: Spinner, newItem: Spinner): Boolean {
+            return oldItem.idSpin == newItem.idSpin
+        }
+
+        override fun areContentsTheSame(oldItem: Spinner, newItem: Spinner): Boolean {
+            return oldItem == newItem
+        }
+    }
+
+    private val differ = AsyncListDiffer(this, diffCallback)
+    var spinners: List<Spinner>
+        get() = differ.currentList
+        set(value) {
+            differ.submitList(value)
+        }
+
+    override fun getItemCount() = spinners.size
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SpinnerListViewHolder {
+        return SpinnerListViewHolder(TitleSpinnerOrChannelItemBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        ))
+    }
+
+    override fun onBindViewHolder(holder: SpinnerListViewHolder, position: Int) {
+        holder.binding.apply {
+            val spinner = spinners[position]
+            tvTitleListOrChannelItem.text = spinner.titleSpin
+            btnEditSpinnerOrChannel.setOnClickListener {
+                onEditClickListener.onEditClick(position)
+            }
+            root.setOnClickListener {
+                listener.onItemClick(spinner.idSpin, spinner.titleSpin)
+            }
+            if (position % 2 != 0) {
+                root.setBackgroundColor(Color.parseColor("#e7f0fd"))
+            }
+        }
+    }
+}

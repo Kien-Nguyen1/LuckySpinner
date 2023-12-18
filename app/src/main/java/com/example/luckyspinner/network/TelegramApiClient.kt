@@ -1,7 +1,7 @@
 package com.example.luckyspinner.network
 
-import com.example.luckyspinner.util.Constants.Companion.BASE_URL
-import com.example.luckyspinner.util.Constants.Companion.TOKEN
+import com.example.luckyspinner.util.Constants.BASE_URL
+import com.example.luckyspinner.util.Constants.TOKEN
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
