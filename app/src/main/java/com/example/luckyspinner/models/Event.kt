@@ -7,5 +7,5 @@ data class Event (
     val typeEvent : Int? = null,
     val hour : Int? = null,
     val minute : Int? = null,
-    val listDay : List<Int> = ArrayList()
+    var listDay : List<Int> = arrayListOf(0,0,0,0,0,0,0)
 )

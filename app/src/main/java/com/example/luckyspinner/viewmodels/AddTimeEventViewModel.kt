@@ -11,7 +11,8 @@ import com.example.luckyspinner.models.Spinner
 import com.example.luckyspinner.util.Constants
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
-import com.google.firebase.firestore.toObject
+import com.google.firebase.firestore.ktx.toObject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -21,6 +22,7 @@ import kotlinx.coroutines.launch
 class AddTimeEventViewModel : ViewModel() {
     var memberList = MutableLiveData<List<Member>>()
     var spinnerList = MutableLiveData<List<Spinner>>()
+    var event = MutableLiveData<Event>()
 
     private val db = FirebaseFirestore.getInstance()
 
@@ -158,6 +160,43 @@ class AddTimeEventViewModel : ViewModel() {
             }
             .addOnFailureListener {
                 saveEvent(idChannel, event)
+            }
+    }
+    fun getEvent(idChannel: String?, idEvent : String? ) : Job = viewModelScope.launch(Dispatchers.IO) {
+        println("getEvent")
+        if (idEvent == null) {
+            this.launch(Dispatchers.Main) {
+                event.value = Event()
+            }
+        } else db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
+            .document(idEvent)
+            .get()
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    if (it.result.exists()) {
+                        val e = it.result.toObject<Event>()
+                        println("Here we come $e")
+                        CoroutineScope(Dispatchers.Main).launch {
+                            event.value = e ?: Event()
+                        }
+                    }
+                }
+            }
+            .addOnFailureListener {
+                getEvent(idChannel, idEvent)
+                println(it)
+            }
+    }
+    fun deleteEvent(idChannel: String?, idEvent : String? ) : Job = viewModelScope.launch(Dispatchers.IO) {
+        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
+            .document(idEvent!!)
+            .delete()
+            .addOnSuccessListener {
+                println("delete event success")
+            }
+            .addOnFailureListener {
+                deleteEvent(idChannel, idEvent)
+                println(it)
             }
     }
 }

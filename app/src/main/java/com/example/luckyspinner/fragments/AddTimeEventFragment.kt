@@ -24,6 +24,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import com.example.luckyspinner.adapter.DateListAdapter
 import com.example.luckyspinner.adapter.RandomSpinnerListAdapter
 import com.example.luckyspinner.databinding.ChooseRandomSpinnerListLayoutBinding
 import com.example.luckyspinner.databinding.FragmentAddTimeEventBinding
@@ -34,20 +35,22 @@ import com.example.luckyspinner.work.SendMessageWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.Duration
-import java.util.ArrayList
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 
-class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
+class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, DateListAdapter.Listener {
     private val viewModel by viewModels<AddTimeEventViewModel>()
     private lateinit var binding : FragmentAddTimeEventBinding
-    private lateinit var bindingDialog : ChooseRandomSpinnerListLayoutBinding
+    private lateinit var bindingRandomDialog : ChooseRandomSpinnerListLayoutBinding
+    private lateinit var bindingDateDialog: ChooseRandomSpinnerListLayoutBinding
     private lateinit var workManager: WorkManager
     private var channelId : String? = null
     private var eventId : String? = null
     private lateinit var chooseSpinnerDialog : Dialog
+    private lateinit var dateDialog : Dialog
     private lateinit var randomSpinnerAdapter : RandomSpinnerListAdapter
+    private lateinit var dateAdapter : DateListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,8 +61,13 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
         channelId = arguments?.getString(Constants.ID_CHANNEL_KEY)
         eventId = arguments?.getString(Constants.ID_EVENT_KEY)
 
-        setupChooseSpinnerDialog(Gravity.CENTER)
 
+        setUpDatePicker()
+
+
+        viewModel.getEvent(channelId, eventId)
+
+        setupChooseSpinnerDialog(Gravity.CENTER)
 
         lifecycleScope.launch(Dispatchers.IO) {
             if (eventId == null) {
@@ -72,7 +80,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
             }
             viewModel.getMembers(channelId, eventId)
         }
-        setUpDatePicker()
         return binding.root
     }
 
@@ -86,27 +93,14 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
         binding.btnChooseRandomSpinner.setOnClickListener {
             chooseSpinnerDialog.show()
         }
+        binding.btnDeleteEvent.setOnClickListener {
+            viewModel.deleteEvent(channelId, eventId)
+        }
 
-    }
-    private fun setupChooseSpinnerDialog(gravity: Int) {
-        setUpRecycleView()
-        chooseSpinnerDialog = Dialog(requireContext())
-        chooseSpinnerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        chooseSpinnerDialog.setContentView(bindingDialog.root)
-
-        val window : Window = chooseSpinnerDialog.window!!
-        window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
-        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-        val windowAttribute : WindowManager.LayoutParams = window.attributes
-        windowAttribute.gravity = gravity
-        window.attributes = windowAttribute
-        bindingDialog.rvChooseRandomSpinnerList
     }
 
 
     private fun getTimeAndDatePicker() {
-        workManager.cancelAllWork()
         val progressDialog = ProgressDialog(context)
         progressDialog.show()
 
@@ -114,13 +108,16 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
         val selectedMinutes: Int = binding.timePickerAddTimeEvent.minute
         val typeEvent = if (binding.btnSwitchModeAddTimeEvent.isChecked) Constants.EVENT_TYPE_EVERY_DAY else Constants.EVENT_TYPE_ONCE
 
+
+
         viewModel.saveEvent(
             channelId,
             Event(
                 eventId!!,
                 typeEvent,
                 selectedHour,
-                selectedMinutes
+                selectedMinutes,
+                getListDay()
                 )
         )
         val timeNow = Calendar.getInstance()
@@ -138,23 +135,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
         }
 
         val constraints = Constraints(requiredNetworkType = NetworkType.CONNECTED, requiresBatteryNotLow = true)
-        val listSpinnerId = ArrayList<String>()
-        val listMemberId = ArrayList<String>()
-        val listMemberName = ArrayList<String>()
-        val listSpinnerName = ArrayList<String>()
-
-        viewModel.spinnerList.value?.forEach {
-            if (it.hasSelected) {
-                listSpinnerId.add(it.idSpin)
-                listSpinnerName.add(it.titleSpin)
-            }
-        }
-        viewModel.memberList.value?.forEach {
-            if (it.hasSelected) {
-                listMemberId.add(it.idMember)
-                listMemberName.add(it.nameMember)
-            }
-        }
 
         workManager.apply {
             val data = workDataOf(
@@ -194,8 +174,10 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
                     workInfor[0]
                     if (workInfor[0].state == WorkInfo.State.SUCCEEDED) {
                         progressDialog.dismiss()
-
-//                        println("Success from workInfor ${workInfor[0].outputData.getString(KEY_STRING)}")
+                        println("Success from workInfor ${workInfor[0].outputData.getString("")}")
+                    }
+                    if (workInfor[0].state == WorkInfo.State.FAILED) {
+                        progressDialog.dismiss()
                     }
                 }
                 else {
@@ -205,8 +187,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
             }
     }
     private fun setUpRecycleView() {
-        bindingDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
-        bindingDialog.rvChooseRandomSpinnerList.apply {
+        bindingRandomDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
+        bindingRandomDialog.rvChooseRandomSpinnerList.apply {
             randomSpinnerAdapter = RandomSpinnerListAdapter(this@AddTimeEventFragment)
             adapter = randomSpinnerAdapter
             layoutManager = LinearLayoutManager(context)
@@ -218,12 +200,63 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
 
 
     private fun setUpDatePicker() {
-        val dayOfWeek = arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "SunDay")
+        binding.btnSwitchModeAddTimeEvent.setOnClickListener {
+            dateDialog.show()
+        }
 
-        binding.numberPickerAddTimeEvent.minValue = 0
-        binding.numberPickerAddTimeEvent.maxValue = dayOfWeek.size - 1
-        binding.numberPickerAddTimeEvent.displayedValues = dayOfWeek
+        bindingDateDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
+        bindingDateDialog.tvTitleChooseRandomSpinnerList.visibility = View.GONE
+        bindingDateDialog.rvChooseRandomSpinnerList.apply {
+            dateAdapter = DateListAdapter(this@AddTimeEventFragment)
+            adapter = dateAdapter
+            layoutManager = LinearLayoutManager(context)
+        }
+
+
+        viewModel.event.observe(viewLifecycleOwner) {
+            dateAdapter.dayList = it.listDay
+            println("Here come listDay"+it.listDay.toString())
+        }
+
+        setupDatePickerDialog()
     }
+
+    fun setupDatePickerDialog() {
+        dateDialog = Dialog(requireContext())
+        dateDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dateDialog.setContentView(bindingDateDialog.root)
+
+        val window : Window = dateDialog.window!!
+        window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val windowAttribute : WindowManager.LayoutParams = window.attributes
+        windowAttribute.gravity = Gravity.CENTER
+        window.attributes = windowAttribute
+    }
+    private fun setupChooseSpinnerDialog(gravity: Int) {
+        setUpRecycleView()
+        chooseSpinnerDialog = Dialog(requireContext())
+        chooseSpinnerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        chooseSpinnerDialog.setContentView(bindingRandomDialog.root)
+
+        val window : Window = chooseSpinnerDialog.window!!
+        window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val windowAttribute : WindowManager.LayoutParams = window.attributes
+        windowAttribute.gravity = gravity
+        window.attributes = windowAttribute
+    }
+
+    fun getListDay() : List<Int>{
+        val list = ArrayList<Int>().toMutableList()
+        viewModel.event.value!!.listDay.forEach {
+            list.add(it)
+        }
+        return list
+    }
+
 
     override fun onItemClick(id: String) {
         TODO("Not yet implemented")
@@ -235,5 +268,19 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
 
     override fun onCheckboxClick(idSpinner: String, position : Int, hasSelected : Boolean) {
         viewModel.checkBoxSpinner(channelId, eventId!!, idSpinner, hasSelected)
+    }
+
+    override fun onDateClick(position: Int, isChecked : Boolean) {
+        val dayNumber = if (isChecked) changeTheNumberOfDay(position) else 0
+        viewModel.event.value = viewModel.event.value?.apply {
+            val tempList = listDay.toMutableList()
+            tempList[position] = dayNumber
+            listDay = tempList
+        }
+    }
+
+    fun changeTheNumberOfDay(position : Int) : Int {
+        if (position == 6) return Constants.SUNDAY
+        return position + 2
     }
 }

@@ -29,7 +29,6 @@ class ChannelViewModel : ViewModel() {
                         )
                         if (document.exists()) {
                             val  e = document.toObject<Event>()
-//                            val  e = getEventFromFirestore(document)
                             list.add(e)
                         }
 
