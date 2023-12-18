@@ -62,9 +62,7 @@ class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter
                 listener.onItemClick(channel.idChannel, channel.nameChannel)
             }
             if (position % 2 == 0) {
-                titleSpinnerOrChannelLayout.setBackgroundColor(Color.WHITE)
-            } else {
-                titleSpinnerOrChannelLayout.setBackgroundColor(Color.WHITE)
+                titleSpinnerOrChannelLayout.setBackgroundColor(Color.parseColor("#e7f0fd"))
             }
         }
     }

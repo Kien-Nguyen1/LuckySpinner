@@ -64,6 +64,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 lifecycleScope.launch(Dispatchers.IO) {
                     viewModel.getChannels()
                 }
+                viewModel.isAddingSuccess.value = null
             }
         }
         // Inflate the layout for this fragment
@@ -169,10 +170,12 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     }
 
     private fun setupRecycleView() {
+        val itemDecoration : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.rvChannelList.apply {
             channelListAdapter = ChannelListAdapter(this@ChannelListFragment)
             adapter = channelListAdapter
             layoutManager = LinearLayoutManager(context)
+            addItemDecoration(itemDecoration)
         }
     }
 
@@ -183,6 +186,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
 
         val bundle = Bundle().apply {
             putString(ID_CHANNEL_KEY, id)
+            putString(CHANNEL_NAME, name)
         }
 
         findNavController().navigate(direction, bundle)

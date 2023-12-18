@@ -3,10 +3,12 @@ package com.example.luckyspinner.fragments
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.opengl.Visibility
 import android.os.Bundle
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
@@ -47,7 +49,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
     ): View? {
         binding = FragmentSpinnerListBinding.inflate(inflater , container, false)
 
-        idChannel = arguments?.getString(Constants.ID_CHANNEL_KEY).toString()
+        idChannel = arguments?.getString(ID_CHANNEL_KEY).toString()
 
         return binding.root
     }
@@ -84,8 +86,10 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
             openAddSpinnerDiaLog(Gravity.CENTER)
         }
 
-        binding.toolBarSpinnerList.setNavigationOnClickListener {
-            findNavController().popBackStack()
+        binding.appBarSpinnerList.apply {
+            toolBar.setNavigationOnClickListener {
+                findNavController().popBackStack()
+            }
         }
 
         spinnerAdapter.onEditClickListener = object : OnEditClickListener{
@@ -138,10 +142,12 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
     }
 
     private fun setupRecycleView() {
+        val itemDecoration : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.rvSpinnerList.apply {
             spinnerAdapter = SpinnerListAdapter(this@SpinnerListFragment)
             adapter = spinnerAdapter
             layoutManager = LinearLayoutManager(context)
+            addItemDecoration(itemDecoration)
         }
     }
 

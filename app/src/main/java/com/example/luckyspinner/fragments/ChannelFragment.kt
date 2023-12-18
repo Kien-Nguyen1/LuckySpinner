@@ -25,18 +25,22 @@ import kotlinx.coroutines.launch
 
 class ChannelFragment : Fragment(), EventListAdapter.Listener {
     private val viewModel by viewModels<ChannelViewModel>()
-    private lateinit var binding : FragmentChannelBinding
-    private var idChannel : String? = null
-    private var nameChannel : String? = null
-    private lateinit var eventAdapter : EventListAdapter
+    private lateinit var binding: FragmentChannelBinding
+    private var idChannel: String? = null
+    private var nameChannel: String? = null
+    private lateinit var eventAdapter: EventListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentChannelBinding.inflate(inflater, container, false)
-        idChannel = arguments?.getString(Constants.ID_CHANNEL_KEY)
+        idChannel = arguments?.getString(ID_CHANNEL_KEY)
         nameChannel = arguments?.getString(CHANNEL_NAME)
+
+        binding.appBarChannel.apply {
+            toolBar.title = nameChannel
+        }
 
         return binding.root
     }
@@ -44,7 +48,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecycleView()
-        viewModel.channelList.observe(viewLifecycleOwner){
+        viewModel.channelList.observe(viewLifecycleOwner) {
             eventAdapter.events = it
         }
         lifecycleScope.launch(Dispatchers.IO) {
@@ -63,31 +67,35 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
             findNavController().navigate(direction, bundle)
         }
 
-        binding.toolBarChannel.setNavigationOnClickListener {
-            findNavController().popBackStack()
+        binding.appBarChannel.apply {
+            toolBar.setNavigationOnClickListener {
+                findNavController().popBackStack()
+            }
         }
 
-        binding.toolBarChannel.setOnMenuItemClickListener { menuItem ->
-            when(menuItem.itemId) {
-                R.id.spinnerListFragment -> {
-                    val direction = ChannelFragmentDirections
-                        .actionChannelFragmentToSpinnerListFragment()
-                        .actionId
+        binding.appBarChannel.apply {
+            toolBar.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.spinnerListFragment -> {
+                        val direction = ChannelFragmentDirections
+                            .actionChannelFragmentToSpinnerListFragment()
+                            .actionId
 
-                    findNavController().navigate(direction, bundle)
-                    true
+                        findNavController().navigate(direction, bundle)
+                        true
+                    }
+
+                    R.id.memberListFragment -> {
+                        val direction = ChannelFragmentDirections
+                            .actionChannelFragmentToMemberListFragment()
+                            .actionId
+
+                        findNavController().navigate(direction, bundle)
+                        true
+                    }
+
+                    else -> false
                 }
-
-                R.id.memberListFragment -> {
-                    val direction = ChannelFragmentDirections
-                        .actionChannelFragmentToMemberListFragment()
-                        .actionId
-
-                    findNavController().navigate(direction, bundle)
-                    true
-                }
-
-                else -> false
             }
         }
     }

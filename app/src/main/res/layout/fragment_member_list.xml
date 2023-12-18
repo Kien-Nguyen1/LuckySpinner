@@ -6,24 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".fragments.MemberListFragment">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <include
         android:id="@+id/app_bar_member_list"
+        layout="@layout/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:liftOnScroll="true">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/tool_bar_member_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="?attr/actionBarSize"
-            app:navigationIcon="@drawable/ic_back"
-            app:title="Member List" />
-
-    </com.google.android.material.appbar.AppBarLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <CheckBox
         android:id="@+id/ckb_choose_all_member"
@@ -34,7 +25,6 @@
         android:textColor="@color/black"
         android:textSize="15sp"
         android:textStyle="bold"
-        android:checked="true"
         app:layout_constraintBottom_toTopOf="@+id/rv_member_list"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/app_bar_member_list" />
@@ -44,10 +34,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="10dp"
-        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ckb_choose_all_member"

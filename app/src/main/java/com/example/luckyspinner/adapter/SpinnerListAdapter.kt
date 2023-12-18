@@ -60,10 +60,8 @@ class SpinnerListAdapter(private val listener: Listener) : RecyclerView.Adapter<
             root.setOnClickListener {
                 listener.onItemClick(spinner.idSpin, spinner.titleSpin)
             }
-            if (position % 2 == 0) {
-                root.setBackgroundColor(Color.WHITE)
-            } else {
-                root.setBackgroundColor(Color.WHITE)
+            if (position % 2 != 0) {
+                root.setBackgroundColor(Color.parseColor("#e7f0fd"))
             }
         }
     }

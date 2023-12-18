@@ -67,8 +67,10 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             openAddMemberDiaLog(Gravity.CENTER)
         }
 
-        binding.toolBarMemberList.setNavigationOnClickListener {
-            findNavController().popBackStack()
+        binding.appBarMemberList.apply {
+            toolBar.setNavigationOnClickListener {
+                findNavController().popBackStack()
+            }
         }
 
         binding.ckbChooseAllMember.setOnClickListener {

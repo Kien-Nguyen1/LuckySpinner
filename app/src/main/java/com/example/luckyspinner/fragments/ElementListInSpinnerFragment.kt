@@ -46,6 +46,8 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         idSpinner = arguments?.getString(ID_SPINNER_KEY)
         titleSpinner = arguments?.getString(SPINNER_TITLE)
 
+        binding.toolBarElementListSpinner.title = titleSpinner
+
         return binding.root
     }
 
