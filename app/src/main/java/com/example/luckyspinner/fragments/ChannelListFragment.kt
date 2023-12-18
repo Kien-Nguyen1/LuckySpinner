@@ -168,4 +168,28 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             viewModel.deleteChannel(id)
         }
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        println("Here come onCreate ${this.javaClass.name}")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        println("Here come onStop ${this.javaClass.name} ")
+
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        println("Here come onDestroyView ${this.javaClass.name}")
+        viewModel.channelList.removeObservers(viewLifecycleOwner)
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        println("Here come onDestroy ${this.javaClass.name}")
+
+    }
 }

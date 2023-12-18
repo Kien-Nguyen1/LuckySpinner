@@ -35,7 +35,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentChannelBinding.inflate(inflater, container, false)
-        idChannel = arguments?.getString(Constants.ID_CHANNEL_KEY)
+        idChannel = arguments?.getString(ID_CHANNEL_KEY)
         nameChannel = arguments?.getString(CHANNEL_NAME)
 
         binding.tvTitleChannelFragment.text = nameChannel
@@ -46,7 +46,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecycleView()
-        viewModel.eventList.observe(viewLifecycleOwner){
+        viewModel.eventList.observe(viewLifecycleOwner) {
             eventAdapter.events = it
         }
         lifecycleScope.launch(Dispatchers.IO) {
@@ -87,7 +87,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     }
 
     override fun onItemClick(id: String) {
-        findNavController().navigate(R.id.editTimeEventFragment, Bundle().apply {
+        findNavController().navigate(R.id.addTimeEventFragment, Bundle().apply {
             putString(ID_CHANNEL_KEY, idChannel)
             putString(Constants.ID_EVENT_KEY, id)
         })
@@ -97,5 +97,29 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.deleteEvent(idChannel, id)
         }
+    }
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        println("Here come onCreate ${this.javaClass.name}")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        println("Here come onStop ${this.javaClass.name} ")
+
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        println("Here come onDestroyView ${this.javaClass.name}")
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        println("Here come onDestroy ${this.javaClass.name}")
+
     }
 }

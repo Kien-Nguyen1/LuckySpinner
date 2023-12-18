@@ -39,7 +39,6 @@ class AddTimeEventViewModel : ViewModel() {
                         if (document.exists()) {
                             list.add(document.toObject<Member>())
                         }
-//                        val  s = Spinner.getSpinnerFromFirestore(document)
                     }
                     memberList.value = list
 
@@ -52,9 +51,6 @@ class AddTimeEventViewModel : ViewModel() {
                 }
 
             }
-    }
-    fun editEvent(idChannel: String?, event : Event) {
-
     }
     fun  getSpinnerFromEvent(idChannel : String?, idEvent : String?) {
         val sList : MutableList<Spinner> = ArrayList()
@@ -95,6 +91,7 @@ class AddTimeEventViewModel : ViewModel() {
     }
 
     fun  getSpinnerFromChannel(idChannel : String?, idEvent: String?) {
+        //only call in add event once
         val sList : MutableList<Spinner> = ArrayList()
 
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
@@ -153,11 +150,12 @@ class AddTimeEventViewModel : ViewModel() {
     }
 
     fun saveEvent(idChannel: String?, event : Event ) : Job = viewModelScope.launch(Dispatchers.IO) {
-
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
             .document(event.idEvent)
             .set(event)
-            .addOnSuccessListener {  }
+            .addOnSuccessListener {
+
+            }
             .addOnFailureListener {
                 saveEvent(idChannel, event)
             }

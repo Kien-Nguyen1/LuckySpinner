@@ -193,6 +193,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
                 if (workInfor.size != 0) {
                     workInfor[0]
                     if (workInfor[0].state == WorkInfo.State.SUCCEEDED) {
+                        progressDialog.dismiss()
+
 //                        println("Success from workInfor ${workInfor[0].outputData.getString(KEY_STRING)}")
                     }
                 }
@@ -201,7 +203,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
                 }
 
             }
-        progressDialog.dismiss()
     }
     private fun setUpRecycleView() {
         bindingDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)

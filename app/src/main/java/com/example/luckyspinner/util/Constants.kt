@@ -39,13 +39,13 @@ object Constants {
     const val CHANNEL_NAME = "CHANNEL_NAME"
     const val SPINNER_TITLE = "SPINNER_TITLE"
 
-    const val MONDAY = 0
-    const val TUESDAY = 1
-    const val WEDNESDAY = 2
-    const val THURSDAY = 3
-    const val FRIDAY = 4
-    const val SATURDAY = 5
-    const val SUNDAY = 6
+    const val MONDAY = 2
+    const val TUESDAY = 3
+    const val WEDNESDAY = 4
+    const val THURSDAY = 5
+    const val FRIDAY = 6
+    const val SATURDAY = 7
+    const val SUNDAY = 1
 
     const val EVENT_TYPE_ONCE = 0
     const val EVENT_TYPE_EVERY_DAY = 1
