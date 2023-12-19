@@ -19,6 +19,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.MemberListAdapter
 import com.example.luckyspinner.databinding.AddChannelLayoutBinding
 import com.example.luckyspinner.databinding.EditDialogBinding
@@ -47,6 +48,13 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         progressDialog = ProgressDialog(requireContext())
         viewModel.progressDialog = progressDialog
         // Inflate the layout for this fragment
+
+        binding.appBarMemberList.apply {
+            toolBar.title = "Member List"
+            toolBar.menu.findItem(R.id.spinnerListFragment)?.isVisible = false
+            toolBar.menu.findItem(R.id.memberListFragment)?.isVisible = false
+        }
+
         return binding.root
     }
 

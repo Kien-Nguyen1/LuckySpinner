@@ -3,12 +3,10 @@ package com.example.luckyspinner.fragments
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.opengl.Visibility
 import android.os.Bundle
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
@@ -26,7 +24,6 @@ import com.example.luckyspinner.databinding.AddChannelLayoutBinding
 import com.example.luckyspinner.databinding.EditDialogBinding
 import com.example.luckyspinner.databinding.FragmentSpinnerListBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
-import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
 import com.example.luckyspinner.util.Constants.ID_SPINNER_KEY
 import com.example.luckyspinner.util.Constants.SPINNER_TITLE
@@ -50,6 +47,12 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
         binding = FragmentSpinnerListBinding.inflate(inflater , container, false)
 
         idChannel = arguments?.getString(ID_CHANNEL_KEY).toString()
+
+        binding.appBarSpinnerList.apply {
+            toolBar.title = "Spinner List"
+            toolBar.menu.findItem(R.id.spinnerListFragment)?.isVisible = false
+            toolBar.menu.findItem(R.id.memberListFragment)?.isVisible = false
+        }
 
         return binding.root
     }

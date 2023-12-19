@@ -17,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.ElementListInSpinnerAdapter
 import com.example.luckyspinner.databinding.AddChannelLayoutBinding
 import com.example.luckyspinner.databinding.FragmentElementListInSpinnerBinding
@@ -46,7 +47,11 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         idSpinner = arguments?.getString(ID_SPINNER_KEY)
         titleSpinner = arguments?.getString(SPINNER_TITLE)
 
-        binding.toolBarElementListSpinner.title = titleSpinner
+        binding.appBarElementListSpinner.apply {
+            toolBar.title = "Element List"
+            toolBar.menu.findItem(R.id.spinnerListFragment)?.isVisible = false
+            toolBar.menu.findItem(R.id.memberListFragment)?.isVisible = false
+        }
 
         return binding.root
     }
@@ -62,8 +67,10 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
             viewModel.getElement(idChannel, idSpinner)
         }
 
-        binding.toolBarElementListSpinner.setNavigationOnClickListener {
-            findNavController().popBackStack()
+        binding.appBarElementListSpinner.apply {
+            toolBar.setNavigationOnClickListener {
+                findNavController().popBackStack()
+            }
         }
 
         binding.btnAddElementListInSpinner.setOnClickListener {

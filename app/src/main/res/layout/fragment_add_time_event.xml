@@ -6,13 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".fragments.AddTimeEventFragment">
 
-    <ImageView
-        android:id="@+id/btn_back_add_time_event"
-        android:layout_width="wrap_content"
+    <include
+        android:id="@+id/app_bar_add_time_event"
+        layout="@layout/app_bar_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="30dp"
-        android:src="@drawable/ic_back"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TimePicker
@@ -23,7 +24,7 @@
         android:timePickerMode="spinner"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_back_add_time_event" />
+        app:layout_constraintTop_toBottomOf="@+id/app_bar_add_time_event" />
 
     <LinearLayout
         android:id="@+id/linear_layout_add_time_event"

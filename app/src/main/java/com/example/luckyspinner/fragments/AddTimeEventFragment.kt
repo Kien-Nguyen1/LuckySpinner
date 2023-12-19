@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -23,6 +24,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.RandomSpinnerListAdapter
 import com.example.luckyspinner.databinding.ChooseRandomSpinnerListLayoutBinding
 import com.example.luckyspinner.databinding.FragmentAddTimeEventBinding
@@ -57,7 +59,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
 
         setupChooseSpinnerDialog(Gravity.CENTER)
 
-
         lifecycleScope.launch(Dispatchers.IO) {
             if (eventId == null) {
                 val timeInMillis = Calendar.getInstance().timeInMillis
@@ -68,6 +69,13 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
                 viewModel.getSpinnerFromEvent(channelId, eventId)
             }
         }
+
+        binding.appBarAddTimeEvent.apply {
+            toolBar.title = "Add Time Event"
+            toolBar.menu.findItem(R.id.spinnerListFragment)?.isVisible = false
+            toolBar.menu.findItem(R.id.memberListFragment)?.isVisible = false
+        }
+
         return binding.root
     }
 
@@ -83,8 +91,10 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener {
             chooseSpinnerDialog.show()
         }
 
-        binding.btnBackAddTimeEvent.setOnClickListener {
-            findNavController().popBackStack()
+        binding.appBarAddTimeEvent.apply {
+            toolBar.setNavigationOnClickListener {
+                findNavController().popBackStack()
+            }
         }
     }
     private fun setupChooseSpinnerDialog(gravity: Int) {

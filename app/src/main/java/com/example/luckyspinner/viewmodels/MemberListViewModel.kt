@@ -41,7 +41,6 @@ class MemberListViewModel : ViewModel() {
                         if (document.exists()) {
                             list.add(document.toObject<Member>())
                         }
-//                        val  s = Spinner.getSpinnerFromFirestore(document)
                     }
                     memberList.value = list
 
@@ -124,8 +123,10 @@ class MemberListViewModel : ViewModel() {
                         Constants.FIRE_STORE,
                         "DocumentSnapshot successfully update!"
                     )
-                    if (index == list.lastIndex) viewModelScope.launch {
-                        getMembers(idChannel)
+                    if (index == list.lastIndex) {
+                        viewModelScope.launch {
+                            getMembers(idChannel)
+                        }
                     }
                 }
                 .addOnFailureListener { e ->
