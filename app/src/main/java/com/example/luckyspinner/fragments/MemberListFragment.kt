@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -66,6 +67,16 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         viewModel.memberList.observe(viewLifecycleOwner) {
             memberAdapter.members = it
             progressDialog.dismiss()
+            if (it.isEmpty()) {
+                binding.rvMemberList.visibility = View.GONE
+                binding.imgEmptyList.visibility = View.VISIBLE
+                binding.ckbChooseAllMember.visibility = View.GONE
+            }
+            else {
+                binding.rvMemberList.visibility = View.VISIBLE
+                binding.imgEmptyList.visibility = View.GONE
+                binding.ckbChooseAllMember.visibility = View.VISIBLE
+            }
         }
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.getMembers(idChannel)
@@ -130,6 +141,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         addMemberDialog.setContentView(binding.root)
 
         binding.tvAddChannel.text = "Member Name"
+        binding.edtEnterChannelId.visibility = View.GONE
 
         val window : Window = addMemberDialog.window!!
         window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)

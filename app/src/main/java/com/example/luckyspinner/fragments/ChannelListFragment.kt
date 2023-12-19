@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -50,6 +51,14 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         setupRecycleView()
         viewModel.channelList.observe(viewLifecycleOwner) {
             channelListAdapter.channels = it
+            if (channelListAdapter.channels.isEmpty()) {
+                binding.rvChannelList.visibility = View.GONE
+                binding.imgEmptyList.visibility = View.VISIBLE
+            }
+            else {
+                binding.rvChannelList.visibility = View.VISIBLE
+                binding.imgEmptyList.visibility = View.GONE
+            }
         }
         viewModel.isAddingSuccess.observe(viewLifecycleOwner) {
             it?.let {

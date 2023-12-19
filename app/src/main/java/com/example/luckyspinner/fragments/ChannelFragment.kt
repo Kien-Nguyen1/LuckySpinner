@@ -50,6 +50,13 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         setupRecycleView()
         viewModel.channelList.observe(viewLifecycleOwner) {
             eventAdapter.events = it
+            if (it.isEmpty()) {
+                binding.rvEventListOfChannel.visibility = View.GONE
+                binding.imgEmptyList.visibility = View.VISIBLE
+            } else {
+                binding.rvEventListOfChannel.visibility = View.VISIBLE
+                binding.imgEmptyList.visibility = View.GONE
+            }
         }
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.getEvents(idChannel)

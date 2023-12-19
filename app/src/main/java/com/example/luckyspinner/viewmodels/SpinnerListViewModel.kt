@@ -42,6 +42,7 @@ class SpinnerListViewModel : ViewModel() {
 
                     }
                     spinnerList.value = sList
+                    print(sList)
 
                 } else {
                     Log.w(

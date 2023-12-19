@@ -61,6 +61,13 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         setupRecycleView()
         viewModel.elementList.observe(viewLifecycleOwner) {
             elementAdapter.elementSpinners = it
+            if (it.isEmpty()) {
+                binding.rvElementListInSpinner.visibility = View.GONE
+                binding.imgEmptyList.visibility = View.VISIBLE
+            } else {
+                binding.rvElementListInSpinner.visibility = View.VISIBLE
+                binding.imgEmptyList.visibility = View.GONE
+            }
         }
 
         lifecycleScope.launch(Dispatchers.IO) {

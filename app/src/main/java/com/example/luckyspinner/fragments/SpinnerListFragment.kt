@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -80,6 +81,13 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
 
         viewModel.spinnerList.observe(viewLifecycleOwner) {
             spinnerAdapter.spinners = it
+            if (it.isEmpty()) {
+                binding.rvSpinnerList.visibility = View.GONE
+                binding.imgEmptyList.visibility = View.VISIBLE
+            } else {
+                binding.rvSpinnerList.visibility = View.VISIBLE
+                binding.imgEmptyList.visibility = View.GONE
+            }
         }
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.getSpinners(idChannel)
@@ -122,6 +130,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
         addSpinnerDiaLog.setContentView(binding.root)
 
         binding.tvAddChannel.text = "Spinner Name"
+        binding.edtEnterChannelId.visibility = View.GONE
 
         val window : Window = addSpinnerDiaLog.window!!
         window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)

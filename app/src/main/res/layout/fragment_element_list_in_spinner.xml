@@ -28,6 +28,20 @@
         app:layout_constraintTop_toBottomOf="@+id/app_bar_element_list_spinner"
         tools:listitem="@layout/element_in_spinner_item" />
 
+    <ImageView
+        android:id="@+id/img_empty_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="10dp"
+        android:src="@drawable/image_empty_list"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/app_bar_element_list_spinner"
+        tools:listitem="@layout/element_in_spinner_item" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_add_element_list_in_spinner"
         android:layout_width="wrap_content"
