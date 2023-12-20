@@ -58,7 +58,7 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                     if ((hasHandleRandomSpinner != true) || !hasHandleRandomMember || !hasGetListDay) {
                         delay(1000)
                         if (++countDelay > 10) {
-                            return@withContext Result.retry()
+                            return@withContext Result.failure()
                         }
                         return@withContext sendMessage()
                     }
@@ -66,8 +66,12 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                         return@withContext Result.success()
                     }
                     val message = messageMember + messageSpinner
-                    val respond = TelegramApiClient.telegramApi.sendMessage(telegramChannelId!!, message)
-                    if (!respond.isSuccessful) return@withContext Result.failure()
+                    val respond = TelegramApiClient.telegramApi.sendMessage("telegramChannelId!!", message)
+                    if (!respond.isSuccessful) {
+                        return@withContext Result.failure(
+                            workDataOf(MESSAGE to "Incorrect chat Id!")
+                        )
+                    }
                     outputData = workDataOf(CHAT_ID to telegramChannelId, MESSAGE to message)
                     makeStatusNotification("Send message successfully!", applicationContext)
                     return@withContext Result.success(outputData)

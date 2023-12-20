@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -198,6 +199,10 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                     }
                     if (workInfor[0].state == WorkInfo.State.FAILED) {
                         progressDialog.dismiss()
+                        val message = workInfor[0].outputData.getString(Constants.MESSAGE)
+                        message?.let {
+                            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
                 else {
@@ -273,6 +278,27 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         val windowAttribute : WindowManager.LayoutParams = window.attributes
         windowAttribute.gravity = gravity
         window.attributes = windowAttribute
+    }
+    fun isEventValidate() : Boolean {
+        var isValidated = true
+        var memberCount = 0
+        var spinnerCount = 0
+        viewModel.memberList.value!!.forEach {
+            if (it.hasSelected) ++memberCount
+        }
+        if (memberCount < 2) {
+            isValidated = false
+            Toast.makeText(context, "You must select at least 2 members",Toast.LENGTH_LONG).show()
+        }
+        viewModel.spinnerList.value!!.forEach {
+            if (it.hasSelected) ++spinnerCount
+        }
+        if (spinnerCount < 1) {
+            isValidated = false
+            Toast.makeText(context, "You must select at least 1 spinner",Toast.LENGTH_LONG).show()
+        }
+        return isValidated
+
     }
 
     fun getListDay() : List<Int>{
