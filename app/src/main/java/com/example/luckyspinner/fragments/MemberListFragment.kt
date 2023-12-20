@@ -25,8 +25,10 @@ import com.example.luckyspinner.databinding.AddChannelLayoutBinding
 import com.example.luckyspinner.databinding.EditDialogBinding
 import com.example.luckyspinner.databinding.FragmentMemberListBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
+import com.example.luckyspinner.models.Member
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.viewmodels.MemberListViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -56,7 +58,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         super.onViewCreated(view, savedInstanceState)
         setupRecycleView()
         idChannel = arguments?.getString(Constants.ID_CHANNEL_KEY).toString()
-
+        setupObserver()
         viewModel.memberList.observe(viewLifecycleOwner) {
             memberAdapter.members = it
             binding.rvMemberList.isVisible = it.isNotEmpty()
@@ -100,8 +102,21 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
                 editMemberDiaLog.requestWindowFeature(Window.FEATURE_NO_TITLE)
                 editMemberDiaLog.setContentView(binding.root)
 
+                val member = memberAdapter.members[position]
+
                 binding.tvNameTitleAddElement.text = "Edit Member"
-                binding.edtEnterElement.setText(memberAdapter.members[position].nameMember)
+                binding.edtEnterElement.setText(member.nameMember)
+                binding.btnDeleteElement.setOnClickListener {
+                    viewModel.deleteMember(idChannel, member.idMember)
+                }
+
+                binding.btnDoneAddElement.setOnClickListener {
+                    member.nameMember = binding.edtEnterElement.text.toString()
+                    viewModel.editMember(
+                        idChannel,
+                        member
+                    )
+                }
 
                 val window : Window = editMemberDiaLog.window!!
                 window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
@@ -155,7 +170,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         binding.btnDoneAddChannel.setOnClickListener {
             val memberName = binding.edtEnterChannelName.text.toString()
             progressDialog.show()
-            viewModel.addMember(idChannel, Calendar.getInstance().timeInMillis.toString(), memberName)
+            viewModel.addMember(idChannel, Member(Calendar.getInstance().timeInMillis.toString(), memberName))
         }
     }
     private fun handleChooseAllMember() {
@@ -182,6 +197,35 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             adapter = memberAdapter
             layoutManager = LinearLayoutManager(context)
             addItemDecoration(decorationItem)
+        }
+    }
+
+    fun setupObserver() {
+        viewModel.isDeletingMemberSuccess.observe(viewLifecycleOwner) {
+            println("Here the observer delete come")
+            it?.let {
+                if(it) {
+                    Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT).show()
+                    editMemberDiaLog.dismiss()
+                } else {
+                    Toast.makeText(context, "Delete Channel Fail!!", Toast.LENGTH_SHORT).show()
+                }
+                CoroutineScope(Dispatchers.IO).launch {
+                    viewModel.getMembers(idChannel)
+                }
+            }
+        }
+        viewModel.isEdtingMemberSuccess.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    editMemberDiaLog.dismiss()
+                } else {
+                    Toast.makeText(requireContext(), "Edit failed!", Toast.LENGTH_SHORT).show()
+                }
+                CoroutineScope(Dispatchers.IO).launch {
+                    viewModel.getMembers(idChannel)
+                }
+            }
         }
     }
 
