@@ -84,7 +84,6 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
 //            Toast.makeText(requireContext(), it , Toast.LENGTH_SHORT).show()
         }
         viewModel.isDeleteSuccess.observe(viewLifecycleOwner) {
-            println("Here the observer delete come")
             it?.let {
                 if(it) {
                     Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT).show()
