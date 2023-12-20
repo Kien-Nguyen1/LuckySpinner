@@ -107,6 +107,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
         binding.btnDeleteEvent.setOnClickListener {
             viewModel.deleteEvent(channelId, eventId)
+            findNavController().popBackStack()
         }
 
         binding.appBarAddTimeEvent.apply {
