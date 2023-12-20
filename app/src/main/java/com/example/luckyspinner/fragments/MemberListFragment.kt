@@ -50,7 +50,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     ): View? {
         binding = FragmentMemberListBinding.inflate(inflater , container, false)
         progressDialog = ProgressDialog(requireContext())
-        viewModel.progressDialog = progressDialog
 
         binding.appBarMemberList.apply {
             toolBar.title = "List Member"
@@ -67,23 +66,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         setupRecycleView()
         idChannel = arguments?.getString(Constants.ID_CHANNEL_KEY).toString()
         setupObserver()
-        viewModel.memberList.observe(viewLifecycleOwner) {
-            memberAdapter.members = it
-            binding.rvMemberList.isVisible = it.isNotEmpty()
-            binding.imgEmptyList.isVisible = it.isEmpty()
-            binding.ckbChooseAllMember.isVisible = it.isNotEmpty()
-            var isAllSelected = true
-            run breaking@{
-                it.forEach { member ->
-                    if (!member.hasSelected) {
-                        isAllSelected = false
-                        return@breaking
-                    }
-                }
-            }
-            binding.ckbChooseAllMember.isChecked = isAllSelected
-            progressDialog.dismiss()
-        }
+
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.getMembers(idChannel)
         }
@@ -137,22 +120,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             }
         }
 
-        viewModel.isAddingMemberSuccess.observe(viewLifecycleOwner) {
-            it?.let {
-                if (it) {
-                    Toast.makeText(context, "Add Spinner Successfully!", Toast.LENGTH_SHORT).show()
-                    addMemberDialog.dismiss()
-                }
-                else
-                {
-                    Toast.makeText(context, "Add Spinner Fail!!", Toast.LENGTH_SHORT).show()
-                }
-                viewModel.isAddingMemberSuccess.value = null
-                lifecycleScope.launch(Dispatchers.IO) {
-                    viewModel.getMembers(idChannel)
-                }
-            }
-        }
+
     }
 
     private fun openAddMemberDiaLog(gravity: Int) {
@@ -208,6 +176,39 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     }
 
     fun setupObserver() {
+        viewModel.memberList.observe(viewLifecycleOwner) {
+            memberAdapter.members = it
+            binding.rvMemberList.isVisible = it.isNotEmpty()
+            binding.imgEmptyList.isVisible = it.isEmpty()
+            binding.ckbChooseAllMember.isVisible = it.isNotEmpty()
+            var isAllSelected = true
+            run breaking@{
+                it.forEach { member ->
+                    if (!member.hasSelected) {
+                        isAllSelected = false
+                        return@breaking
+                    }
+                }
+            }
+            binding.ckbChooseAllMember.isChecked = isAllSelected
+            progressDialog.dismiss()
+        }
+        viewModel.isAddingMemberSuccess.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    Toast.makeText(context, "Add Spinner Successfully!", Toast.LENGTH_SHORT).show()
+                    addMemberDialog.dismiss()
+                }
+                else
+                {
+                    Toast.makeText(context, "Add Spinner Fail!!", Toast.LENGTH_SHORT).show()
+                }
+                viewModel.isAddingMemberSuccess.value = null
+                lifecycleScope.launch(Dispatchers.IO) {
+                    viewModel.getMembers(idChannel)
+                }
+            }
+        }
         viewModel.isDeletingMemberSuccess.observe(viewLifecycleOwner) {
             println("Here the observer delete come")
             it?.let {
@@ -233,6 +234,10 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
                     viewModel.getMembers(idChannel)
                 }
             }
+        }
+        viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
+            if (it) progressDialog.show()
+            else progressDialog.dismiss()
         }
     }
 

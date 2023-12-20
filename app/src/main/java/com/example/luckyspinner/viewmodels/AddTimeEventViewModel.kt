@@ -23,6 +23,8 @@ class AddTimeEventViewModel : ViewModel() {
     var memberList = MutableLiveData<List<Member>>()
     var spinnerList = MutableLiveData<List<Spinner>>()
     var event = MutableLiveData<Event>()
+    val isShowProgressDialog = MutableLiveData<Boolean>()
+
 
     private val db = FirebaseFirestore.getInstance()
 
@@ -56,7 +58,10 @@ class AddTimeEventViewModel : ViewModel() {
     }
     fun  getSpinnerFromEvent(idChannel : String?, idEvent : String?) {
         val sList : MutableList<Spinner> = ArrayList()
-        println("Here come from event")
+
+        viewModelScope.launch(Dispatchers.Main){
+            isShowProgressDialog.value = true
+        }
 
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_SPINNER}")
             .get()
@@ -74,7 +79,8 @@ class AddTimeEventViewModel : ViewModel() {
                         }
                     }
                     spinnerList.value = sList
-                    if (sList.size == 0) getSpinnerFromChannel(idChannel, idEvent)
+                    isShowProgressDialog.value = false
+
 
                 } else {
                     Log.w(
@@ -82,6 +88,8 @@ class AddTimeEventViewModel : ViewModel() {
                         "Error getting documents.",
                         it.exception
                     )
+                    isShowProgressDialog.value = false
+
                 }
 
             }
@@ -90,6 +98,9 @@ class AddTimeEventViewModel : ViewModel() {
     fun  getSpinnerFromChannel(idChannel : String?, idEvent: String?) {
         //only call in add event once
         val sList : MutableList<Spinner> = ArrayList()
+        viewModelScope.launch(Dispatchers.Main) {
+            isShowProgressDialog.value = true
+        }
 
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
             .get()
@@ -106,9 +117,7 @@ class AddTimeEventViewModel : ViewModel() {
                         }
                     }
                     spinnerList.value = sList
-                    viewModelScope.launch(Dispatchers.IO) {
-                        saveListSpinner(idChannel, idEvent)
-                    }
+                    isShowProgressDialog.value = false
 
                 } else {
                     Log.w(
@@ -116,34 +125,31 @@ class AddTimeEventViewModel : ViewModel() {
                         "Error getting documents.",
                         it.exception
                     )
+                    isShowProgressDialog.value = false
                 }
 
             }
     }
     fun saveListSpinner(idChannel: String?, idEvent: String?) {
+        isShowProgressDialog.value = true
         val sList  = spinnerList.value ?: return
         val collectionRef = db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_SPINNER}")
         sList.forEach {
             collectionRef.document(it.idSpin)
                 .set(it)
                 .addOnSuccessListener {
-                    println("Here come saveListSpinner success")
-
+                    isShowProgressDialog.value = false
                 }
                 .addOnFailureListener {
-                    saveListSpinner(idChannel, idEvent)
+                    isShowProgressDialog.value = false
                 }
         }
 
     }
-    fun checkBoxSpinner(idChannel: String?, idEvent : String, idSpinner : String, hasSelected : Boolean) = viewModelScope.launch(Dispatchers.IO) {
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_SPINNER}")
-            .document(idSpinner)
-            .update("hasSelected", !hasSelected)
-            .addOnSuccessListener {
-                println("Here come change success!$hasSelected")
-                getSpinnerFromEvent(idChannel, idEvent)
-            }
+    fun checkBoxSpinner(position : Int, hasSelected : Boolean) {
+        val spinners = spinnerList.value!!
+        spinners[position].hasSelected = !hasSelected
+        spinnerList.value = spinners
     }
 
     fun saveEvent(idChannel: String?, event : Event ) : Job = viewModelScope.launch(Dispatchers.IO) {
@@ -182,7 +188,7 @@ class AddTimeEventViewModel : ViewModel() {
                 println(it)
             }
     }
-    fun deleteEvent(idChannel: String?, idEvent : String? ) : Job = viewModelScope.launch(Dispatchers.IO) {
+    fun deleteEvent(idChannel: String?, idEvent : String? ) : Job = viewModelScope.launch(Dispatchers.Main) {
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
             .document(idEvent!!)
             .delete()

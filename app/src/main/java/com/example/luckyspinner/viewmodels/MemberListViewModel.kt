@@ -21,14 +21,15 @@ class MemberListViewModel : ViewModel() {
     var isAddingMemberSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
     var isDeletingMemberSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
     var isEdtingMemberSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
-    lateinit var progressDialog: ProgressDialog
+    val isShowProgressDialog = MutableLiveData<Boolean>()
+
     private val db = FirebaseFirestore.getInstance()
 
 
     suspend fun  getMembers(idChannel : String) {
         val list : MutableList<Member> = ArrayList()
         withContext(Dispatchers.Main) {
-            progressDialog.show()
+            isShowProgressDialog.value = true
         }
 
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_MEMBER}")
@@ -102,7 +103,7 @@ class MemberListViewModel : ViewModel() {
     }
     suspend fun updateCheckBoxForMember(idChannel: String, idMember: String, isSelected : Boolean) = viewModelScope.launch(Dispatchers.IO){
         withContext(Dispatchers.Main) {
-            progressDialog.show()
+            isShowProgressDialog.value =true
         }
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_MEMBER}")
             .document(idMember)
@@ -120,13 +121,13 @@ class MemberListViewModel : ViewModel() {
             .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error updating document", e)
             }
         withContext(Dispatchers.Main) {
-            progressDialog.dismiss()
+            isShowProgressDialog.value = false
         }
     }
 
     suspend fun updateForChooseAllMember(idChannel: String, list : List<Member>, isSelected : Boolean) = viewModelScope.launch(Dispatchers.IO){
         withContext(Dispatchers.Main) {
-            progressDialog.show()
+            isShowProgressDialog.value =true
         }
         list.forEachIndexed { index, member ->
             if (member.hasSelected == isSelected) {
@@ -151,7 +152,7 @@ class MemberListViewModel : ViewModel() {
                         "Error updating document",
                         e
                     )
-                    progressDialog.dismiss()
+                    isShowProgressDialog.value =false
                 }
         }
     }

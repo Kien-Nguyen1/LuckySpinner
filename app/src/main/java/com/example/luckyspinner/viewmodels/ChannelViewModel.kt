@@ -21,9 +21,11 @@ import kotlinx.coroutines.launch
 class ChannelViewModel : ViewModel() {
     var channelList = MutableLiveData<List<Event>>()
     val db = FirebaseFirestore.getInstance()
+    val isShowProgressDialog = MutableLiveData<Boolean>()
 
 
     fun  getEvents(idChannel : String?) {
+        isShowProgressDialog.value = true
         val list : MutableList<Event> = ArrayList()
 
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
@@ -41,6 +43,7 @@ class ChannelViewModel : ViewModel() {
                         }
                     }
                     channelList.value = list
+                    isShowProgressDialog.value = false
 
                 } else {
                     Log.w(
@@ -48,6 +51,7 @@ class ChannelViewModel : ViewModel() {
                         "Error getting documents.",
                         it.exception
                     )
+                    isShowProgressDialog.value = false
                 }
 
             }
@@ -63,8 +67,11 @@ class ChannelViewModel : ViewModel() {
                     Constants.FIRE_STORE,
                     "DocumentSnapshot successfully deleted!"
                 )
+                isShowProgressDialog.value = false
             }
-            .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error deleting document", e) }
+            .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error deleting document", e)
+                isShowProgressDialog.value = false
+            }
 
     }
     fun getEventFromFirestore(doc : DocumentSnapshot) : Event {

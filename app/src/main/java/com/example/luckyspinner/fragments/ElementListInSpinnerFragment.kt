@@ -1,6 +1,7 @@
 package com.example.luckyspinner.fragments
 
 import android.app.Dialog
+import android.app.ProgressDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -43,12 +44,15 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
     private var idChannel : String? = null
     private lateinit var addElementInSpinnerDiaLog : Dialog
     private lateinit var editElementDialog : Dialog
+    private lateinit var progressDialog : Dialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentElementListInSpinnerBinding.inflate(inflater, container, false)
+        progressDialog = ProgressDialog(context)
+
         idChannel = arguments?.getString(ID_CHANNEL_KEY)
         idSpinner = arguments?.getString(ID_SPINNER_KEY)
         titleSpinner = arguments?.getString(SPINNER_TITLE)
@@ -64,51 +68,8 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupObserver()
         setupRecycleView()
-        viewModel.elementList.observe(viewLifecycleOwner) {
-            elementAdapter.elementSpinners = it
-            if (it.isEmpty()) {
-                binding.rvElementListInSpinner.visibility = View.GONE
-                binding.imgEmptyList.visibility = View.VISIBLE
-            } else {
-                binding.rvElementListInSpinner.visibility = View.VISIBLE
-                binding.imgEmptyList.visibility = View.GONE
-            }
-        }
-        viewModel.isDeleteSuccess.observe(viewLifecycleOwner) {
-            println("Here the observer delete come")
-            it?.let {
-                if(it) {
-                    Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT).show()
-                    editElementDialog.dismiss()
-                } else {
-                    Toast.makeText(context, "Delete Channel Fail!!", Toast.LENGTH_SHORT).show()
-                }
-                viewModel.isDeleteSuccess.value = null
-                viewModel.getElement(idChannel, idSpinner)
-            }
-        }
-        viewModel.isEditingSuccess.observe(viewLifecycleOwner) {
-            it?.let {
-                if (it) {
-                    editElementDialog.dismiss()
-                } else {
-                    Toast.makeText(requireContext(), "Edit failed!", Toast.LENGTH_SHORT).show()
-                }
-                viewModel.getElement(idChannel, idSpinner)
-            }
-        }
-        viewModel.isAddingSuccess.observe(viewLifecycleOwner) {
-            it?.let {
-                if (it) {
-                    Toast.makeText(requireContext(), "Add successful!", Toast.LENGTH_SHORT).show()
-                    addElementInSpinnerDiaLog.dismiss()
-                } else {
-                    Toast.makeText(requireContext(), "Add failed!", Toast.LENGTH_SHORT).show()
-                }
-                viewModel.getElement(idChannel, idSpinner)
-            }
-        }
 
         elementAdapter.onEditClickListener = object : OnEditClickListener {
             override fun onEditClick(position: Int) {
@@ -143,7 +104,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
             }
         }
 
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.Main) {
             viewModel.getElement(idChannel, idSpinner)
         }
 
@@ -197,12 +158,63 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         }
     }
 
+    fun setupObserver() {
+        viewModel.elementList.observe(viewLifecycleOwner) {
+            elementAdapter.elementSpinners = it
+            if (it.isEmpty()) {
+                binding.rvElementListInSpinner.visibility = View.GONE
+                binding.imgEmptyList.visibility = View.VISIBLE
+            } else {
+                binding.rvElementListInSpinner.visibility = View.VISIBLE
+                binding.imgEmptyList.visibility = View.GONE
+            }
+        }
+        viewModel.isDeleteSuccess.observe(viewLifecycleOwner) {
+            println("Here the observer delete come")
+            it?.let {
+                if(it) {
+                    Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT).show()
+                    editElementDialog.dismiss()
+                } else {
+                    Toast.makeText(context, "Delete Channel Fail!!", Toast.LENGTH_SHORT).show()
+                }
+                viewModel.isDeleteSuccess.value = null
+                viewModel.getElement(idChannel, idSpinner)
+            }
+        }
+        viewModel.isEditingSuccess.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    editElementDialog.dismiss()
+                } else {
+                    Toast.makeText(requireContext(), "Edit failed!", Toast.LENGTH_SHORT).show()
+                }
+                viewModel.getElement(idChannel, idSpinner)
+            }
+        }
+        viewModel.isAddingSuccess.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    Toast.makeText(requireContext(), "Add successful!", Toast.LENGTH_SHORT).show()
+                    addElementInSpinnerDiaLog.dismiss()
+                } else {
+                    Toast.makeText(requireContext(), "Add failed!", Toast.LENGTH_SHORT).show()
+                }
+                viewModel.getElement(idChannel, idSpinner)
+            }
+        }
+        viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
+            if (it) progressDialog.show()
+            else progressDialog.dismiss()
+        }
+    }
+
     override fun onItemClick(id: String) {
 //        TODO("Not yet implemented")
     }
 
     override fun onDeleteItem(id: String) {
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.Main) {
             viewModel.deleteElement(idChannel, idSpinner, id)
         }
     }

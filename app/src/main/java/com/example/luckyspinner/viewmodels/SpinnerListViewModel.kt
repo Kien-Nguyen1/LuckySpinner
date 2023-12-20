@@ -21,11 +21,14 @@ class SpinnerListViewModel : ViewModel() {
     val isAddingSpinnerSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
     val isEditingSuccess : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
     val isDeletingSuccess : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
+    val isShowProgressDialog = MutableLiveData<Boolean>()
+
 
     val db = FirebaseFirestore.getInstance()
 
 
     fun  getSpinners(idChannel : String) {
+        isShowProgressDialog.value = true
         val sList : MutableList<Spinner> = ArrayList()
 
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
@@ -44,6 +47,8 @@ class SpinnerListViewModel : ViewModel() {
 
                     }
                     spinnerList.value = sList
+                    isShowProgressDialog.value = false
+
                     print(sList)
 
                 } else {
@@ -52,12 +57,17 @@ class SpinnerListViewModel : ViewModel() {
                         "Error getting documents.",
                         it.exception
                     )
+                    isShowProgressDialog.value = false
                 }
 
             }
     }
 
     fun addSpinner(idChannel: String, spinner: Spinner) = viewModelScope.launch {
+        this.launch(Dispatchers.Main) {
+            isShowProgressDialog.value = true
+        }
+
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
             .document(spinner.idSpin)
             .set(spinner)
@@ -69,9 +79,13 @@ class SpinnerListViewModel : ViewModel() {
             .addOnFailureListener { e ->
                 Log.e("error", e.message.toString())
                 isAddingSpinnerSuccess.value = false
+                isShowProgressDialog.value = false
             }
     }
     fun editSpinner(idChannel: String, spinner: Spinner) = viewModelScope.launch {
+        this.launch(Dispatchers.Main) {
+            isShowProgressDialog.value = true
+        }
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
             .document(spinner.idSpin)
             .set(spinner)
@@ -83,10 +97,12 @@ class SpinnerListViewModel : ViewModel() {
             .addOnFailureListener { e ->
                 Log.e("error", e.message.toString())
                 isEditingSuccess.value = false
+                isShowProgressDialog.value = false
             }
     }
 
     fun deleteSpinner(idChannel : String, idSpinner : String) {
+        isShowProgressDialog.value = true
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
             .document(idSpinner)
             .delete()
@@ -101,6 +117,7 @@ class SpinnerListViewModel : ViewModel() {
                 e ->
                 Log.w(Constants.FIRE_STORE, "Error deleting document", e)
                 isDeletingSuccess.value = false
+                isShowProgressDialog.value = false
             }
     }
 }

@@ -56,18 +56,31 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     private lateinit var dateDialog : Dialog
     private lateinit var randomSpinnerAdapter : RandomSpinnerListAdapter
     private lateinit var dateAdapter : DateListAdapter
+    lateinit var progressDialog : ProgressDialog
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentAddTimeEventBinding.inflate(inflater, container, false)
+        progressDialog =  ProgressDialog(context)
 
         channelId = arguments?.getString(Constants.ID_CHANNEL_KEY)
         eventId = arguments?.getString(Constants.ID_EVENT_KEY)
         telegramChannelId = arguments?.getString(Constants.ID_TELEGRAM_CHANNEL_KEY)
+        binding.appBarAddTimeEvent.apply {
+            toolBar.menu.findItem(R.id.memberListFragment)?.isVisible = false
+            toolBar.menu.findItem(R.id.spinnerListFragment)?.isVisible = false
+        }
+        if (eventId == null) {
+            binding.btnDeleteEvent.visibility = View.GONE
+            binding.appBarAddTimeEvent.toolBar.title = "Add Time Event"
+        } else {
+            binding.appBarAddTimeEvent.toolBar.title = "Edit Time Event"
+        }
 
-        if (eventId == null) binding.btnDeleteEvent.visibility = View.GONE
+        setupObservers()
 
         setUpDatePicker()
 
@@ -87,11 +100,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             viewModel.getMembers(channelId, eventId)
         }
 
-        binding.appBarAddTimeEvent.apply {
-            toolBar.title = "Add Time Event"
-            toolBar.menu.findItem(R.id.memberListFragment)?.isVisible = false
-            toolBar.menu.findItem(R.id.spinnerListFragment)?.isVisible = false
-        }
 
         return binding.root
     }
@@ -99,12 +107,16 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         workManager = WorkManager.getInstance(requireContext())
         binding.btnDoneAddTimeEvent.setOnClickListener {
             getTimeAndDatePicker()
         }
         binding.btnChooseRandomSpinner.setOnClickListener {
             chooseSpinnerDialog.show()
+        }
+        binding.btnSpinnerNow.setOnClickListener {
+            handleTestNow()
         }
         binding.btnDeleteEvent.setOnClickListener {
             viewModel.deleteEvent(channelId, eventId)
@@ -120,14 +132,15 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
 
     private fun getTimeAndDatePicker() {
-        val progressDialog = ProgressDialog(context)
+        if (!isEventValidate()) {
+            return
+        }
         progressDialog.show()
 
         val selectedHour: Int = binding.timePickerAddTimeEvent.hour
         val selectedMinutes: Int = binding.timePickerAddTimeEvent.minute
-//        val typeEvent = if (binding.btnSwitchModeAddTimeEvent.isChecked) Constants.EVENT_TYPE_EVERY_DAY else Constants.EVENT_TYPE_ONCE
 
-
+        viewModel.saveListSpinner(channelId, eventId)
 
         viewModel.saveEvent(
             channelId,
@@ -167,49 +180,40 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 .setInputData(data)
                 .setConstraints(constraints)
                 .build()
-            val workRequestFake = OneTimeWorkRequestBuilder<SendMessageWorker>()
-                .setInputData(data)
-                .setConstraints(constraints)
-                .build()
 
-            if (false) {
-                enqueueUniquePeriodicWork(
-                    eventId!!,
-                    ExistingPeriodicWorkPolicy.UPDATE,
-                    workRequest
-                )
-            } else {
-                enqueueUniqueWork(
-                    eventId!!,
-                    ExistingWorkPolicy.REPLACE,
-                    workRequestFake
-                )
-            }
+            enqueueUniquePeriodicWork(
+                eventId!!,
+                ExistingPeriodicWorkPolicy.UPDATE,
+                workRequest
+            )
         }
-        workManager.getWorkInfosForUniqueWorkLiveData(eventId!!)
-            .observe(viewLifecycleOwner) {
-                    workInfor ->
-                if (workInfor.size != 0) {
+        progressDialog.dismiss()
+        findNavController().popBackStack()
 
-                    workInfor[0]
-                    if (workInfor[0].state == WorkInfo.State.SUCCEEDED) {
-                        progressDialog.dismiss()
-                        findNavController().popBackStack()
-                        println("Success from workInfor ${workInfor[0].outputData.getString("")}")
-                    }
-                    if (workInfor[0].state == WorkInfo.State.FAILED) {
-                        progressDialog.dismiss()
-                        val message = workInfor[0].outputData.getString(Constants.MESSAGE)
-                        message?.let {
-                            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-                else {
-                    println("WorkInfo is null")
-                }
-
-            }
+//        workManager.getWorkInfosForUniqueWorkLiveData(eventId!!)
+//            .observe(viewLifecycleOwner) {
+//                    workInfor ->
+//                if (workInfor.size != 0) {
+//
+//                    workInfor[0]
+//                    if (workInfor[0].state == WorkInfo.State.SUCCEEDED) {
+//                        progressDialog.dismiss()
+//                        findNavController().popBackStack()
+//                        println("Success from workInfor ${workInfor[0].outputData.getString("")}")
+//                    }
+//                    if (workInfor[0].state == WorkInfo.State.FAILED) {
+//                        progressDialog.dismiss()
+//                        val message = workInfor[0].outputData.getString(Constants.MESSAGE)
+//                        message?.let {
+//                            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+//                        }
+//                    }
+//                }
+//                else {
+//                    println("WorkInfo is null")
+//                }
+//
+//            }
     }
     private fun setUpRecycleView() {
         bindingRandomDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
@@ -217,9 +221,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             randomSpinnerAdapter = RandomSpinnerListAdapter(this@AddTimeEventFragment)
             adapter = randomSpinnerAdapter
             layoutManager = LinearLayoutManager(context)
-        }
-        viewModel.spinnerList.observe(viewLifecycleOwner) {
-            randomSpinnerAdapter.spinners = it
         }
     }
 
@@ -237,18 +238,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             layoutManager = LinearLayoutManager(context)
         }
 
-        viewModel.event.observe(viewLifecycleOwner) {
-            if (!isLoadedFirstTime) {
-                it.hour?.let { eventHour ->
-                    binding.timePickerAddTimeEvent.apply {
-                        hour = eventHour
-                        minute = it.minute!!
-                    }
-                }
-                isLoadedFirstTime = true
-            }
-            dateAdapter.dayList = it.listDay
-        }
         setupDatePickerDialog()
     }
 
@@ -279,6 +268,87 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         windowAttribute.gravity = gravity
         window.attributes = windowAttribute
     }
+    fun handleTestNow() {
+        if (!isEventValidate()) {
+            return
+        }
+        progressDialog.show()
+        val testId = Calendar.getInstance().timeInMillis.toString()
+        val constraints = Constraints(requiredNetworkType = NetworkType.CONNECTED, requiresBatteryNotLow = true)
+
+        viewModel.saveListSpinner(channelId, testId)
+
+        viewModel.saveEvent(
+            channelId,
+            Event(
+                testId,
+                typeEvent = null,
+                0,
+                0,
+                getListDay()
+            )
+        )
+
+        workManager.apply {
+            val data = workDataOf(
+                Constants.ID_TELEGRAM_CHANNEL_KEY to "-1002136709675",
+                Constants.ID_CHANNEL_KEY to channelId,
+                Constants.ID_EVENT_KEY to testId,
+                "deviceId" to Constants.DEVICE_ID
+            )
+            val workRequestTest = OneTimeWorkRequestBuilder<SendMessageWorker>()
+                .setInputData(data)
+                .setConstraints(constraints)
+                .build()
+
+            enqueueUniqueWork(
+                testId,
+                ExistingWorkPolicy.REPLACE,
+                workRequestTest
+            )
+        }
+        workManager.getWorkInfosForUniqueWorkLiveData(testId)
+            .observe(viewLifecycleOwner) {
+                if (it.size != 0) {
+                    if (it[0].state == WorkInfo.State.SUCCEEDED) {
+                        progressDialog.dismiss()
+                        println("Success from workInfor ${it[0].outputData.getString("")}")
+                    }
+                    if (it[0].state == WorkInfo.State.FAILED) {
+                        progressDialog.dismiss()
+                        val message = it[0].outputData.getString(Constants.MESSAGE)
+                        message?.let {
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    println("WorkInfo is null")
+                }
+
+            }
+    }
+
+    fun setupObservers() {
+        viewModel.spinnerList.observe(viewLifecycleOwner) {
+            randomSpinnerAdapter.spinners = it
+        }
+        viewModel.event.observe(viewLifecycleOwner) {
+            if (!isLoadedFirstTime) {
+                it.hour?.let { eventHour ->
+                    binding.timePickerAddTimeEvent.apply {
+                        hour = eventHour
+                        minute = it.minute!!
+                    }
+                }
+                isLoadedFirstTime = true
+            }
+            dateAdapter.dayList = it.listDay
+        }
+        viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
+            if (it) progressDialog.show()
+            else progressDialog.dismiss()
+        }
+    }
     fun isEventValidate() : Boolean {
         var isValidated = true
         var memberCount = 0
@@ -297,8 +367,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             isValidated = false
             Toast.makeText(context, "You must select at least 1 spinner",Toast.LENGTH_LONG).show()
         }
-        return isValidated
 
+        return isValidated
     }
 
     fun getListDay() : List<Int>{
@@ -317,7 +387,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     }
 
     override fun onCheckboxClick(idSpinner: String, position : Int, hasSelected : Boolean) {
-        viewModel.checkBoxSpinner(channelId, eventId!!, idSpinner, hasSelected)
+        viewModel.checkBoxSpinner(position, hasSelected)
     }
 
     override fun onDateClick(position: Int, isChecked : Boolean) {

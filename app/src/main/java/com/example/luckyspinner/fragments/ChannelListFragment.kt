@@ -1,6 +1,7 @@
 package com.example.luckyspinner.fragments
 
 import android.app.Dialog
+import android.app.ProgressDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -42,11 +43,14 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     private lateinit var channelListAdapter : ChannelListAdapter
     private lateinit var addDialog : Dialog
     private lateinit var editChannelDiaLog : Dialog
+    private lateinit var progressDialog: ProgressDialog
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
+        println("HHere come oncreateview")
         binding = FragmentChannelListBinding.inflate(inflater, container, false)
+        progressDialog = ProgressDialog(context)
         setupRecycleView()
         viewModel.channelList.observe(viewLifecycleOwner) {
             channelListAdapter.channels = it
@@ -65,17 +69,14 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        println("Here come onViewCreated")
         super.onViewCreated(view, savedInstanceState)
         setupStateObserver()
 
         viewModel.message.observe(viewLifecycleOwner) {
 //            Toast.makeText(requireContext(), it , Toast.LENGTH_SHORT).show()
         }
+        viewModel.getChannels()
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.getChannels()
-        }
 
         binding.btnAddChannel.setOnClickListener {
             Log.d("kien", "click add channel")
@@ -170,7 +171,6 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             }
             lifecycleScope.launch(Dispatchers.IO) {
                 Log.d("kien", "click done add channel")
-
                 val autoId = Calendar.getInstance().timeInMillis
                 val channel = Channel(autoId.toString(), channelTelegramId, channelName)
                 viewModel.addChannel(channel)
@@ -215,6 +215,10 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 viewModel.getChannels()
             }
         }
+        viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
+            if (it) progressDialog.show()
+            else progressDialog.dismiss()
+        }
     }
     private fun setupRecycleView() {
         val itemDecoration : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
@@ -245,30 +249,11 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             viewModel.deleteChannel(id)
         }
     }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        println("Here come onCreate ${this.javaClass.name}")
-    }
-
-
-    override fun onStop() {
-        super.onStop()
-        println("Here come onStop ${this.javaClass.name} ")
-
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
-        println("Here come onDestroyView ${this.javaClass.name}")
-//        viewModel.channelList.removeObservers(viewLifecycleOwner)
-//        viewModel.isAddingSuccess.removeObservers(viewLifecycleOwner)
-//        viewModel.isDeleteSuccess.removeObservers(viewLifecycleOwner)
+        viewModel.channelList.removeObservers(viewLifecycleOwner)
+        viewModel.isAddingSuccess.removeObservers(viewLifecycleOwner)
+        viewModel.isDeleteSuccess.removeObservers(viewLifecycleOwner)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        println("Here come onDestroy ${this.javaClass.name}")
-
-    }
 }

@@ -27,10 +27,11 @@ class ChannelListViewModel : ViewModel() {
     var isAddingSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
     var isDeleteSuccess  : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
     var isEditingSuccess : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
+    val isShowProgressDialog = MutableLiveData<Boolean>()
 
     fun  getChannels() {
         val cList : MutableList<Channel> = ArrayList()
-
+        isShowProgressDialog.value = true
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/$FS_USER_CHANNEL")
             .get()
             .addOnCompleteListener {
@@ -46,6 +47,7 @@ class ChannelListViewModel : ViewModel() {
                         }
                     }
                     channelList.value = cList
+                    isShowProgressDialog.value = false
 
                 } else {
                     Log.w(
@@ -54,12 +56,14 @@ class ChannelListViewModel : ViewModel() {
                         it.exception
                     )
                     message.value = Constants.MESSAGE_GET_FAILED
+                    isShowProgressDialog.value = false
                 }
 
             }
 
     }
     fun  deleteChannel(id : String) {
+        isShowProgressDialog.value = true
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/$FS_USER_CHANNEL")
             .document(id)
             .delete()
@@ -75,11 +79,14 @@ class ChannelListViewModel : ViewModel() {
                     Log.w(Constants.FIRE_STORE, "Error deleting document", e)
                     isDeleteSuccess.value = false
                     message.value = MESSAGE_DELETE_FAILED
+                    isShowProgressDialog.value = false
+
                 }
             })
     }
 
     fun addChannel(channel: Channel) = viewModelScope.launch {
+        isShowProgressDialog.value = true
         db.collection(Constants.FS_LIST_CHANNEL + "/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}")
             .document(channel.idChannel)
             .set(channel)
@@ -92,9 +99,13 @@ class ChannelListViewModel : ViewModel() {
                 Log.e("error", e.message.toString())
                 message.value = MESSAGE_SAVE_FAILED
                 isAddingSuccess.value = false
+                isShowProgressDialog.value = false
+
             }
     }
     fun editChannel(channel: Channel) = viewModelScope.launch {
+        isShowProgressDialog.value = true
+
         db.collection(Constants.FS_LIST_CHANNEL + "/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}")
             .document(channel.idChannel)
             .set(channel)
@@ -107,6 +118,7 @@ class ChannelListViewModel : ViewModel() {
                 Log.e("error", e.message.toString())
                 message.value = MESSAGE_SAVE_FAILED
                 isEditingSuccess.value = false
+                isShowProgressDialog.value = false
             }
     }
     fun getChannelFromFirestore(doc : DocumentSnapshot) : Channel {

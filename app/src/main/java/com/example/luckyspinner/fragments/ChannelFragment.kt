@@ -1,5 +1,6 @@
 package com.example.luckyspinner.fragments
 
+import android.app.ProgressDialog
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -30,13 +31,15 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     private var idChannel: String? = null
     private var nameChannel: String? = null
     private var idTelegramChannel: String? = null
-    private lateinit var eventAdapter: EventListAdapter
+    private lateinit var eventAdapter : EventListAdapter
+    private lateinit var progressDialog : ProgressDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentChannelBinding.inflate(inflater, container, false)
+        progressDialog = ProgressDialog(context)
         idChannel = arguments?.getString(ID_CHANNEL_KEY)
         nameChannel = arguments?.getString(CHANNEL_NAME)
         idTelegramChannel = arguments?.getString(ID_TELEGRAM_CHANNEL_KEY)
@@ -50,18 +53,10 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupObserver()
         setupRecycleView()
-        viewModel.channelList.observe(viewLifecycleOwner) {
-            eventAdapter.events = it
-            if (it.isEmpty()) {
-                binding.rvEventListOfChannel.visibility = View.GONE
-                binding.imgEmptyList.visibility = View.VISIBLE
-            } else {
-                binding.rvEventListOfChannel.visibility = View.VISIBLE
-                binding.imgEmptyList.visibility = View.GONE
-            }
-        }
-        lifecycleScope.launch(Dispatchers.IO) {
+
+        lifecycleScope.launch(Dispatchers.Main) {
             viewModel.getEvents(idChannel)
         }
 
@@ -117,6 +112,22 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
             layoutManager = LinearLayoutManager(context)
         }
     }
+    fun setupObserver() {
+        viewModel.channelList.observe(viewLifecycleOwner) {
+            eventAdapter.events = it
+            if (it.isEmpty()) {
+                binding.rvEventListOfChannel.visibility = View.GONE
+                binding.imgEmptyList.visibility = View.VISIBLE
+            } else {
+                binding.rvEventListOfChannel.visibility = View.VISIBLE
+                binding.imgEmptyList.visibility = View.GONE
+            }
+        }
+        viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
+            if (it) progressDialog.show()
+            else progressDialog.dismiss()
+        }
+    }
 
     override fun onItemClick(id: String) {
         val direction = ChannelFragmentDirections
@@ -131,7 +142,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     }
 
     override fun onDeleteItem(id: String) {
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.Main) {
             viewModel.deleteChannel(idChannel, id)
         }
     }

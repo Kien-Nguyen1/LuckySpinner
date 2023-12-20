@@ -14,12 +14,14 @@ class ElementListInSpinnerViewModel : ViewModel() {
     var isAddingSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
     var isDeleteSuccess  : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
     var isEditingSuccess : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
+    val isShowProgressDialog = MutableLiveData<Boolean>()
 
 
     val db = FirebaseFirestore.getInstance()
 
 
     fun  getElement(idChannel : String?, idSpinner : String?) {
+        isShowProgressDialog.value = true
         val list : MutableList<ElementSpinner> = ArrayList()
 
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}/$idSpinner/${Constants.FS_USER_ELEMENT_SPINNER}")
@@ -37,6 +39,7 @@ class ElementListInSpinnerViewModel : ViewModel() {
                         }
                     }
                     elementList.value = list
+                    isShowProgressDialog.value = false
 
                 } else {
                     Log.w(
@@ -44,6 +47,8 @@ class ElementListInSpinnerViewModel : ViewModel() {
                         "Error getting documents.",
                         it.exception
                     )
+                    isShowProgressDialog.value = false
+
                 }
 
             }
@@ -59,6 +64,8 @@ class ElementListInSpinnerViewModel : ViewModel() {
     }
 
     fun deleteElement(idChannel : String?, idSpinner : String?, idElement : String) {
+        isShowProgressDialog.value = true
+
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}/$idSpinner/${Constants.FS_USER_ELEMENT_SPINNER}")
             .document(idElement)
             .delete()
@@ -73,9 +80,13 @@ class ElementListInSpinnerViewModel : ViewModel() {
                 e ->
                 Log.w(Constants.FIRE_STORE, "Error deleting document", e)
                 isDeleteSuccess.value =false
+                isShowProgressDialog.value = false
+
             }
     }
     fun addElement(idChannel : String?, idSpinner: String?, element: ElementSpinner) {
+        isShowProgressDialog.value = true
+
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}/$idSpinner/${Constants.FS_USER_ELEMENT_SPINNER}")
             .document(element.idElement)
             .set(element)
@@ -87,10 +98,14 @@ class ElementListInSpinnerViewModel : ViewModel() {
                 isAddingSuccess.value = true
             }
             .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error deleting document", e)
-            isAddingSuccess.value = false}
+            isAddingSuccess.value = false
+                isShowProgressDialog.value = false
+            }
     }
 
     fun editElement(idChannel : String?, idSpinner: String?, element: ElementSpinner) {
+        isShowProgressDialog.value = true
+
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}/$idSpinner/${Constants.FS_USER_ELEMENT_SPINNER}")
             .document(element.idElement)
             .set(element)
@@ -99,10 +114,12 @@ class ElementListInSpinnerViewModel : ViewModel() {
                     Constants.FIRE_STORE,
                     "DocumentSnapshot successfully save!"
                 )
-                isEditingSuccess.value =true
+                isEditingSuccess.value = true
             }
             .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error deleting document", e)
-            isEditingSuccess.value = false}
+            isEditingSuccess.value = false
+                isShowProgressDialog.value = false
+            }
     }
 
 

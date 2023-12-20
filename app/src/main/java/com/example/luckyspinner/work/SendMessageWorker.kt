@@ -48,11 +48,12 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
 
 
     override suspend fun doWork(): Result {
-        getListDayFromEvent(channelId)
+        getListDayFromEvent(channelId, eventId.toString())
         getMembers(channelId)
         getSpinnerFromEvent(channelId, eventId)
 
         suspend fun sendMessage() : Result {
+            println("Here do work go")
             return try {
                 withContext(Dispatchers.IO) {
                     if ((hasHandleRandomSpinner != true) || !hasHandleRandomMember || !hasGetListDay) {
@@ -66,8 +67,9 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                         return@withContext Result.success()
                     }
                     val message = messageMember + messageSpinner
-                    val respond = TelegramApiClient.telegramApi.sendMessage("telegramChannelId!!", message)
+                    val respond = TelegramApiClient.telegramApi.sendMessage(telegramChannelId!!, message)
                     if (!respond.isSuccessful) {
+                        println("Here come fail")
                         return@withContext Result.failure(
                             workDataOf(MESSAGE to "Incorrect chat Id!")
                         )
@@ -78,7 +80,9 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                 }
             } catch (e: Exception) {
                 print("${Log.e("TAG", e.message.toString())}")
-                return Result.failure()
+                return Result.failure(
+                    workDataOf(MESSAGE to e.message.toString())
+                )
             }
         }
         return sendMessage()
@@ -202,9 +206,9 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                 }
             }
     }
-    fun  getListDayFromEvent(idChannel : String?) {
+    fun  getListDayFromEvent(idChannel : String?, eventId : String) {
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
-            .document(eventId.toString())
+            .document(eventId)
             .get()
             .addOnCompleteListener {
                 if (it.isSuccessful) {
@@ -223,7 +227,7 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                         "Error getting documents.",
                         it.exception
                     )
-                    getListDayFromEvent(idChannel)
+                    getListDayFromEvent(idChannel, eventId)
                 }
 
             }

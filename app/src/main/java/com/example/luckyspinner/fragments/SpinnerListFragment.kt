@@ -1,6 +1,7 @@
 package com.example.luckyspinner.fragments
 
 import android.app.Dialog
+import android.app.ProgressDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -42,12 +43,14 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
     private lateinit var idChannel : String
     private lateinit var addSpinnerDiaLog : Dialog
     private lateinit var editSpinnerDiaLog : Dialog
+    private lateinit var progressDialog : Dialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentSpinnerListBinding.inflate(inflater , container, false)
+        progressDialog = ProgressDialog(context)
 
         idChannel = arguments?.getString(ID_CHANNEL_KEY).toString()
 
@@ -63,62 +66,9 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecycleView()
+        setupObservers()
 
-        viewModel.isEditingSuccess.observe(viewLifecycleOwner) {
-            it?.let {
-                if (it) {
-                    Toast.makeText(context, "Edit Spinner Successfully!", Toast.LENGTH_SHORT).show()
-                    editSpinnerDiaLog.dismiss()
-                }
-                else {
-                    Toast.makeText(context, "Edit Spinner Fail!!", Toast.LENGTH_SHORT).show()
-                }
-                lifecycleScope.launch(Dispatchers.IO) {
-                    viewModel.getSpinners(idChannel)
-                }            }
-        }
-
-        viewModel.isDeletingSuccess.observe(viewLifecycleOwner) {
-            it?.let {
-                if (it) {
-                    Toast.makeText(context, "Delete Spinner Successfully!", Toast.LENGTH_SHORT).show()
-                    editSpinnerDiaLog.dismiss()
-                }
-                else {
-                    Toast.makeText(context, "Delete Spinner Fail!!", Toast.LENGTH_SHORT).show()
-                }
-                lifecycleScope.launch(Dispatchers.IO) {
-                    viewModel.getSpinners(idChannel)
-                }            }
-        }
-
-        viewModel.isAddingSpinnerSuccess.observe(viewLifecycleOwner) {
-            it?.let {
-                if (it) {
-                    Toast.makeText(context, "Add Spinner Successfully!", Toast.LENGTH_SHORT).show()
-                    addSpinnerDiaLog.dismiss()
-                }
-                else {
-                    Toast.makeText(context, "Add Spinner Fail!!", Toast.LENGTH_SHORT).show()
-                }
-                viewModel.isAddingSpinnerSuccess.value = null
-                lifecycleScope.launch(Dispatchers.IO) {
-                    viewModel.getSpinners(idChannel)
-                }
-            }
-        }
-
-        viewModel.spinnerList.observe(viewLifecycleOwner) {
-            spinnerAdapter.spinners = it
-            if (it.isEmpty()) {
-                binding.rvSpinnerList.visibility = View.GONE
-                binding.imgEmptyList.visibility = View.VISIBLE
-            } else {
-                binding.rvSpinnerList.visibility = View.VISIBLE
-                binding.imgEmptyList.visibility = View.GONE
-            }
-        }
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.Main) {
             viewModel.getSpinners(idChannel)
         }
 
@@ -189,7 +139,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
 
 
         binding.btnDoneAddChannel.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch(Dispatchers.Main) {
                 val nameSpinner = binding.edtEnterChannelName.text.toString()
                 val idSpinner = Calendar.getInstance().timeInMillis.toString()
                 viewModel.addSpinner(idChannel, Spinner(idSpinner, nameSpinner))
@@ -204,6 +154,66 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
             adapter = spinnerAdapter
             layoutManager = LinearLayoutManager(context)
             addItemDecoration(itemDecoration)
+        }
+    }
+    fun setupObservers() {
+        viewModel.isEditingSuccess.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    Toast.makeText(context, "Edit Spinner Successfully!", Toast.LENGTH_SHORT).show()
+                    editSpinnerDiaLog.dismiss()
+                }
+                else {
+                    Toast.makeText(context, "Edit Spinner Fail!!", Toast.LENGTH_SHORT).show()
+                }
+                lifecycleScope.launch(Dispatchers.Main) {
+                    viewModel.getSpinners(idChannel)
+                }            }
+        }
+
+        viewModel.isDeletingSuccess.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    Toast.makeText(context, "Delete Spinner Successfully!", Toast.LENGTH_SHORT).show()
+                    editSpinnerDiaLog.dismiss()
+                }
+                else {
+                    Toast.makeText(context, "Delete Spinner Fail!!", Toast.LENGTH_SHORT).show()
+                }
+                lifecycleScope.launch(Dispatchers.Main) {
+                    viewModel.getSpinners(idChannel)
+                }            }
+        }
+
+        viewModel.isAddingSpinnerSuccess.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    Toast.makeText(context, "Add Spinner Successfully!", Toast.LENGTH_SHORT).show()
+                    addSpinnerDiaLog.dismiss()
+                }
+                else {
+                    Toast.makeText(context, "Add Spinner Fail!!", Toast.LENGTH_SHORT).show()
+                }
+                viewModel.isAddingSpinnerSuccess.value = null
+                lifecycleScope.launch(Dispatchers.Main) {
+                    viewModel.getSpinners(idChannel)
+                }
+            }
+        }
+
+        viewModel.spinnerList.observe(viewLifecycleOwner) {
+            spinnerAdapter.spinners = it
+            if (it.isEmpty()) {
+                binding.rvSpinnerList.visibility = View.GONE
+                binding.imgEmptyList.visibility = View.VISIBLE
+            } else {
+                binding.rvSpinnerList.visibility = View.VISIBLE
+                binding.imgEmptyList.visibility = View.GONE
+            }
+        }
+        viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
+            if (it) progressDialog.show()
+            else progressDialog.dismiss()
         }
     }
 
@@ -222,7 +232,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
     }
 
     override fun onDeleteItem(id: String) {
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.Main) {
             viewModel.deleteSpinner(idChannel, id)
         }
     }
