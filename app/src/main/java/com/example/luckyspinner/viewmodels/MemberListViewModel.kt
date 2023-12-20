@@ -18,7 +18,9 @@ import kotlinx.coroutines.withContext
 
 class MemberListViewModel : ViewModel() {
     var memberList = MutableLiveData<List<Member>>()
-    var isAddingMemberSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>(null)
+    var isAddingMemberSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
+    var isDeletingMemberSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
+    var isEdtingMemberSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
     lateinit var progressDialog: ProgressDialog
     private val db = FirebaseFirestore.getInstance()
 
@@ -63,17 +65,19 @@ class MemberListViewModel : ViewModel() {
                     Constants.FIRE_STORE,
                     "DocumentSnapshot successfully deleted!"
                 )
+                isDeletingMemberSuccess.value = true
                 viewModelScope.launch {
                     getMembers(idChannel)
                 }
             }
-            .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error deleting document", e) }
+            .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error deleting document", e)
+                isDeletingMemberSuccess.value = false
+            }
     }
-    fun addMember(idChannel: String, idMember: String, nameMember : String) {
-        val newMember = Member(idMember, nameMember)
+    fun addMember(idChannel: String, member: Member) {
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_MEMBER}")
-            .document(idMember)
-            .set(newMember)
+            .document(member.idMember)
+            .set(member)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     isAddingMemberSuccess.value = true
@@ -81,6 +85,19 @@ class MemberListViewModel : ViewModel() {
             }
             .addOnFailureListener {
                 isAddingMemberSuccess.value = false
+            }
+    }
+    fun editMember(idChannel: String, member: Member) {
+        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_MEMBER}")
+            .document(member.idMember)
+            .set(member)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    isEdtingMemberSuccess.value = true
+                }
+            }
+            .addOnFailureListener {
+                isEdtingMemberSuccess.value = false
             }
     }
     suspend fun updateCheckBoxForMember(idChannel: String, idMember: String, isSelected : Boolean) = viewModelScope.launch(Dispatchers.IO){
