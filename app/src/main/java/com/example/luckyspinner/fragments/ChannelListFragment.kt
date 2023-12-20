@@ -59,19 +59,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
 
             }
         }
-        viewModel.isAddingSuccess.observe(viewLifecycleOwner) {
-            println("Here come adding")
-            it?.let {
-                if (it) {
-                    Toast.makeText(requireContext(), "Add successful!", Toast.LENGTH_SHORT).show()
-                    addDialog.dismiss()
-                } else {
-                    Toast.makeText(requireContext(), "Add failed!", Toast.LENGTH_SHORT).show()
-                }
-                viewModel.isAddingSuccess.value = null
-                viewModel.getChannels()
-            }
-        }
+
         // Inflate the layout for this fragment
         return binding.root
     }
@@ -79,32 +67,10 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         println("Here come onViewCreated")
         super.onViewCreated(view, savedInstanceState)
+        setupStateObserver()
 
         viewModel.message.observe(viewLifecycleOwner) {
 //            Toast.makeText(requireContext(), it , Toast.LENGTH_SHORT).show()
-        }
-        viewModel.isDeleteSuccess.observe(viewLifecycleOwner) {
-            println("Here the observer delete come")
-            it?.let {
-                if(it) {
-                    Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT).show()
-                    editChannelDiaLog.dismiss()
-                } else {
-                    Toast.makeText(context, "Delete Channel Fail!!", Toast.LENGTH_SHORT).show()
-                }
-                viewModel.isDeleteSuccess.value = null
-                viewModel.getChannels()
-            }
-        }
-        viewModel.isEditingSuccess.observe(viewLifecycleOwner) {
-            it?.let {
-                if (it) {
-                    editChannelDiaLog.dismiss()
-                } else {
-                    Toast.makeText(requireContext(), "Edit failed!", Toast.LENGTH_SHORT).show()
-                }
-                viewModel.getChannels()
-            }
         }
 
         lifecycleScope.launch(Dispatchers.IO) {
@@ -212,6 +178,44 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         }
     }
 
+    fun setupStateObserver() {
+        viewModel.isAddingSuccess.observe(viewLifecycleOwner) {
+            println("Here come adding")
+            it?.let {
+                if (it) {
+                    Toast.makeText(requireContext(), "Add successful!", Toast.LENGTH_SHORT).show()
+                    addDialog.dismiss()
+                } else {
+                    Toast.makeText(requireContext(), "Add failed!", Toast.LENGTH_SHORT).show()
+                }
+                viewModel.isAddingSuccess.value = null
+                viewModel.getChannels()
+            }
+        }
+        viewModel.isDeleteSuccess.observe(viewLifecycleOwner) {
+            println("Here the observer delete come")
+            it?.let {
+                if(it) {
+                    Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT).show()
+                    editChannelDiaLog.dismiss()
+                } else {
+                    Toast.makeText(context, "Delete Channel Fail!!", Toast.LENGTH_SHORT).show()
+                }
+                viewModel.isDeleteSuccess.value = null
+                viewModel.getChannels()
+            }
+        }
+        viewModel.isEditingSuccess.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    editChannelDiaLog.dismiss()
+                } else {
+                    Toast.makeText(requireContext(), "Edit failed!", Toast.LENGTH_SHORT).show()
+                }
+                viewModel.getChannels()
+            }
+        }
+    }
     private fun setupRecycleView() {
         val itemDecoration : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.rvChannelList.apply {
