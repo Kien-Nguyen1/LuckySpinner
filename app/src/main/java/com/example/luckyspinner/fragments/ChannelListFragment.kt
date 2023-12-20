@@ -60,6 +60,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             }
         }
         viewModel.isAddingSuccess.observe(viewLifecycleOwner) {
+            println("Here come adding")
             it?.let {
                 if (it) {
                     Toast.makeText(requireContext(), "Add successful!", Toast.LENGTH_SHORT).show()
@@ -67,6 +68,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 } else {
                     Toast.makeText(requireContext(), "Add failed!", Toast.LENGTH_SHORT).show()
                 }
+                viewModel.isAddingSuccess.value = null
                 viewModel.getChannels()
             }
         }
@@ -77,7 +79,6 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         println("Here come onViewCreated")
         super.onViewCreated(view, savedInstanceState)
-        addDialog = Dialog(requireContext())
 
         viewModel.message.observe(viewLifecycleOwner) {
 //            Toast.makeText(requireContext(), it , Toast.LENGTH_SHORT).show()
@@ -91,6 +92,8 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 } else {
                     Toast.makeText(context, "Delete Channel Fail!!", Toast.LENGTH_SHORT).show()
                 }
+                viewModel.isDeleteSuccess.value = null
+                viewModel.getChannels()
             }
         }
         viewModel.isEditingSuccess.observe(viewLifecycleOwner) {
@@ -176,6 +179,8 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     }
     private fun openAddChannelDialog(gravity: Int) {
         val binding : AddChannelLayoutBinding = AddChannelLayoutBinding.inflate(layoutInflater)
+        addDialog = Dialog(requireContext())
+
         addDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         addDialog.setContentView(binding.root)
 
@@ -252,9 +257,9 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     override fun onDestroyView() {
         super.onDestroyView()
         println("Here come onDestroyView ${this.javaClass.name}")
-        viewModel.channelList.removeObservers(viewLifecycleOwner)
-        viewModel.isAddingSuccess.removeObservers(viewLifecycleOwner)
-        viewModel.isDeleteSuccess.removeObservers(viewLifecycleOwner)
+//        viewModel.channelList.removeObservers(viewLifecycleOwner)
+//        viewModel.isAddingSuccess.removeObservers(viewLifecycleOwner)
+//        viewModel.isDeleteSuccess.removeObservers(viewLifecycleOwner)
     }
 
     override fun onDestroy() {

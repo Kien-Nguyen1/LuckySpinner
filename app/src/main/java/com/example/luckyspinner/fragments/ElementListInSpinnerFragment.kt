@@ -84,6 +84,8 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
                 } else {
                     Toast.makeText(context, "Delete Channel Fail!!", Toast.LENGTH_SHORT).show()
                 }
+                viewModel.isDeleteSuccess.value = null
+                viewModel.getElement(idChannel, idSpinner)
             }
         }
         viewModel.isEditingSuccess.observe(viewLifecycleOwner) {
@@ -111,6 +113,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         elementAdapter.onEditClickListener = object : OnEditClickListener {
             override fun onEditClick(position: Int) {
                 val binding : EditDialogBinding = EditDialogBinding.inflate(layoutInflater)
+
                 editElementDialog = Dialog(requireContext())
                 editElementDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
                 editElementDialog.setContentView(binding.root)
@@ -137,9 +140,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
                 window.attributes = windowAttribute
 
                 editElementDialog.show()
-
             }
-
         }
 
         lifecycleScope.launch(Dispatchers.IO) {

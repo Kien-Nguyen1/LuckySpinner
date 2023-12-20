@@ -115,7 +115,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             }
         }
 
-
         viewModel.isAddingMemberSuccess.observe(viewLifecycleOwner) {
             it?.let {
                 if (it) {

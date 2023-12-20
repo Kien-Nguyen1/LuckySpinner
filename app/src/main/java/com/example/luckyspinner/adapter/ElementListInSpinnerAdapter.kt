@@ -56,6 +56,10 @@ class ElementListInSpinnerAdapter(private val listener: Listener) : RecyclerView
                 listener.onItemClick(spinner.idElement)
             }
 
+            btnEditElementTitle.setOnClickListener {
+                onEditClickListener.onEditClick(position)
+            }
+
             if (position % 2 == 0) {
                 root.setBackgroundColor(Color.parseColor("#e7f0fd"))
             }

@@ -25,6 +25,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.DateListAdapter
 import com.example.luckyspinner.adapter.RandomSpinnerListAdapter
 import com.example.luckyspinner.databinding.ChooseRandomSpinnerListLayoutBinding
@@ -67,9 +68,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
         if (eventId == null) binding.btnDeleteEvent.visibility = View.GONE
 
-
         setUpDatePicker()
-
 
         viewModel.getEvent(channelId, eventId)
 
@@ -86,6 +85,13 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             }
             viewModel.getMembers(channelId, eventId)
         }
+
+        binding.appBarAddTimeEvent.apply {
+            toolBar.title = "Add Time Event"
+            toolBar.menu.findItem(R.id.memberListFragment)?.isVisible = false
+            toolBar.menu.findItem(R.id.spinnerListFragment)?.isVisible = false
+        }
+
         return binding.root
     }
 
@@ -103,6 +109,11 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             viewModel.deleteEvent(channelId, eventId)
         }
 
+        binding.appBarAddTimeEvent.apply {
+            toolBar.setNavigationOnClickListener {
+                findNavController().popBackStack()
+            }
+        }
     }
 
 
