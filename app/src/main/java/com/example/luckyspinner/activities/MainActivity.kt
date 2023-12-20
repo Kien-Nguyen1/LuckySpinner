@@ -14,7 +14,6 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
 import kotlin.random.Random
 
 
@@ -56,13 +55,8 @@ class MainActivity : AppCompatActivity() {
 
         // Combine LocalDateTime with the timezone to get ZonedDateTime
         val zonedDateTime = ZonedDateTime.of(localDateTime, gmtPlus7)
-        val a = Calendar.getInstance()
-        val c = a.get(Calendar.DAY_OF_WEEK)
-        val b = c == Calendar.FRIDAY
 
-        println("ZonedDateTime: $c $b ")
-
-
+        println("ZonedDateTime: $zonedDateTime")
 
 
     }

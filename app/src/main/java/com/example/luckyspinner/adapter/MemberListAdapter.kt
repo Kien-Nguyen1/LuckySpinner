@@ -1,32 +1,35 @@
 package com.example.luckyspinner.adapter
 
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.MemberListItemBinding
+import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.models.Member
 
 class MemberListAdapter(private val listener: Listener) : RecyclerView.Adapter<MemberListAdapter.MemberListViewHolder>() {
+
+    lateinit var onEditClickListener: OnEditClickListener
 
     interface Listener {
         fun onItemClick(id: String)
         fun onDeleteItem(id: String)
         fun onCheckBoxSelected(id: String, position: Int, isSelected : Boolean)
-
     }
 
     inner class MemberListViewHolder(val binding: MemberListItemBinding) : RecyclerView.ViewHolder(binding.root)
 
     private val diffCallback = object : DiffUtil.ItemCallback<Member>() {
         override fun areItemsTheSame(oldItem: Member, newItem: Member): Boolean {
-            return oldItem.idMember == newItem.idMember
+            return false
         }
 
         override fun areContentsTheSame(oldItem: Member, newItem: Member): Boolean {
-            return oldItem == newItem
+            return false
         }
     }
 
@@ -53,10 +56,16 @@ class MemberListAdapter(private val listener: Listener) : RecyclerView.Adapter<M
             tvMemberNameItem.text = member.nameMember
             checkBoxMemberListItem.isChecked = member.hasSelected
             checkBoxMemberListItem.setOnClickListener {
-                listener.onCheckBoxSelected(member.idMember, position, it.isSelected)
+                listener.onCheckBoxSelected(member.idMember, position, member.hasSelected)
+            }
+            btnEditMemberName.setOnClickListener {
+                onEditClickListener.onEditClick(position)
             }
             root.setOnClickListener {
                 listener.onItemClick(member.idMember)
+            }
+            if (position % 2 == 0) {
+                root.setBackgroundColor(Color.parseColor("#e7f0fd"))
             }
         }
     }

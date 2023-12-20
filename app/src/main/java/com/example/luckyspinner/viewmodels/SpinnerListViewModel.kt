@@ -18,8 +18,10 @@ import kotlinx.coroutines.launch
 
 class SpinnerListViewModel : ViewModel() {
     var spinnerList = MutableLiveData<List<Spinner>>()
-    var isAddingSpinnerSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>(null)
-    lateinit var contextSpinnerList: Context
+    val isAddingSpinnerSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
+    val isEditingSuccess : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
+    val isDeletingSuccess : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
+
     val db = FirebaseFirestore.getInstance()
 
 
@@ -42,6 +44,7 @@ class SpinnerListViewModel : ViewModel() {
 
                     }
                     spinnerList.value = sList
+                    print(sList)
 
                 } else {
                     Log.w(
@@ -54,10 +57,9 @@ class SpinnerListViewModel : ViewModel() {
             }
     }
 
-    fun addSpinner(idChannel: String, spinnerId: String, nameSpinner: String) = viewModelScope.launch {
-        val spinner = Spinner(spinnerId, nameSpinner)
+    fun addSpinner(idChannel: String, spinner: Spinner) = viewModelScope.launch {
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
-            .document(spinnerId)
+            .document(spinner.idSpin)
             .set(spinner)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
@@ -67,6 +69,20 @@ class SpinnerListViewModel : ViewModel() {
             .addOnFailureListener { e ->
                 Log.e("error", e.message.toString())
                 isAddingSpinnerSuccess.value = false
+            }
+    }
+    fun editSpinner(idChannel: String, spinner: Spinner) = viewModelScope.launch {
+        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
+            .document(spinner.idSpin)
+            .set(spinner)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    isEditingSuccess.value = true
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("error", e.message.toString())
+                isEditingSuccess.value = false
             }
     }
 
@@ -79,7 +95,12 @@ class SpinnerListViewModel : ViewModel() {
                     Constants.FIRE_STORE,
                     "DocumentSnapshot successfully deleted!"
                 )
+                isDeletingSuccess.value = true
             }
-            .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error deleting document", e) }
+            .addOnFailureListener {
+                e ->
+                Log.w(Constants.FIRE_STORE, "Error deleting document", e)
+                isDeletingSuccess.value = false
+            }
     }
 }

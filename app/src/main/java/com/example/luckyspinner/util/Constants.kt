@@ -17,12 +17,6 @@ object Constants {
 
     const val CHAT_ID = "CHAT_ID"
     const val MESSAGE = "MESSAGE"
-    const val LIST_MEMBER_ID = "LIST_MEMBER_ID"
-    const val LIST_MEMBER_NAME = "LIST_MEMBER_NAME"
-    const val LIST_SPINNER_ID = "LIST_SPINNER_ID"
-    const val LIST_SPINNER_NAME = "LIST_SPINNER_NAME"
-
-
     const val TAG_OUTPUT = "TAG_OUTPUT"
     const val FS_LIST_CHANNEL = "listchannel"
     const val FIRE_STORE = "Fire Store"
@@ -35,20 +29,25 @@ object Constants {
     const val EMPTY_STRING = ""
     const val ID_SPINNER_KEY = "ID_SPINNER_KEY"
     const val ID_CHANNEL_KEY = "ID_CHANNEL_KEY"
+    const val ID_TELEGRAM_CHANNEL_KEY = "ID_TELEGRAM_CHANNEL_KEY"
     const val ID_EVENT_KEY = "ID_EVENT_KEY"
     const val CHANNEL_NAME = "CHANNEL_NAME"
     const val SPINNER_TITLE = "SPINNER_TITLE"
 
-    const val MONDAY = 2
-    const val TUESDAY = 3
-    const val WEDNESDAY = 4
-    const val THURSDAY = 5
-    const val FRIDAY = 6
-    const val SATURDAY = 7
-    const val SUNDAY = 1
+    const val MESSAGE_SAVE_SUCCESSFUL = "Save successful"
+    const val MESSAGE_SAVE_FAILED = "Save failed"
+    const val MESSAGE_GET_SUCCESSFUL = "Get successful"
+    const val MESSAGE_GET_FAILED = "Get failed"
+    const val MESSAGE_DELETE_SUCCESSFUL = "Delete successful"
+    const val MESSAGE_DELETE_FAILED = "Delete failed"
 
-    const val EVENT_TYPE_ONCE = 0
-    const val EVENT_TYPE_EVERY_DAY = 1
+    const val MONDAY = 0
+    const val TUESDAY = 1
+    const val WEDNESDAY = 2
+    const val THURSDAY = 3
+    const val FRIDAY = 4
+    const val SATURDAY = 5
+    const val SUNDAY = 6
 
     const val DELAY_TIME_MILLIS: Long = 3000
     lateinit var DEVICE_ID : String

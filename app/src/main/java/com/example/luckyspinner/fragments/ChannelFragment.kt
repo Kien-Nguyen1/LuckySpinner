@@ -18,6 +18,7 @@ import com.example.luckyspinner.databinding.FragmentChannelBinding
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.CHANNEL_NAME
 import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
+import com.example.luckyspinner.util.Constants.ID_TELEGRAM_CHANNEL_KEY
 import com.example.luckyspinner.viewmodels.ChannelViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,10 +26,11 @@ import kotlinx.coroutines.launch
 
 class ChannelFragment : Fragment(), EventListAdapter.Listener {
     private val viewModel by viewModels<ChannelViewModel>()
-    private lateinit var binding : FragmentChannelBinding
-    private var idChannel : String? = null
-    private var nameChannel : String? = null
-    private lateinit var eventAdapter : EventListAdapter
+    private lateinit var binding: FragmentChannelBinding
+    private var idChannel: String? = null
+    private var nameChannel: String? = null
+    private var idTelegramChannel: String? = null
+    private lateinit var eventAdapter: EventListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,8 +39,11 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         binding = FragmentChannelBinding.inflate(inflater, container, false)
         idChannel = arguments?.getString(ID_CHANNEL_KEY)
         nameChannel = arguments?.getString(CHANNEL_NAME)
+        idTelegramChannel = arguments?.getString(ID_TELEGRAM_CHANNEL_KEY)
 
-        binding.tvTitleChannelFragment.text = nameChannel
+        binding.appBarChannel.apply {
+            toolBar.title = nameChannel
+        }
 
         return binding.root
     }
@@ -46,80 +51,88 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecycleView()
-        viewModel.eventList.observe(viewLifecycleOwner) {
+        viewModel.channelList.observe(viewLifecycleOwner) {
             eventAdapter.events = it
+            if (it.isEmpty()) {
+                binding.rvEventListOfChannel.visibility = View.GONE
+                binding.imgEmptyList.visibility = View.VISIBLE
+            } else {
+                binding.rvEventListOfChannel.visibility = View.VISIBLE
+                binding.imgEmptyList.visibility = View.GONE
+            }
         }
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.getEvents(idChannel)
         }
 
+        val bundle = Bundle().apply {
+            putString(ID_CHANNEL_KEY, idChannel)
+        }
+
         binding.btnAddEventOfChannel.setOnClickListener {
-            findNavController().navigate(R.id.addTimeEventFragment, Bundle().apply {
-                putString(ID_CHANNEL_KEY, idChannel)
-            })
+            val direction = ChannelFragmentDirections
+                .actionChannelFragmentToAddTimeEventFragment()
+                .actionId
+
+            findNavController().navigate(direction, bundle)
         }
 
-        binding.btnSpinnerList.setOnClickListener {
-            findNavController().navigate(R.id.spinnerListFragment, Bundle().apply {
-                putString(ID_CHANNEL_KEY, idChannel)
-            })
+        binding.appBarChannel.apply {
+            toolBar.setNavigationOnClickListener {
+                findNavController().popBackStack()
+            }
         }
 
-        binding.btnMemberListChannel.setOnClickListener {
-            findNavController().navigate(R.id.memberListFragment, Bundle().apply {
-                putString(ID_CHANNEL_KEY, idChannel)
-            })
-        }
+        binding.appBarChannel.apply {
+            toolBar.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.spinnerListFragment -> {
+                        val direction = ChannelFragmentDirections
+                            .actionChannelFragmentToSpinnerListFragment()
+                            .actionId
 
-//        binding.btnBackChannelFragment.setOnClickListener {
-//            findNavController().popBackStack()
-//        }
+                        findNavController().navigate(direction, bundle)
+                        true
+                    }
+
+                    R.id.memberListFragment -> {
+                        val direction = ChannelFragmentDirections
+                            .actionChannelFragmentToMemberListFragment()
+                            .actionId
+
+                        findNavController().navigate(direction, bundle)
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }
     }
 
     private fun setupRecycleView() {
-        val itemDecoration : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.rvEventListOfChannel.apply {
             eventAdapter = EventListAdapter(this@ChannelFragment)
             adapter = eventAdapter
             layoutManager = LinearLayoutManager(context)
-            addItemDecoration(itemDecoration)
         }
     }
 
     override fun onItemClick(id: String) {
-        findNavController().navigate(R.id.addTimeEventFragment, Bundle().apply {
+        val direction = ChannelFragmentDirections
+            .actionChannelFragmentToAddTimeEventFragment()
+            .actionId
+
+        findNavController().navigate(direction, Bundle().apply {
             putString(ID_CHANNEL_KEY, idChannel)
+            putString(ID_TELEGRAM_CHANNEL_KEY, nameChannel)
             putString(Constants.ID_EVENT_KEY, id)
         })
     }
 
     override fun onDeleteItem(id: String) {
         lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.deleteEvent(idChannel, id)
+            viewModel.deleteChannel(idChannel, id)
         }
-    }
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        println("Here come onCreate ${this.javaClass.name}")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        println("Here come onStop ${this.javaClass.name} ")
-
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        println("Here come onDestroyView ${this.javaClass.name}")
-
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        println("Here come onDestroy ${this.javaClass.name}")
-
     }
 }

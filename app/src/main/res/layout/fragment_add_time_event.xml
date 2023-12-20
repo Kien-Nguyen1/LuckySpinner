@@ -6,60 +6,48 @@
     android:layout_height="match_parent"
     tools:context=".fragments.AddTimeEventFragment">
 
-    <ImageView
-        android:id="@+id/btn_back_add_time_event"
-        android:layout_width="wrap_content"
+    <include
+        android:id="@+id/app_bar_add_time_event"
+        layout="@layout/app_bar_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="30dp"
-        android:src="@drawable/ic_back"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TimePicker
         android:id="@+id/time_picker_add_time_event"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="80dp"
         android:timePickerMode="spinner"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_back_add_time_event" />
-
-    <NumberPicker
-        android:id="@+id/number_picker_add_time_event"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/time_picker_add_time_event" />
+        app:layout_constraintTop_toBottomOf="@+id/app_bar_add_time_event" />
 
     <LinearLayout
         android:id="@+id/linear_layout_add_time_event"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="50dp"
         android:orientation="horizontal"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/number_picker_add_time_event">
+        app:layout_constraintTop_toBottomOf="@+id/time_picker_add_time_event">
 
-        <Switch
-            android:id="@+id/btn_switch_mode_add_time_event"
+        <Button
+            android:id="@+id/btn_event_schedule"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:text="Once/Every Week"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/number_picker_add_time_event"
-            tools:ignore="UseSwitchCompatOrMaterialXml" />
+            android:layout_marginHorizontal="40dp"
+            android:text="Event Schedule" />
 
         <Button
             android:id="@+id/btn_choose_random_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginLeft="50dp"
             android:text="Choose Spinner" />
     </LinearLayout>
 
@@ -71,7 +59,7 @@
         android:src="@drawable/ic_done"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linear_layout_add_time_event"/>
+        app:layout_constraintTop_toBottomOf="@+id/linear_layout_add_time_event" />
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_delete_event"
         android:layout_width="wrap_content"
@@ -80,6 +68,5 @@
         app:layout_constraintTop_toTopOf="@+id/btn_done_add_time_event"
         app:layout_constraintStart_toStartOf="parent"
         android:src="@drawable/ic_cancel" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

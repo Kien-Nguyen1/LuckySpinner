@@ -8,6 +8,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.luckyspinner.models.Channel
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.FS_USER_CHANNEL
+import com.example.luckyspinner.util.Constants.MESSAGE_DELETE_FAILED
+import com.example.luckyspinner.util.Constants.MESSAGE_DELETE_SUCCESSFUL
+import com.example.luckyspinner.util.Constants.MESSAGE_SAVE_FAILED
+import com.example.luckyspinner.util.Constants.MESSAGE_SAVE_SUCCESSFUL
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.firestore.DocumentSnapshot
@@ -19,11 +23,12 @@ import kotlinx.coroutines.launch
 class ChannelListViewModel : ViewModel() {
     var channelList = MutableLiveData<List<Channel>>()
     val db = FirebaseFirestore.getInstance()
-    var isAddingSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>(null)
-    lateinit var context: Context
-    var isDeleteSuccess  : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>(null)
+    var message = MutableLiveData<String>()
+    var isAddingSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
+    var isDeleteSuccess  : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
+    var isEditingSuccess : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
 
-     fun  getChannels() {
+    fun  getChannels() {
         val cList : MutableList<Channel> = ArrayList()
 
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/$FS_USER_CHANNEL")
@@ -48,9 +53,11 @@ class ChannelListViewModel : ViewModel() {
                         "Error getting documents.",
                         it.exception
                     )
+                    message.value = Constants.MESSAGE_GET_FAILED
                 }
 
             }
+
     }
     fun  deleteChannel(id : String) {
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/$FS_USER_CHANNEL")
@@ -59,6 +66,7 @@ class ChannelListViewModel : ViewModel() {
             .addOnSuccessListener(object : OnSuccessListener<Void?> {
                 override fun onSuccess(aVoid: Void?) {
                     Log.d(Constants.FIRE_STORE, "DocumentSnapshot successfully deleted!")
+                    message.value = Constants.MESSAGE_DELETE_SUCCESSFUL
                     isDeleteSuccess.value = true
                 }
             })
@@ -66,23 +74,39 @@ class ChannelListViewModel : ViewModel() {
                 override fun onFailure(e: Exception) {
                     Log.w(Constants.FIRE_STORE, "Error deleting document", e)
                     isDeleteSuccess.value = false
+                    message.value = MESSAGE_DELETE_FAILED
                 }
             })
     }
 
-    fun addChannel(channelId: String, nameChannel: String) = viewModelScope.launch {
-        val channel = Channel(channelId, nameChannel)
+    fun addChannel(channel: Channel) = viewModelScope.launch {
         db.collection(Constants.FS_LIST_CHANNEL + "/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}")
-            .document(channelId)
+            .document(channel.idChannel)
             .set(channel)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    isAddingSuccess.value = true
-                }
+            .addOnSuccessListener {
+                message.value = MESSAGE_SAVE_SUCCESSFUL
+                isAddingSuccess.value = true
+
             }
             .addOnFailureListener { e ->
                 Log.e("error", e.message.toString())
+                message.value = MESSAGE_SAVE_FAILED
                 isAddingSuccess.value = false
+            }
+    }
+    fun editChannel(channel: Channel) = viewModelScope.launch {
+        db.collection(Constants.FS_LIST_CHANNEL + "/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}")
+            .document(channel.idChannel)
+            .set(channel)
+            .addOnSuccessListener {
+                message.value = MESSAGE_SAVE_SUCCESSFUL
+                isEditingSuccess.value = true
+
+            }
+            .addOnFailureListener { e ->
+                Log.e("error", e.message.toString())
+                message.value = MESSAGE_SAVE_FAILED
+                isEditingSuccess.value = false
             }
     }
     fun getChannelFromFirestore(doc : DocumentSnapshot) : Channel {

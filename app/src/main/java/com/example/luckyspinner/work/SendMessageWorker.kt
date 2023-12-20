@@ -14,6 +14,7 @@ import com.example.luckyspinner.network.TelegramApiClient
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.CHAT_ID
 import com.example.luckyspinner.util.Constants.ID_EVENT_KEY
+import com.example.luckyspinner.util.Constants.ID_TELEGRAM_CHANNEL_KEY
 import com.example.luckyspinner.util.Constants.MESSAGE
 import com.example.luckyspinner.util.makeStatusNotification
 import com.google.firebase.firestore.FirebaseFirestore
@@ -32,7 +33,7 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
     val db = FirebaseFirestore.getInstance()
     val sList : MutableList<Spinner> = ArrayList()
     val mList : MutableList<Member> = ArrayList()
-    val chatId = inputData.getString(CHAT_ID)
+    val telegramChannelId = inputData.getString(ID_TELEGRAM_CHANNEL_KEY)
     val channelId = inputData.getString(Constants.ID_CHANNEL_KEY)
     val eventId = inputData.getString(ID_EVENT_KEY)
     val deviceId = inputData.getString("deviceId")
@@ -65,8 +66,9 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                         return@withContext Result.success()
                     }
                     val message = messageMember + messageSpinner
-                    TelegramApiClient.telegramApi.sendMessage(chatId!!, message)
-                    outputData = workDataOf(CHAT_ID to chatId, MESSAGE to message)
+                    val respond = TelegramApiClient.telegramApi.sendMessage(telegramChannelId!!, message)
+                    if (!respond.isSuccessful) return@withContext Result.failure()
+                    outputData = workDataOf(CHAT_ID to telegramChannelId, MESSAGE to message)
                     makeStatusNotification("Send message successfully!", applicationContext)
                     return@withContext Result.success(outputData)
                 }
@@ -105,6 +107,8 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                     if (list.size != 0) {
                         val randomInt = Random.nextInt(list.size)
                         messageSpinner += "\n For ${spinnerName} : ${list[randomInt].nameElement} is random chooser."
+                    } else {
+                        messageSpinner += "\n For  ${spinnerName} : Don't have any elements!!"
                     }
                     if (isLast) {
                         hasHandleRandomSpinner = (hasHandleRandomSpinner == null)
@@ -200,15 +204,15 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
             .get()
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                        Log.d(
-                            Constants.FIRE_STORE,
-                            it.result.id + " => " + it.result.data
-                        )
-                        if (it.result.exists()) {
-                            val  e = it.result.toObject<Event>()
-                            listDay = e?.listDay ?: ArrayList()
-                            hasGetListDay = true
-                        }
+                    Log.d(
+                        Constants.FIRE_STORE,
+                        it.result.id + " => " + it.result.data
+                    )
+                    if (it.result.exists()) {
+                        val  e = it.result.toObject<Event>()
+                        listDay = e?.listDay ?: ArrayList()
+                        hasGetListDay = true
+                    }
                 } else {
                     Log.w(
                         Constants.FIRE_STORE,

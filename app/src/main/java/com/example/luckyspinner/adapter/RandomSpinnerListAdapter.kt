@@ -22,11 +22,11 @@ class RandomSpinnerListAdapter(private val listener: Listener) : RecyclerView.Ad
 
     private val diffCallback = object : DiffUtil.ItemCallback<Spinner>() {
         override fun areItemsTheSame(oldItem: Spinner, newItem: Spinner): Boolean {
-            return oldItem.idSpin == newItem.idSpin
+            return false
         }
 
         override fun areContentsTheSame(oldItem: Spinner, newItem: Spinner): Boolean {
-            return oldItem == newItem
+            return false
         }
     }
 

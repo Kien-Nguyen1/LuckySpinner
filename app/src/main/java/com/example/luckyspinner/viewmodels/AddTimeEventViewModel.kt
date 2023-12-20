@@ -56,7 +56,6 @@ class AddTimeEventViewModel : ViewModel() {
     }
     fun  getSpinnerFromEvent(idChannel : String?, idEvent : String?) {
         val sList : MutableList<Spinner> = ArrayList()
-        val workList : MutableList<Spinner> = ArrayList()
         println("Here come from event")
 
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_SPINNER}")
@@ -72,11 +71,7 @@ class AddTimeEventViewModel : ViewModel() {
                         if (document.exists()) {
                             val  s = document.toObject<Spinner>()
                             sList.add(s)
-                            if (s.hasSelected) {
-                                workList.add(s)
-                            }
                         }
-
                     }
                     spinnerList.value = sList
                     if (sList.size == 0) getSpinnerFromChannel(idChannel, idEvent)
@@ -130,14 +125,14 @@ class AddTimeEventViewModel : ViewModel() {
         val collectionRef = db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_SPINNER}")
         sList.forEach {
             collectionRef.document(it.idSpin)
-            .set(it)
-            .addOnSuccessListener {
-                println("Here come saveListSpinner success")
+                .set(it)
+                .addOnSuccessListener {
+                    println("Here come saveListSpinner success")
 
-            }
-            .addOnFailureListener {
-                saveListSpinner(idChannel, idEvent)
-            }
+                }
+                .addOnFailureListener {
+                    saveListSpinner(idChannel, idEvent)
+                }
         }
 
     }

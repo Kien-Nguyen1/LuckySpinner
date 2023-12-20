@@ -6,28 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".fragments.SpinnerListFragment">
 
-    <ImageView
-        android:id="@+id/btn_back_spinner_list"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:src="@drawable/ic_back"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tv_title_spinner_list"
+    <include
+        android:id="@+id/app_bar_spinner_list"
+        layout="@layout/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:gravity="center_horizontal"
-        android:text="Spinner List"
-        android:textColor="@color/black"
-        android:textSize="25sp"
-        android:textStyle="bold"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_back_spinner_list" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_spinner_list"
@@ -38,7 +25,21 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_title_spinner_list"
+        app:layout_constraintTop_toBottomOf="@+id/app_bar_spinner_list"
+        tools:listitem="@layout/title_spinner_or_channel_item" />
+
+    <ImageView
+        android:id="@+id/img_empty_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:visibility="gone"
+        android:src="@drawable/image_empty_list"
+        app:layout_constraintTop_toBottomOf="@+id/app_bar_spinner_list"
         tools:listitem="@layout/title_spinner_or_channel_item" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

@@ -14,6 +14,7 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -47,6 +48,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     private lateinit var workManager: WorkManager
     private var channelId : String? = null
     private var eventId : String? = null
+    private var telegramChannelId : String? = null
+    private var isLoadedFirstTime = false
     private lateinit var chooseSpinnerDialog : Dialog
     private lateinit var dateDialog : Dialog
     private lateinit var randomSpinnerAdapter : RandomSpinnerListAdapter
@@ -60,6 +63,9 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
         channelId = arguments?.getString(Constants.ID_CHANNEL_KEY)
         eventId = arguments?.getString(Constants.ID_EVENT_KEY)
+        telegramChannelId = arguments?.getString(Constants.ID_TELEGRAM_CHANNEL_KEY)
+
+        if (eventId == null) binding.btnDeleteEvent.visibility = View.GONE
 
 
         setUpDatePicker()
@@ -106,7 +112,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
         val selectedHour: Int = binding.timePickerAddTimeEvent.hour
         val selectedMinutes: Int = binding.timePickerAddTimeEvent.minute
-        val typeEvent = if (binding.btnSwitchModeAddTimeEvent.isChecked) Constants.EVENT_TYPE_EVERY_DAY else Constants.EVENT_TYPE_ONCE
+//        val typeEvent = if (binding.btnSwitchModeAddTimeEvent.isChecked) Constants.EVENT_TYPE_EVERY_DAY else Constants.EVENT_TYPE_ONCE
 
 
 
@@ -114,11 +120,11 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             channelId,
             Event(
                 eventId!!,
-                typeEvent,
+                typeEvent = null,
                 selectedHour,
                 selectedMinutes,
                 getListDay()
-                )
+            )
         )
         val timeNow = Calendar.getInstance()
 
@@ -138,7 +144,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
         workManager.apply {
             val data = workDataOf(
-                Constants.CHAT_ID to "-1002136709675",
+                Constants.ID_TELEGRAM_CHANNEL_KEY to "-1002136709675",
                 Constants.ID_CHANNEL_KEY to channelId,
                 Constants.ID_EVENT_KEY to eventId,
                 "deviceId" to Constants.DEVICE_ID
@@ -153,7 +159,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 .setConstraints(constraints)
                 .build()
 
-            if (binding.btnSwitchModeAddTimeEvent.isChecked) {
+            if (false) {
                 enqueueUniquePeriodicWork(
                     eventId!!,
                     ExistingPeriodicWorkPolicy.UPDATE,
@@ -171,9 +177,11 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             .observe(viewLifecycleOwner) {
                     workInfor ->
                 if (workInfor.size != 0) {
+
                     workInfor[0]
                     if (workInfor[0].state == WorkInfo.State.SUCCEEDED) {
                         progressDialog.dismiss()
+                        findNavController().popBackStack()
                         println("Success from workInfor ${workInfor[0].outputData.getString("")}")
                     }
                     if (workInfor[0].state == WorkInfo.State.FAILED) {
@@ -200,7 +208,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
 
     private fun setUpDatePicker() {
-        binding.btnSwitchModeAddTimeEvent.setOnClickListener {
+        binding.btnEventSchedule.setOnClickListener {
             dateDialog.show()
         }
 
@@ -212,12 +220,18 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             layoutManager = LinearLayoutManager(context)
         }
 
-
         viewModel.event.observe(viewLifecycleOwner) {
+            if (!isLoadedFirstTime) {
+                it.hour?.let { eventHour ->
+                    binding.timePickerAddTimeEvent.apply {
+                        hour = eventHour
+                        minute = it.minute!!
+                    }
+                }
+                isLoadedFirstTime = true
+            }
             dateAdapter.dayList = it.listDay
-            println("Here come listDay"+it.listDay.toString())
         }
-
         setupDatePickerDialog()
     }
 
@@ -259,11 +273,9 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
 
     override fun onItemClick(id: String) {
-        TODO("Not yet implemented")
     }
 
     override fun onDeleteItem(id: String) {
-        TODO("Not yet implemented")
     }
 
     override fun onCheckboxClick(idSpinner: String, position : Int, hasSelected : Boolean) {
