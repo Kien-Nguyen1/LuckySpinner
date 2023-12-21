@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.luckyspinner.controller.DataController
 import com.example.luckyspinner.models.ElementSpinner
 import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Member
@@ -25,14 +26,21 @@ class AddTimeEventViewModel : ViewModel() {
     var event = MutableLiveData<Event>()
     val isShowProgressDialog = MutableLiveData<Boolean>()
 
+    val isGettingSpinnerSuccess = MutableLiveData<Boolean>()
+    val isGettingEventSuccess = MutableLiveData<Boolean>()
+    val isSaveListSpinnerSuccess = MutableLiveData<Boolean>()
+    val isSaveEventSuccess = MutableLiveData<Boolean>()
+    val isDeleteEventSuccess = MutableLiveData<Boolean>()
+
+
+
 
     private val db = FirebaseFirestore.getInstance()
 
-    fun  getMembers(idChannel : String?, idEvent : String?) {
+    fun  getMembers(idChannel : String) {
         val list : MutableList<Member> = ArrayList()
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_MEMBER}")
-            .get()
+        DataController.getMembers(db, idChannel)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     for (document : QueryDocumentSnapshot in it.result) {
@@ -56,15 +64,14 @@ class AddTimeEventViewModel : ViewModel() {
 
             }
     }
-    fun  getSpinnerFromEvent(idChannel : String?, idEvent : String?) {
+    fun  getSpinnerFromEvent(idChannel : String, idEvent : String) {
         val sList : MutableList<Spinner> = ArrayList()
 
         viewModelScope.launch(Dispatchers.Main){
             isShowProgressDialog.value = true
         }
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_SPINNER}")
-            .get()
+        DataController.getSpinnerFromEvent(db, idChannel, idEvent)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     println("getspin ${it.result.size()}")
@@ -80,7 +87,7 @@ class AddTimeEventViewModel : ViewModel() {
                     }
                     spinnerList.value = sList
                     isShowProgressDialog.value = false
-
+                    isGettingSpinnerSuccess.value = true
 
                 } else {
                     Log.w(
@@ -89,21 +96,20 @@ class AddTimeEventViewModel : ViewModel() {
                         it.exception
                     )
                     isShowProgressDialog.value = false
+                    isGettingSpinnerSuccess.value = false
 
                 }
 
             }
     }
 
-    fun  getSpinnerFromChannel(idChannel : String?, idEvent: String?) {
+    fun  getSpinnerFromChannel(idChannel : String) {
         //only call in add event once
         val sList : MutableList<Spinner> = ArrayList()
         viewModelScope.launch(Dispatchers.Main) {
             isShowProgressDialog.value = true
         }
-
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
-            .get()
+        DataController.getSpinners(db, idChannel)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     for (document : QueryDocumentSnapshot in it.result) {
@@ -118,6 +124,8 @@ class AddTimeEventViewModel : ViewModel() {
                     }
                     spinnerList.value = sList
                     isShowProgressDialog.value = false
+                    isGettingSpinnerSuccess.value = true
+
 
                 } else {
                     Log.w(
@@ -126,25 +134,27 @@ class AddTimeEventViewModel : ViewModel() {
                         it.exception
                     )
                     isShowProgressDialog.value = false
+                    isGettingSpinnerSuccess.value = false
                 }
 
             }
     }
-    fun saveListSpinner(idChannel: String?, idEvent: String?) {
-        isShowProgressDialog.value = true
+    fun saveListSpinner(idChannel: String, idEvent: String) {
         val sList  = spinnerList.value ?: return
-        val collectionRef = db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_SPINNER}")
-        sList.forEach {
-            collectionRef.document(it.idSpin)
-                .set(it)
+        isShowProgressDialog.value = true
+        sList.forEachIndexed { index, spinner ->
+            DataController.saveSpinnerInEvent(db, idChannel, idEvent, spinner)
                 .addOnSuccessListener {
                     isShowProgressDialog.value = false
+                    if (index == sList.size - 1) {
+                        isSaveListSpinnerSuccess.value = true
+                    }
                 }
                 .addOnFailureListener {
                     isShowProgressDialog.value = false
+                    isSaveListSpinnerSuccess.value = false
                 }
         }
-
     }
     fun checkBoxSpinner(position : Int, hasSelected : Boolean) {
         val spinners = spinnerList.value!!
@@ -152,52 +162,49 @@ class AddTimeEventViewModel : ViewModel() {
         spinnerList.value = spinners
     }
 
-    fun saveEvent(idChannel: String?, event : Event ) : Job = viewModelScope.launch(Dispatchers.IO) {
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
-            .document(event.idEvent)
-            .set(event)
+    fun saveEvent(idChannel: String, event : Event )  {
+        DataController.saveEvent(db, idChannel, event)
             .addOnSuccessListener {
-
+                isSaveEventSuccess.value = true
             }
             .addOnFailureListener {
                 saveEvent(idChannel, event)
+                isSaveEventSuccess.value = false
             }
     }
-    fun getEvent(idChannel: String?, idEvent : String? ) : Job = viewModelScope.launch(Dispatchers.IO) {
-        println("getEvent")
+    fun getEvent(idChannel: String, idEvent : String? ) : Job = viewModelScope.launch(Dispatchers.IO) {
         if (idEvent == null) {
             this.launch(Dispatchers.Main) {
                 event.value = Event()
             }
-        } else db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
-            .document(idEvent)
-            .get()
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    if (it.result.exists()) {
-                        val e = it.result.toObject<Event>()
-                        println("Here we come $e")
-                        CoroutineScope(Dispatchers.Main).launch {
-                            event.value = e ?: Event()
+        } else {
+            DataController.getEvent(db, idChannel, idEvent)
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        if (it.result.exists()) {
+                            val e = it.result.toObject<Event>()
+                            println("Here we come $e")
+                            CoroutineScope(Dispatchers.Main).launch {
+                                event.value = e ?: Event()
+                                isGettingEventSuccess.value = true
+                            }
                         }
                     }
                 }
-            }
-            .addOnFailureListener {
-                getEvent(idChannel, idEvent)
-                println(it)
-            }
+                .addOnFailureListener {
+                    isGettingEventSuccess.value = false
+                }
+        }
     }
-    fun deleteEvent(idChannel: String?, idEvent : String? ) : Job = viewModelScope.launch(Dispatchers.Main) {
+    fun deleteEvent(idChannel: String?, idEvent : String? ) {
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
             .document(idEvent!!)
             .delete()
             .addOnSuccessListener {
-                println("delete event success")
+                isDeleteEventSuccess.value = true
             }
             .addOnFailureListener {
-                deleteEvent(idChannel, idEvent)
-                println(it)
+                isDeleteEventSuccess.value = false
             }
     }
 }

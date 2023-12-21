@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.luckyspinner.controller.DataController
 import com.example.luckyspinner.models.Channel
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.FS_USER_CHANNEL
@@ -32,8 +33,7 @@ class ChannelListViewModel : ViewModel() {
     fun  getChannels() {
         val cList : MutableList<Channel> = ArrayList()
         isShowProgressDialog.value = true
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/$FS_USER_CHANNEL")
-            .get()
+        DataController.getChannels(db)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     for (document : QueryDocumentSnapshot in it.result) {
@@ -58,38 +58,28 @@ class ChannelListViewModel : ViewModel() {
                     message.value = Constants.MESSAGE_GET_FAILED
                     isShowProgressDialog.value = false
                 }
-
             }
 
     }
-    fun  deleteChannel(id : String) {
+    fun  deleteChannel(channelId : String) {
         isShowProgressDialog.value = true
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/$FS_USER_CHANNEL")
-            .document(id)
-            .delete()
-            .addOnSuccessListener(object : OnSuccessListener<Void?> {
-                override fun onSuccess(aVoid: Void?) {
-                    Log.d(Constants.FIRE_STORE, "DocumentSnapshot successfully deleted!")
-                    message.value = Constants.MESSAGE_DELETE_SUCCESSFUL
-                    isDeleteSuccess.value = true
-                }
-            })
-            .addOnFailureListener(object : OnFailureListener {
-                override fun onFailure(e: Exception) {
-                    Log.w(Constants.FIRE_STORE, "Error deleting document", e)
-                    isDeleteSuccess.value = false
-                    message.value = MESSAGE_DELETE_FAILED
-                    isShowProgressDialog.value = false
-
-                }
-            })
+        DataController.deleteChannel(db, channelId)
+            .addOnSuccessListener {
+                Log.d(Constants.FIRE_STORE, "DocumentSnapshot successfully deleted!")
+                message.value = Constants.MESSAGE_DELETE_SUCCESSFUL
+                isDeleteSuccess.value = true
+            }
+            .addOnFailureListener { e ->
+                Log.w(Constants.FIRE_STORE, "Error deleting document", e)
+                isDeleteSuccess.value = false
+                message.value = MESSAGE_DELETE_FAILED
+                isShowProgressDialog.value = false
+            }
     }
 
     fun addChannel(channel: Channel) = viewModelScope.launch {
         isShowProgressDialog.value = true
-        db.collection(Constants.FS_LIST_CHANNEL + "/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}")
-            .document(channel.idChannel)
-            .set(channel)
+        DataController.saveChannel(db, channel)
             .addOnSuccessListener {
                 message.value = MESSAGE_SAVE_SUCCESSFUL
                 isAddingSuccess.value = true
@@ -106,9 +96,7 @@ class ChannelListViewModel : ViewModel() {
     fun editChannel(channel: Channel) = viewModelScope.launch {
         isShowProgressDialog.value = true
 
-        db.collection(Constants.FS_LIST_CHANNEL + "/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}")
-            .document(channel.idChannel)
-            .set(channel)
+        DataController.saveChannel(db, channel)
             .addOnSuccessListener {
                 message.value = MESSAGE_SAVE_SUCCESSFUL
                 isEditingSuccess.value = true

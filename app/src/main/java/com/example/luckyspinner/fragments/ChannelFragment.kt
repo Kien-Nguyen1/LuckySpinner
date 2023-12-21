@@ -2,7 +2,6 @@ package com.example.luckyspinner.fragments
 
 import android.app.ProgressDialog
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,9 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.EventListAdapter
 import com.example.luckyspinner.databinding.FragmentChannelBinding
@@ -28,7 +25,7 @@ import kotlinx.coroutines.launch
 class ChannelFragment : Fragment(), EventListAdapter.Listener {
     private val viewModel by viewModels<ChannelViewModel>()
     private lateinit var binding: FragmentChannelBinding
-    private var idChannel: String? = null
+    private lateinit var idChannel: String
     private var nameChannel: String? = null
     private var idTelegramChannel: String? = null
     private lateinit var eventAdapter : EventListAdapter
@@ -40,7 +37,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     ): View? {
         binding = FragmentChannelBinding.inflate(inflater, container, false)
         progressDialog = ProgressDialog(context)
-        idChannel = arguments?.getString(ID_CHANNEL_KEY)
+        idChannel = arguments?.getString(ID_CHANNEL_KEY)!!
         nameChannel = arguments?.getString(CHANNEL_NAME)
         idTelegramChannel = arguments?.getString(ID_TELEGRAM_CHANNEL_KEY)
 
@@ -69,7 +66,9 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
                 .actionChannelFragmentToAddTimeEventFragment()
                 .actionId
 
-            findNavController().navigate(direction, bundle)
+            findNavController().navigate(direction, bundle.apply {
+                putString(Constants.ID_TELEGRAM_CHANNEL_KEY, idTelegramChannel)
+            })
         }
 
         binding.appBarChannel.apply {
@@ -136,14 +135,12 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
 
         findNavController().navigate(direction, Bundle().apply {
             putString(ID_CHANNEL_KEY, idChannel)
-            putString(ID_TELEGRAM_CHANNEL_KEY, nameChannel)
+            putString(ID_TELEGRAM_CHANNEL_KEY, idTelegramChannel)
             putString(Constants.ID_EVENT_KEY, id)
         })
     }
 
     override fun onDeleteItem(id: String) {
-        lifecycleScope.launch(Dispatchers.Main) {
-            viewModel.deleteChannel(idChannel, id)
-        }
+
     }
 }

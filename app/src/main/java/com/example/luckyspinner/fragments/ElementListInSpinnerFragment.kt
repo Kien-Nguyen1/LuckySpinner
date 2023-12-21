@@ -39,9 +39,9 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
     private val viewModel by viewModels<ElementListInSpinnerViewModel>()
     private lateinit var binding : FragmentElementListInSpinnerBinding
     private lateinit var elementAdapter : ElementListInSpinnerAdapter
-    private var idSpinner : String? = null
+    private lateinit var idSpinner : String
     private var titleSpinner : String? = null
-    private var idChannel : String? = null
+    private lateinit var idChannel : String
     private lateinit var addElementInSpinnerDiaLog : Dialog
     private lateinit var editElementDialog : Dialog
     private lateinit var progressDialog : Dialog
@@ -53,8 +53,8 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         binding = FragmentElementListInSpinnerBinding.inflate(inflater, container, false)
         progressDialog = ProgressDialog(context)
 
-        idChannel = arguments?.getString(ID_CHANNEL_KEY)
-        idSpinner = arguments?.getString(ID_SPINNER_KEY)
+        idChannel = arguments?.getString(ID_CHANNEL_KEY)!!
+        idSpinner = arguments?.getString(ID_SPINNER_KEY)!!
         titleSpinner = arguments?.getString(SPINNER_TITLE)
 
         binding.appBarElementListSpinner.apply {

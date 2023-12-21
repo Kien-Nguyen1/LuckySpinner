@@ -1,8 +1,10 @@
 package com.example.luckyspinner.viewmodels
 
+import android.provider.ContactsContract.Data
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.luckyspinner.controller.DataController
 import com.example.luckyspinner.models.ElementSpinner
 import com.example.luckyspinner.util.Constants
 import com.google.firebase.firestore.DocumentSnapshot
@@ -20,12 +22,11 @@ class ElementListInSpinnerViewModel : ViewModel() {
     val db = FirebaseFirestore.getInstance()
 
 
-    fun  getElement(idChannel : String?, idSpinner : String?) {
+    fun  getElement(idChannel : String, idSpinner : String) {
         isShowProgressDialog.value = true
         val list : MutableList<ElementSpinner> = ArrayList()
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}/$idSpinner/${Constants.FS_USER_ELEMENT_SPINNER}")
-            .get()
+        DataController.getElement(db, idChannel, idSpinner)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     for (document : QueryDocumentSnapshot in it.result) {
@@ -63,12 +64,10 @@ class ElementListInSpinnerViewModel : ViewModel() {
 
     }
 
-    fun deleteElement(idChannel : String?, idSpinner : String?, idElement : String) {
+    fun deleteElement(idChannel : String, idSpinner : String, idElement : String) {
         isShowProgressDialog.value = true
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}/$idSpinner/${Constants.FS_USER_ELEMENT_SPINNER}")
-            .document(idElement)
-            .delete()
+        DataController.deleteElement(db, idChannel, idSpinner, idElement)
             .addOnSuccessListener {
                 Log.d(
                     Constants.FIRE_STORE,
@@ -84,12 +83,10 @@ class ElementListInSpinnerViewModel : ViewModel() {
 
             }
     }
-    fun addElement(idChannel : String?, idSpinner: String?, element: ElementSpinner) {
+    fun addElement(idChannel : String, idSpinner: String, element: ElementSpinner) {
         isShowProgressDialog.value = true
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}/$idSpinner/${Constants.FS_USER_ELEMENT_SPINNER}")
-            .document(element.idElement)
-            .set(element)
+        DataController.saveElement(db, idChannel, idSpinner, element)
             .addOnSuccessListener {
                 Log.d(
                     Constants.FIRE_STORE,
@@ -103,12 +100,10 @@ class ElementListInSpinnerViewModel : ViewModel() {
             }
     }
 
-    fun editElement(idChannel : String?, idSpinner: String?, element: ElementSpinner) {
+    fun editElement(idChannel : String, idSpinner: String, element: ElementSpinner) {
         isShowProgressDialog.value = true
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}/$idSpinner/${Constants.FS_USER_ELEMENT_SPINNER}")
-            .document(element.idElement)
-            .set(element)
+        DataController.saveElement(db, idChannel, idSpinner, element)
             .addOnSuccessListener {
                 Log.d(
                     Constants.FIRE_STORE,

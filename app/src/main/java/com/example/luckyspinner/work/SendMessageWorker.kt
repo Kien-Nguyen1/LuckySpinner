@@ -67,11 +67,12 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                         return@withContext Result.success()
                     }
                     val message = messageMember + messageSpinner
+                    println("Here come fail fake $telegramChannelId")
+
                     val respond = TelegramApiClient.telegramApi.sendMessage(telegramChannelId!!, message)
                     if (!respond.isSuccessful) {
-                        println("Here come fail")
                         return@withContext Result.failure(
-                            workDataOf(MESSAGE to "Incorrect chat Id!")
+                            workDataOf(MESSAGE to "Incorrect chat Id! Please make sure your group already add the LifeSpinBot")
                         )
                     }
                     outputData = workDataOf(CHAT_ID to telegramChannelId, MESSAGE to message)
@@ -79,6 +80,7 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                     return@withContext Result.success(outputData)
                 }
             } catch (e: Exception) {
+                println(e)
                 print("${Log.e("TAG", e.message.toString())}")
                 return Result.failure(
                     workDataOf(MESSAGE to e.message.toString())

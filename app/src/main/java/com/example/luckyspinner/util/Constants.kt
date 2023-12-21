@@ -43,13 +43,13 @@ object Constants {
     const val EVERY_WEEK: Int = 1
 
 
-    const val MONDAY = 0
-    const val TUESDAY = 1
-    const val WEDNESDAY = 2
-    const val THURSDAY = 3
-    const val FRIDAY = 4
-    const val SATURDAY = 5
-    const val SUNDAY = 6
+    const val MONDAY = 2
+    const val TUESDAY = 3
+    const val WEDNESDAY = 4
+    const val THURSDAY = 5
+    const val FRIDAY = 6
+    const val SATURDAY = 7
+    const val SUNDAY = 1
 
     const val DELAY_TIME_MILLIS: Long = 3000
     lateinit var DEVICE_ID : String

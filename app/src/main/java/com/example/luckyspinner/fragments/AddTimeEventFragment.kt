@@ -33,6 +33,7 @@ import com.example.luckyspinner.databinding.ChooseRandomSpinnerListLayoutBinding
 import com.example.luckyspinner.databinding.FragmentAddTimeEventBinding
 import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.util.Constants
+import com.example.luckyspinner.util.Constants.EMPTY_STRING
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
 import kotlinx.coroutines.Dispatchers
@@ -48,9 +49,9 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     private lateinit var bindingRandomDialog : ChooseRandomSpinnerListLayoutBinding
     private lateinit var bindingDateDialog: ChooseRandomSpinnerListLayoutBinding
     private lateinit var workManager: WorkManager
-    private var channelId : String? = null
+    private var channelId : String = EMPTY_STRING
     private var eventId : String? = null
-    private var telegramChannelId : String? = null
+    private lateinit var telegramChannelId : String
     private var isLoadedFirstTime = false
     private lateinit var chooseSpinnerDialog : Dialog
     private lateinit var dateDialog : Dialog
@@ -66,9 +67,11 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         binding = FragmentAddTimeEventBinding.inflate(inflater, container, false)
         progressDialog =  ProgressDialog(context)
 
-        channelId = arguments?.getString(Constants.ID_CHANNEL_KEY)
+        channelId = arguments?.getString(Constants.ID_CHANNEL_KEY)!!
         eventId = arguments?.getString(Constants.ID_EVENT_KEY)
-        telegramChannelId = arguments?.getString(Constants.ID_TELEGRAM_CHANNEL_KEY)
+
+        telegramChannelId = arguments?.getString(Constants.ID_TELEGRAM_CHANNEL_KEY)!!
+        println("Here come teleid $telegramChannelId")
         binding.appBarAddTimeEvent.apply {
             toolBar.menu.findItem(R.id.memberListFragment)?.isVisible = false
             toolBar.menu.findItem(R.id.spinnerListFragment)?.isVisible = false
@@ -92,12 +95,11 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             if (eventId == null) {
                 val timeInMillis = Calendar.getInstance().timeInMillis
                 eventId = "$channelId $timeInMillis"
-                viewModel.getSpinnerFromChannel(channelId, eventId)
+                viewModel.getSpinnerFromChannel(channelId)
+            } else {
+                viewModel.getSpinnerFromEvent(channelId, eventId!!)
             }
-            else {
-                viewModel.getSpinnerFromEvent(channelId, eventId)
-            }
-            viewModel.getMembers(channelId, eventId)
+            viewModel.getMembers(channelId)
         }
 
 
@@ -119,8 +121,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             handleTestNow()
         }
         binding.btnDeleteEvent.setOnClickListener {
-            viewModel.deleteEvent(channelId, eventId)
-            findNavController().popBackStack()
+            handleDeleteEvent()
         }
 
         binding.appBarAddTimeEvent.apply {
@@ -140,7 +141,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         val selectedHour: Int = binding.timePickerAddTimeEvent.hour
         val selectedMinutes: Int = binding.timePickerAddTimeEvent.minute
 
-        viewModel.saveListSpinner(channelId, eventId)
+        eventId?.let { viewModel.saveListSpinner(channelId, it) }
 
         viewModel.saveEvent(
             channelId,
@@ -187,7 +188,29 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 workRequest
             )
         }
-        findNavController().popBackStack()
+        viewModel.isSaveEventSuccess.observe(viewLifecycleOwner) { isSave ->
+            if (isSave) {
+                    fun navigate() {
+                        println("Here come navigate")
+                        progressDialog.dismiss()
+                        findNavController().popBackStack()
+                    }
+                    viewModel.isSaveListSpinnerSuccess.apply {
+                        if (value == true) {
+                            println("Here come navigate")
+                            navigate()
+                        } else {
+                            viewModel.isSaveListSpinnerSuccess.observe(viewLifecycleOwner) {
+                                if (it) {
+                                    navigate()
+                                } else {
+                                    viewModel.saveListSpinner(channelId, eventId!!)
+                                }
+                            }
+                        }
+                    }
+                }
+        }
 
 //        workManager.getWorkInfosForUniqueWorkLiveData(eventId!!)
 //            .observe(viewLifecycleOwner) {
@@ -290,7 +313,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
         workManager.apply {
             val data = workDataOf(
-                Constants.ID_TELEGRAM_CHANNEL_KEY to "-1002136709675",
+                Constants.ID_TELEGRAM_CHANNEL_KEY to telegramChannelId,
                 Constants.ID_CHANNEL_KEY to channelId,
                 Constants.ID_EVENT_KEY to testId,
                 "deviceId" to Constants.DEVICE_ID
@@ -325,6 +348,19 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 }
 
             }
+    }
+    fun handleDeleteEvent() {
+        progressDialog.show()
+        viewModel.deleteEvent(channelId, eventId)
+        viewModel.isDeleteEventSuccess.observe(viewLifecycleOwner) {
+            progressDialog.dismiss()
+            if (it) {
+                findNavController().popBackStack()
+            } else {
+                Toast.makeText(context, "Delete Failed", Toast.LENGTH_LONG).show()
+            }
+
+        }
     }
 
     fun setupObservers() {

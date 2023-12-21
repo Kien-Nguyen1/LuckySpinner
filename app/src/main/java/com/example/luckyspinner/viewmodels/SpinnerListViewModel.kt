@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.luckyspinner.controller.DataController
 import com.example.luckyspinner.models.Channel
 import com.example.luckyspinner.models.Spinner
 import com.example.luckyspinner.util.Constants
@@ -31,8 +32,7 @@ class SpinnerListViewModel : ViewModel() {
         isShowProgressDialog.value = true
         val sList : MutableList<Spinner> = ArrayList()
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
-            .get()
+        DataController.getSpinners(db, idChannel)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     for (document : QueryDocumentSnapshot in it.result) {
@@ -48,8 +48,6 @@ class SpinnerListViewModel : ViewModel() {
                     }
                     spinnerList.value = sList
                     isShowProgressDialog.value = false
-
-                    print(sList)
 
                 } else {
                     Log.w(
@@ -68,9 +66,7 @@ class SpinnerListViewModel : ViewModel() {
             isShowProgressDialog.value = true
         }
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
-            .document(spinner.idSpin)
-            .set(spinner)
+        DataController.saveSpinner(db, idChannel, spinner)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     isAddingSpinnerSuccess.value = true
@@ -86,9 +82,7 @@ class SpinnerListViewModel : ViewModel() {
         this.launch(Dispatchers.Main) {
             isShowProgressDialog.value = true
         }
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
-            .document(spinner.idSpin)
-            .set(spinner)
+        DataController.saveSpinner(db, idChannel, spinner)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     isEditingSuccess.value = true
@@ -103,9 +97,7 @@ class SpinnerListViewModel : ViewModel() {
 
     fun deleteSpinner(idChannel : String, idSpinner : String) {
         isShowProgressDialog.value = true
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
-            .document(idSpinner)
-            .delete()
+        DataController.deleteSpinner(db, idChannel, idSpinner)
             .addOnSuccessListener {
                 Log.d(
                     Constants.FIRE_STORE,

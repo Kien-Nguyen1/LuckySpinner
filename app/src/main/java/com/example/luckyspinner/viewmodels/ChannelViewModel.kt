@@ -1,22 +1,15 @@
 package com.example.luckyspinner.viewmodels
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.luckyspinner.models.Channel
-import com.example.luckyspinner.models.ElementSpinner
+import com.example.luckyspinner.controller.DataController
 import com.example.luckyspinner.models.Event
-import com.example.luckyspinner.models.Spinner
 import com.example.luckyspinner.util.Constants
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.toObject
-import kotlinx.coroutines.launch
 
 class ChannelViewModel : ViewModel() {
     var channelList = MutableLiveData<List<Event>>()
@@ -24,12 +17,11 @@ class ChannelViewModel : ViewModel() {
     val isShowProgressDialog = MutableLiveData<Boolean>()
 
 
-    fun  getEvents(idChannel : String?) {
+    fun  getEvents(idChannel : String) {
         isShowProgressDialog.value = true
         val list : MutableList<Event> = ArrayList()
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
-            .get()
+        DataController.getEvents(db, idChannel)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     for (document : QueryDocumentSnapshot in it.result) {
@@ -59,11 +51,9 @@ class ChannelViewModel : ViewModel() {
             }
     }
 
-    fun  deleteChannel(idChannel: String?, idEvent : String) {
+    fun  deleteEvent(idChannel: String, idEvent : String) {
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
-            .document(idEvent)
-            .delete()
+        DataController.deleteEvent(db, idChannel, idEvent)
             .addOnSuccessListener {
                 Log.d(
                     Constants.FIRE_STORE,
