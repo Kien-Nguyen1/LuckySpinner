@@ -58,7 +58,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         titleSpinner = arguments?.getString(SPINNER_TITLE)
 
         binding.appBarElementListSpinner.apply {
-            toolBar.title = "Element List"
+            toolBar.title = titleSpinner
             toolBar.menu.findItem(R.id.spinnerListFragment)?.isVisible = false
             toolBar.menu.findItem(R.id.memberListFragment)?.isVisible = false
         }

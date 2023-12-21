@@ -37,8 +37,8 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
     val channelId = inputData.getString(Constants.ID_CHANNEL_KEY)
     val eventId = inputData.getString(ID_EVENT_KEY)
     val deviceId = inputData.getString("deviceId")
-    var messageSpinner = "1"
-    var messageMember = "1"
+    var messageSpinner = ""
+    var messageMember = ""
     var hasHandleRandomSpinner : Boolean? = null
     var hasHandleRandomMember : Boolean = false
     var hasGetListDay : Boolean = false
