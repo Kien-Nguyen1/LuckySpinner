@@ -146,7 +146,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             channelId,
             Event(
                 eventId!!,
-                typeEvent = null,
+                typeEvent = Constants.EVERY_WEEK,
                 selectedHour,
                 selectedMinutes,
                 getListDay()
@@ -170,7 +170,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
         workManager.apply {
             val data = workDataOf(
-                Constants.ID_TELEGRAM_CHANNEL_KEY to "-1002136709675",
+                Constants.ID_TELEGRAM_CHANNEL_KEY to telegramChannelId,
                 Constants.ID_CHANNEL_KEY to channelId,
                 Constants.ID_EVENT_KEY to eventId,
                 "deviceId" to Constants.DEVICE_ID
@@ -187,7 +187,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 workRequest
             )
         }
-        progressDialog.dismiss()
         findNavController().popBackStack()
 
 //        workManager.getWorkInfosForUniqueWorkLiveData(eventId!!)

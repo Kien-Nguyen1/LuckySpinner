@@ -39,7 +39,9 @@ class ChannelViewModel : ViewModel() {
                         )
                         if (document.exists()) {
                             val  e = document.toObject<Event>()
-                            list.add(e)
+                            if (e.typeEvent != null) {
+                                list.add(e)
+                            }
                         }
                     }
                     channelList.value = list
