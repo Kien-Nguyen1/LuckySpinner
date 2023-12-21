@@ -83,9 +83,9 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             openAddChannelDialog(Gravity.CENTER)
         }
 
-        channelListAdapter.onEditClickListener = object  : OnEditClickListener{
+        channelListAdapter.onEditClickListener = object : OnEditClickListener {
             override fun onEditClick(position: Int) {
-                val binding : EditDialogBinding = EditDialogBinding.inflate(layoutInflater)
+                val binding: EditDialogBinding = EditDialogBinding.inflate(layoutInflater)
                 editChannelDiaLog = Dialog(requireContext())
                 editChannelDiaLog.requestWindowFeature(Window.FEATURE_NO_TITLE)
                 editChannelDiaLog.setContentView(binding.root)
@@ -104,46 +104,22 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                     viewModel.deleteChannel(channel.idChannel)
                 }
 
-                val window : Window = editChannelDiaLog.window!!
-                window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+                val window: Window = editChannelDiaLog.window!!
+                window.setLayout(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
                 window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-                val windowAttribute : WindowManager.LayoutParams = window.attributes
+                val windowAttribute: WindowManager.LayoutParams = window.attributes
                 windowAttribute.gravity = Gravity.CENTER
                 window.attributes = windowAttribute
 
                 editChannelDiaLog.show()
-
             }
-        }
-
-        val itemTouchHelperCallBack = object : ItemTouchHelper.SimpleCallback(
-            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
-        ) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder,
-            ): Boolean {
-                return true
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.adapterPosition
-                val channel = channelListAdapter.differ.currentList[position]
-                viewModel.deleteChannel(channel.idChannel)
-                val channels : MutableList<Channel> = viewModel.channelList.value!!.toMutableList()
-                channels.removeAt(position)
-                channelListAdapter.channels = channels
-                viewModel.channelList.value = channels
-            }
-        }
-
-        ItemTouchHelper(itemTouchHelperCallBack).apply {
-            attachToRecyclerView(binding.rvChannelList)
         }
     }
+
     private fun openAddChannelDialog(gravity: Int) {
         val binding : AddChannelLayoutBinding = AddChannelLayoutBinding.inflate(layoutInflater)
         addDialog = Dialog(requireContext())
