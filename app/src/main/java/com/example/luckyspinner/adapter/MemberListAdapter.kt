@@ -54,10 +54,6 @@ class MemberListAdapter(private val listener: Listener) : RecyclerView.Adapter<M
         holder.binding.apply {
             val member = members[position]
             tvMemberNameItem.text = member.nameMember
-            checkBoxMemberListItem.isChecked = member.hasSelected
-            checkBoxMemberListItem.setOnClickListener {
-                listener.onCheckBoxSelected(member.idMember, position, member.hasSelected)
-            }
             btnEditMemberName.setOnClickListener {
                 onEditClickListener.onEditClick(position)
             }

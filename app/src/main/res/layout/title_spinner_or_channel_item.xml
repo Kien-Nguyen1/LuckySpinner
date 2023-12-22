@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/title_spinner_or_channel_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -22,10 +23,21 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_edit_spinner_or_channel"
+        style="?attr/materialIconButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_edit" />
+        app:icon="@drawable/ic_edit"
+        app:iconTint="@color/black" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_delete_spinner_or_channel"
+        style="?attr/materialIconButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        app:icon="@drawable/ic_delete"
+        app:iconTint="@color/black" />
 
 </LinearLayout>

@@ -26,12 +26,14 @@
             android:textSize="15sp"
             android:textStyle="bold" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_edit_event_item"
             android:layout_width="wrap_content"
+            style="?attr/materialIconButtonStyle"
+            app:icon="@drawable/ic_edit"
+            app:iconTint="@color/black"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="Edit" />
+            android:layout_marginLeft="10dp" />
 
     </LinearLayout>
 
