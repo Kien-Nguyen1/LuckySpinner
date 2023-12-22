@@ -88,8 +88,8 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
                     element.nameElement = binding.edtEnterElement.text.toString()
                     viewModel.editElement(idChannel, idSpinner, element)
                 }
-                binding.btnDeleteElement.setOnClickListener {
-                    viewModel.deleteElement(idChannel, idSpinner, element.idElement)
+                binding.btnCancelElement.setOnClickListener {
+                    editElementDialog.dismiss()
                 }
 
                 val window : Window = editElementDialog.window!!
