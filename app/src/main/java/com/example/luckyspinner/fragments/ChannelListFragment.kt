@@ -100,8 +100,9 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                     viewModel.editChannel(channel)
                     editChannelDiaLog.dismiss()
                 }
-                binding.btnDeleteElement.setOnClickListener {
-                    viewModel.deleteChannel(channel.idChannel)
+
+                binding.btnCancelElement.setOnClickListener {
+                    editChannelDiaLog.dismiss()
                 }
 
                 val window: Window = editChannelDiaLog.window!!

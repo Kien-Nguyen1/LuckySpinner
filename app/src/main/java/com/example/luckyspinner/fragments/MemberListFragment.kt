@@ -95,9 +95,11 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
                 val member = memberAdapter.members[position]
 
                 binding.tvNameTitleAddElement.text = "Edit Member"
+
                 binding.edtEnterElement.setText(member.nameMember)
-                binding.btnDeleteElement.setOnClickListener {
-                    viewModel.deleteMember(idChannel, member.idMember)
+
+                binding.btnCancelElement.setOnClickListener {
+                    editMemberDiaLog.dismiss()
                 }
 
                 binding.btnDoneAddElement.setOnClickListener {
