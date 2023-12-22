@@ -67,6 +67,12 @@ class EventListAdapter(private val listener: Listener) : RecyclerView.Adapter<Ev
             btnEditEventItem.setOnClickListener {
                 listener.onItemClick(event.idEvent)
             }
+            root.setOnClickListener {
+                listener.onItemClick(event.idEvent)
+            }
+            btnDeleteEventItem.setOnClickListener {
+                listener.onDeleteItem(event.idEvent)
+            }
         }
     }
 }

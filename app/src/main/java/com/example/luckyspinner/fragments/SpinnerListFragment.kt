@@ -15,6 +15,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -27,9 +28,12 @@ import com.example.luckyspinner.databinding.EditDialogBinding
 import com.example.luckyspinner.databinding.FragmentSpinnerListBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.models.Spinner
+import com.example.luckyspinner.util.Constants.EMPTY_STRING
 import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
 import com.example.luckyspinner.util.Constants.ID_SPINNER_KEY
 import com.example.luckyspinner.util.Constants.SPINNER_TITLE
+import com.example.luckyspinner.util.DialogUtil
+import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.viewmodels.SpinnerListViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -142,6 +146,10 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
         binding.btnDoneAddChannel.setOnClickListener {
             lifecycleScope.launch(Dispatchers.Main) {
                 val nameSpinner = binding.edtEnterChannelName.text.toString()
+                if (nameSpinner == EMPTY_STRING) {
+                    binding.edtEnterChannelName.error = "Please fill this field"
+                    return@launch
+                }
                 val idSpinner = Calendar.getInstance().timeInMillis.toString()
                 viewModel.addSpinner(idChannel, Spinner(idSpinner, nameSpinner))
             }
@@ -162,7 +170,6 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
             it?.let {
                 if (it) {
                     Toast.makeText(context, "Edit Spinner Successfully!", Toast.LENGTH_SHORT).show()
-                    editSpinnerDiaLog.dismiss()
                 }
                 else {
                     Toast.makeText(context, "Edit Spinner Fail!!", Toast.LENGTH_SHORT).show()
@@ -176,7 +183,6 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
             it?.let {
                 if (it) {
                     Toast.makeText(context, "Delete Spinner Successfully!", Toast.LENGTH_SHORT).show()
-                    editSpinnerDiaLog.dismiss()
                 }
                 else {
                     Toast.makeText(context, "Delete Spinner Fail!!", Toast.LENGTH_SHORT).show()
@@ -234,8 +240,24 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
 
     override fun onDeleteItem(id: String) {
         lifecycleScope.launch(Dispatchers.Main) {
-            viewModel.deleteSpinner(idChannel, id)
+            val isDelete = DialogUtil.showYesNoDialog(context)
+            if (isDelete) {
+                progressDialog.show()
+                viewModel.deleteSpinner(idChannel, id)
+            }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        val list : MutableList<MutableLiveData<*>> = ArrayList<MutableLiveData<*>>().apply {
+            add(viewModel.isEditingSuccess)
+            add(viewModel.isDeletingSuccess)
+            add(viewModel.isAddingSpinnerSuccess)
+        }
+        Function.toNull(list)
+        list.add(viewModel.spinnerList)
+        Function.removeObservers(list, viewLifecycleOwner)
     }
 
 }

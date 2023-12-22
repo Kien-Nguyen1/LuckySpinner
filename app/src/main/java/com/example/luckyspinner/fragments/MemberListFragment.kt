@@ -15,6 +15,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -28,6 +29,8 @@ import com.example.luckyspinner.databinding.FragmentMemberListBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.models.Member
 import com.example.luckyspinner.util.Constants
+import com.example.luckyspinner.util.DialogUtil
+import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.viewmodels.MemberListViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,6 +53,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     ): View? {
         binding = FragmentMemberListBinding.inflate(inflater , container, false)
         progressDialog = ProgressDialog(requireContext())
+        binding.ckbChooseAllMember.isVisible = false
 
         binding.appBarMemberList.apply {
             toolBar.title = "List Member"
@@ -145,14 +149,19 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         addMemberDialog.show()
 
         binding.btnDoneAddChannel.setOnClickListener {
+            val edt = binding.edtEnterChannelName
+            if (edt.text.toString() == Constants.EMPTY_STRING) {
+                edt.error = "Please fill this field"
+                return@setOnClickListener
+            }
             val memberName = binding.edtEnterChannelName.text.toString()
             progressDialog.show()
             viewModel.addMember(idChannel, Member(Calendar.getInstance().timeInMillis.toString(), memberName))
         }
     }
     private fun handleChooseAllMember() {
-        progressDialog.show()
         val list = viewModel.memberList.value ?: return
+        progressDialog.show()
         var isAllSelected = true
         run breaking@{
             list.forEach { member ->
@@ -182,18 +191,17 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             memberAdapter.members = it
             binding.rvMemberList.isVisible = it.isNotEmpty()
             binding.imgEmptyList.isVisible = it.isEmpty()
-            binding.ckbChooseAllMember.isVisible = it.isNotEmpty()
-            var isAllSelected = true
-            run breaking@{
-                it.forEach { member ->
-                    if (!member.hasSelected) {
-                        isAllSelected = false
-                        return@breaking
-                    }
-                }
-            }
-            binding.ckbChooseAllMember.isChecked = isAllSelected
-            progressDialog.dismiss()
+//            var isAllSelected = true
+//            run breaking@{
+//                it.forEach { member ->
+//                    if (!member.hasSelected) {
+//                        isAllSelected = false
+//                        return@breaking
+//                    }
+//                }
+//            }
+//            binding.ckbChooseAllMember.isChecked = isAllSelected
+//            progressDialog.dismiss()
         }
         viewModel.isAddingMemberSuccess.observe(viewLifecycleOwner) {
             it?.let {
@@ -216,7 +224,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             it?.let {
                 if(it) {
                     Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT).show()
-                    editMemberDiaLog.dismiss()
                 } else {
                     Toast.makeText(context, "Delete Channel Fail!!", Toast.LENGTH_SHORT).show()
                 }
@@ -248,12 +255,29 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     }
 
     override fun onDeleteItem(id: String) {
-        TODO("Not yet implemented")
+        lifecycleScope.launch {
+            val isDelete = DialogUtil.showYesNoDialog(context)
+            if (isDelete) {
+                progressDialog.show()
+                viewModel.deleteMember(idChannel, id)
+            }
+        }
     }
 
     override fun onCheckBoxSelected(id: String, position: Int, isSelected : Boolean) {
         lifecycleScope.launch {
             viewModel.updateCheckBoxForMember(idChannel, id, isSelected)
         }
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        val list : MutableList<MutableLiveData<*>> = ArrayList<MutableLiveData<*>>().apply {
+            add(viewModel.isEdtingMemberSuccess)
+            add(viewModel.isDeletingMemberSuccess)
+            add(viewModel.isAddingMemberSuccess)
+        }
+        Function.toNull(list)
+        list.add(viewModel.memberList)
+        Function.removeObservers(list, viewLifecycleOwner)
     }
 }

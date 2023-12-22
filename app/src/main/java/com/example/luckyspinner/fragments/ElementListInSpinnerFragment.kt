@@ -15,6 +15,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,6 +30,8 @@ import com.example.luckyspinner.util.Constants.EMPTY_STRING
 import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
 import com.example.luckyspinner.util.Constants.ID_SPINNER_KEY
 import com.example.luckyspinner.util.Constants.SPINNER_TITLE
+import com.example.luckyspinner.util.DialogUtil
+import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.viewmodels.ElementListInSpinnerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -139,6 +142,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         addElementInSpinnerDiaLog.show()
         binding.btnDoneAddChannel.setOnClickListener {
             if (binding.edtEnterChannelName.text.toString() == EMPTY_STRING) {
+                binding.edtEnterChannelName.error = "Please fill this field"
                 return@setOnClickListener
             }
             viewModel.addElement(idChannel,
@@ -174,7 +178,6 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
             it?.let {
                 if(it) {
                     Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT).show()
-                    editElementDialog.dismiss()
                 } else {
                     Toast.makeText(context, "Delete Channel Fail!!", Toast.LENGTH_SHORT).show()
                 }
@@ -215,7 +218,22 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
 
     override fun onDeleteItem(id: String) {
         lifecycleScope.launch(Dispatchers.Main) {
-            viewModel.deleteElement(idChannel, idSpinner, id)
+            val isDelete = DialogUtil.showYesNoDialog(context)
+            if (isDelete) {
+                viewModel.deleteElement(idChannel, idSpinner, id)
+            }
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        val list : MutableList<MutableLiveData<*>> = ArrayList<MutableLiveData<*>>().apply {
+            add(viewModel.isAddingSuccess)
+            add(viewModel.isEditingSuccess)
+            add(viewModel.isDeleteSuccess)
+        }
+        Function.toNull(list)
+        list.add(viewModel.elementList)
+        Function.removeObservers(list, viewLifecycleOwner)
+        }
 }

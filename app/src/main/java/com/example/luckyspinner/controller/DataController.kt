@@ -117,6 +117,11 @@ object DataController {
             .get()
     }
 
+    fun  getMemberFromEvent(db: FirebaseFirestore, idChannel : String, idEvent : String): Task<QuerySnapshot> {
+        return db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_MEMBER}")
+            .get()
+    }
+
     fun saveSpinnerInEvent(db: FirebaseFirestore, idChannel: String, idEvent: String, spinner: Spinner): Task<Void> {
         return db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_SPINNER}")
             .document(spinner.idSpin)
@@ -133,6 +138,12 @@ object DataController {
         return db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
             .document(idEvent)
             .get()
+    }
+
+    fun saveMemberInEvent(db: FirebaseFirestore, idChannel: String, idEvent: String, member: Member): Task<Void> {
+        return db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_MEMBER}")
+            .document(member.idMember)
+            .set(member)
     }
 
 }

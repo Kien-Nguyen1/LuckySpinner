@@ -22,9 +22,11 @@ import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.launch
 
 class ChannelListViewModel : ViewModel() {
-    var channelList = MutableLiveData<List<Channel>>()
     val db = FirebaseFirestore.getInstance()
+
+    var channelList = MutableLiveData<List<Channel>>()
     var message = MutableLiveData<String>()
+
     var isAddingSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
     var isDeleteSuccess  : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
     var isEditingSuccess : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()

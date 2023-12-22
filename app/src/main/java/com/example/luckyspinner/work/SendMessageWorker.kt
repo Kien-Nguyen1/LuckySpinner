@@ -49,7 +49,7 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
 
     override suspend fun doWork(): Result {
         getListDayFromEvent(channelId, eventId.toString())
-        getMembers(channelId)
+        getMembers(channelId, eventId)
         getSpinnerFromEvent(channelId, eventId)
 
         suspend fun sendMessage() : Result {
@@ -93,7 +93,7 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
 
     fun isSendMessageToDay() : Boolean {
         val today = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
-        return true//moke
+//        return true//moke
         return listDay.contains(today)
     }
     fun  getElement(idChannel : String?, idSpinner : String?, spinnerName : String, isLast : Boolean) {
@@ -170,12 +170,11 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
             }
     }
 
-    fun  getMembers(idChannel : String?) {
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_MEMBER}")
+    fun  getMembers(idChannel : String?, idEvent: String?) {
+        db.collection(Constants.FS_LIST_CHANNEL+"/$deviceId/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_MEMBER}")
             .get()
             .addOnCompleteListener {
-                println("Here come getMembers")
-                println(it.result.size())
+
                 if (it.result.size() == 0) {
                     hasHandleRandomMember = true
                     messageMember = "Can not get members"
@@ -204,12 +203,12 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                         "Error getting documents.",
                         it.exception
                     )
-                    getMembers(idChannel)
+                    getMembers(idChannel, idEvent)
                 }
             }
     }
     fun  getListDayFromEvent(idChannel : String?, eventId : String) {
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
+        db.collection(Constants.FS_LIST_CHANNEL+"/$deviceId/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
             .document(eventId)
             .get()
             .addOnCompleteListener {
@@ -220,7 +219,13 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                     )
                     if (it.result.exists()) {
                         val  e = it.result.toObject<Event>()
-                        listDay = e?.listDay ?: ArrayList()
+                        listDay = if (e != null) {
+                            if (e.typeEvent == null) arrayListOf(2,3,4,5,6,7,1)
+                            else e.listDay
+                        } else {
+                            ArrayList()
+                        }
+
                         hasGetListDay = true
                     }
                 } else {
