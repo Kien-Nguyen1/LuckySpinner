@@ -5,18 +5,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.luckyspinner.controller.DataController
-import com.example.luckyspinner.models.ElementSpinner
 import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Member
 import com.example.luckyspinner.models.Spinner
 import com.example.luckyspinner.util.Constants
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
-import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -43,7 +40,11 @@ class AddTimeEventViewModel : ViewModel() {
         DataController.getMembers(db, idChannel)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
+                    println("Here we come member ${it.result.size()}")
+
                     for (document : QueryDocumentSnapshot in it.result) {
+                        println("Here we come member ${it.result.size()}")
+
                         Log.d(
                             Constants.FIRE_STORE,
                             document.id + " => " + document.data
@@ -67,7 +68,7 @@ class AddTimeEventViewModel : ViewModel() {
     fun  getSpinnerFromEvent(idChannel : String, idEvent : String) {
         val sList : MutableList<Spinner> = ArrayList()
 
-        viewModelScope.launch(Dispatchers.Main){
+        viewModelScope.launch(Dispatchers.Main) {
             isShowProgressDialog.value = true
         }
 
@@ -98,6 +99,34 @@ class AddTimeEventViewModel : ViewModel() {
                     isShowProgressDialog.value = false
                     isGettingSpinnerSuccess.value = false
 
+                }
+            }
+    }
+
+    fun  getMemberFromEvent(idChannel : String, idEvent : String) {
+        val list : MutableList<Member> = ArrayList()
+
+        DataController.getMemberFromEvent(db, idChannel, idEvent)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    for (document : QueryDocumentSnapshot in it.result) {
+                        Log.d(
+                            Constants.FIRE_STORE,
+                            document.id + " => " + document.data
+                        )
+                        if (document.exists()) {
+                            val  m = document.toObject<Member>()
+                            list.add(m)
+                        }
+                    }
+                    memberList.value = list
+
+                } else {
+                    Log.w(
+                        Constants.FIRE_STORE,
+                        "Error getting documents.",
+                        it.exception
+                    )
                 }
 
             }
@@ -156,10 +185,34 @@ class AddTimeEventViewModel : ViewModel() {
                 }
         }
     }
+
+    fun saveListMember(idChannel: String, idEvent: String) {
+        val memberList = memberList.value ?: return
+        isShowProgressDialog.value = true
+        memberList.forEachIndexed { index, member ->
+            DataController.saveMemberInEvent(db, idChannel, idEvent, member)
+                .addOnSuccessListener {
+                    isShowProgressDialog.value = false
+                    if (index == memberList.size - 1) {
+                        isSaveListSpinnerSuccess.value = true
+                    }
+                }
+                .addOnFailureListener {
+                    isShowProgressDialog.value = false
+                    isSaveListSpinnerSuccess.value = false
+                }
+        }
+
+    }
     fun checkBoxSpinner(position : Int, hasSelected : Boolean) {
         val spinners = spinnerList.value!!
         spinners[position].hasSelected = !hasSelected
         spinnerList.value = spinners
+    }
+    fun checkBoxMember(position : Int, hasSelected : Boolean) {
+        val members = memberList.value!!
+        members[position].hasSelected = !hasSelected
+        memberList.value = members
     }
 
     fun saveEvent(idChannel: String, event : Event )  {
@@ -195,16 +248,5 @@ class AddTimeEventViewModel : ViewModel() {
                     isGettingEventSuccess.value = false
                 }
         }
-    }
-    fun deleteEvent(idChannel: String?, idEvent : String? ) {
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
-            .document(idEvent!!)
-            .delete()
-            .addOnSuccessListener {
-                isDeleteEventSuccess.value = true
-            }
-            .addOnFailureListener {
-                isDeleteEventSuccess.value = false
-            }
     }
 }

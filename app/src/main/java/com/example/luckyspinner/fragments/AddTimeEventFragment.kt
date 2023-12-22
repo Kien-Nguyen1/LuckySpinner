@@ -28,6 +28,7 @@ import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.DateListAdapter
+import com.example.luckyspinner.adapter.MemberInEventListAdapter
 import com.example.luckyspinner.adapter.RandomSpinnerListAdapter
 import com.example.luckyspinner.databinding.ChooseRandomSpinnerListLayoutBinding
 import com.example.luckyspinner.databinding.FragmentAddTimeEventBinding
@@ -43,10 +44,11 @@ import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 
-class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, DateListAdapter.Listener {
+class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, DateListAdapter.Listener, MemberInEventListAdapter.Listener {
     private val viewModel by viewModels<AddTimeEventViewModel>()
     private lateinit var binding : FragmentAddTimeEventBinding
     private lateinit var bindingRandomDialog : ChooseRandomSpinnerListLayoutBinding
+    private lateinit var bindingMemberDialog : ChooseRandomSpinnerListLayoutBinding
     private lateinit var bindingDateDialog: ChooseRandomSpinnerListLayoutBinding
     private lateinit var workManager: WorkManager
     private var channelId : String = EMPTY_STRING
@@ -54,8 +56,10 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     private lateinit var telegramChannelId : String
     private var isLoadedFirstTime = false
     private lateinit var chooseSpinnerDialog : Dialog
+    private lateinit var chooseMemberDialog : Dialog
     private lateinit var dateDialog : Dialog
     private lateinit var randomSpinnerAdapter : RandomSpinnerListAdapter
+    private lateinit var memberInEventAdapter : MemberInEventListAdapter
     private lateinit var dateAdapter : DateListAdapter
     lateinit var progressDialog : ProgressDialog
 
@@ -76,12 +80,15 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             toolBar.menu.findItem(R.id.memberListFragment)?.isVisible = false
             toolBar.menu.findItem(R.id.spinnerListFragment)?.isVisible = false
         }
+        workManager = WorkManager.getInstance(requireContext())
+
         if (eventId == null) {
             binding.btnDeleteEvent.visibility = View.GONE
             binding.appBarAddTimeEvent.toolBar.title = "Add Time Event"
         } else {
             binding.appBarAddTimeEvent.toolBar.title = "Edit Time Event"
         }
+        setUpRecycleView()
 
         setupObservers()
 
@@ -89,17 +96,19 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
         viewModel.getEvent(channelId, eventId)
 
-        setupChooseSpinnerDialog(Gravity.CENTER)
+        setupChooseSpinnerDialog()
+        setupMemberDialog()
 
         lifecycleScope.launch(Dispatchers.IO) {
             if (eventId == null) {
+                viewModel.getMembers(channelId)
                 val timeInMillis = Calendar.getInstance().timeInMillis
                 eventId = "$channelId $timeInMillis"
                 viewModel.getSpinnerFromChannel(channelId)
             } else {
                 viewModel.getSpinnerFromEvent(channelId, eventId!!)
+                viewModel.getMemberFromEvent(channelId, eventId!!)
             }
-            viewModel.getMembers(channelId)
         }
 
 
@@ -110,8 +119,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        workManager = WorkManager.getInstance(requireContext())
-        workManager.cancelAllWork()
+
         binding.btnDoneAddTimeEvent.setOnClickListener {
             getTimeAndDatePicker()
         }
@@ -122,7 +130,10 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             handleTestNow()
         }
         binding.btnDeleteEvent.setOnClickListener {
-            handleDeleteEvent()
+            findNavController().popBackStack()
+        }
+        binding.btnMemberList.setOnClickListener {
+            chooseMemberDialog.show()
         }
 
         binding.appBarAddTimeEvent.apply {
@@ -154,6 +165,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 getListDay()
             )
         )
+        viewModel.saveListMember(channelId, eventId!!)
+
         val timeNow = Calendar.getInstance()
 
         val calendar = Calendar.getInstance()
@@ -198,7 +211,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                     }
                     viewModel.isSaveListSpinnerSuccess.apply {
                         if (value == true) {
-                            println("Here come navigate")
                             navigate()
                         } else {
                             viewModel.isSaveListSpinnerSuccess.observe(viewLifecycleOwner) {
@@ -212,37 +224,19 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                     }
                 }
         }
-
-//        workManager.getWorkInfosForUniqueWorkLiveData(eventId!!)
-//            .observe(viewLifecycleOwner) {
-//                    workInfor ->
-//                if (workInfor.size != 0) {
-//
-//                    workInfor[0]
-//                    if (workInfor[0].state == WorkInfo.State.SUCCEEDED) {
-//                        progressDialog.dismiss()
-//                        findNavController().popBackStack()
-//                        println("Success from workInfor ${workInfor[0].outputData.getString("")}")
-//                    }
-//                    if (workInfor[0].state == WorkInfo.State.FAILED) {
-//                        progressDialog.dismiss()
-//                        val message = workInfor[0].outputData.getString(Constants.MESSAGE)
-//                        message?.let {
-//                            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-//                        }
-//                    }
-//                }
-//                else {
-//                    println("WorkInfo is null")
-//                }
-//
-//            }
     }
     private fun setUpRecycleView() {
         bindingRandomDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
         bindingRandomDialog.rvChooseRandomSpinnerList.apply {
             randomSpinnerAdapter = RandomSpinnerListAdapter(this@AddTimeEventFragment)
             adapter = randomSpinnerAdapter
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        bindingMemberDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
+        bindingMemberDialog.rvChooseRandomSpinnerList.apply {
+            memberInEventAdapter = MemberInEventListAdapter(this@AddTimeEventFragment)
+            adapter = memberInEventAdapter
             layoutManager = LinearLayoutManager(context)
         }
     }
@@ -277,8 +271,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         windowAttribute.gravity = Gravity.CENTER
         window.attributes = windowAttribute
     }
-    private fun setupChooseSpinnerDialog(gravity: Int) {
-        setUpRecycleView()
+    private fun setupChooseSpinnerDialog() {
         chooseSpinnerDialog = Dialog(requireContext())
         chooseSpinnerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         chooseSpinnerDialog.setContentView(bindingRandomDialog.root)
@@ -288,9 +281,25 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         val windowAttribute : WindowManager.LayoutParams = window.attributes
-        windowAttribute.gravity = gravity
+        windowAttribute.gravity = Gravity.CENTER
         window.attributes = windowAttribute
     }
+
+    private fun setupMemberDialog() {
+        chooseMemberDialog = Dialog(requireContext())
+        chooseMemberDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        chooseMemberDialog.setContentView(bindingMemberDialog.root)
+        bindingMemberDialog.tvTitleChooseRandomSpinnerList.text = "Choose Members"
+
+        val window : Window = chooseMemberDialog.window!!
+        window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val windowAttribute : WindowManager.LayoutParams = window.attributes
+        windowAttribute.gravity = Gravity.CENTER
+        window.attributes = windowAttribute
+    }
+
     fun handleTestNow() {
         if (!isEventValidate()) {
             return
@@ -300,6 +309,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         val constraints = Constraints(requiredNetworkType = NetworkType.CONNECTED, requiresBatteryNotLow = true)
 
         viewModel.saveListSpinner(channelId, testId)
+        viewModel.saveListMember(channelId, testId)
 
         viewModel.saveEvent(
             channelId,
@@ -350,23 +360,17 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
             }
     }
-    fun handleDeleteEvent() {
-        progressDialog.show()
-        viewModel.deleteEvent(channelId, eventId)
-        viewModel.isDeleteEventSuccess.observe(viewLifecycleOwner) {
-            progressDialog.dismiss()
-            if (it) {
-                findNavController().popBackStack()
-            } else {
-                Toast.makeText(context, "Delete Failed", Toast.LENGTH_LONG).show()
-            }
 
-        }
+    fun handleMemberList() {
+
     }
-
     fun setupObservers() {
         viewModel.spinnerList.observe(viewLifecycleOwner) {
             randomSpinnerAdapter.spinners = it
+        }
+        viewModel.memberList.observe(viewLifecycleOwner) {
+            memberInEventAdapter.members = it
+            println(it.size)
         }
         viewModel.event.observe(viewLifecycleOwner) {
             if (!isLoadedFirstTime) {
@@ -422,9 +426,14 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     override fun onDeleteItem(id: String) {
     }
 
-    override fun onCheckboxClick(idSpinner: String, position : Int, hasSelected : Boolean) {
+    override fun onCheckboxClickSpinner(id: String, position : Int, hasSelected : Boolean) {
         viewModel.checkBoxSpinner(position, hasSelected)
     }
+
+    override fun onCheckboxClickMember(id : String, position : Int, hasSelected : Boolean) {
+        viewModel.checkBoxMember(position, hasSelected)
+    }
+
 
     override fun onDateClick(position: Int, isChecked : Boolean) {
         val dayNumber = if (isChecked) changeTheNumberOfDay(position) else 0

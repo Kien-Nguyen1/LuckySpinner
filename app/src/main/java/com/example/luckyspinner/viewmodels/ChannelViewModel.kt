@@ -15,6 +15,7 @@ class ChannelViewModel : ViewModel() {
     var channelList = MutableLiveData<List<Event>>()
     val db = FirebaseFirestore.getInstance()
     val isShowProgressDialog = MutableLiveData<Boolean>()
+    val isDeleteEventSuccess = MutableLiveData<Boolean?>()
 
 
     fun  getEvents(idChannel : String) {
@@ -51,20 +52,17 @@ class ChannelViewModel : ViewModel() {
             }
     }
 
-    fun  deleteEvent(idChannel: String, idEvent : String) {
-
+    fun deleteEvent(idChannel: String, idEvent : String) {
+        isShowProgressDialog.value = true
         DataController.deleteEvent(db, idChannel, idEvent)
             .addOnSuccessListener {
-                Log.d(
-                    Constants.FIRE_STORE,
-                    "DocumentSnapshot successfully deleted!"
-                )
+                isDeleteEventSuccess.value = true
                 isShowProgressDialog.value = false
             }
-            .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error deleting document", e)
+            .addOnFailureListener {
+                isDeleteEventSuccess.value = false
                 isShowProgressDialog.value = false
             }
-
     }
     fun getEventFromFirestore(doc : DocumentSnapshot) : Event {
         val HOUR_EVENT_KEY = "hourElement"

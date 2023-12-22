@@ -5,18 +5,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.EventListAdapter
+import com.example.luckyspinner.controller.DataController
 import com.example.luckyspinner.databinding.FragmentChannelBinding
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.CHANNEL_NAME
 import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
 import com.example.luckyspinner.util.Constants.ID_TELEGRAM_CHANNEL_KEY
+import com.example.luckyspinner.util.DialogUtil
+import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.viewmodels.ChannelViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -126,6 +131,16 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
             if (it) progressDialog.show()
             else progressDialog.dismiss()
         }
+        viewModel.isDeleteEventSuccess.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    Toast.makeText(context, "Delete success!", Toast.LENGTH_SHORT).show()
+                    viewModel.getEvents(idChannel)
+                } else {
+                    Toast.makeText(context, "Delete failed!", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
     override fun onItemClick(id: String) {
@@ -141,6 +156,21 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     }
 
     override fun onDeleteItem(id: String) {
+        lifecycleScope.launch {
+            val isDelete = DialogUtil.showYesNoDialog(context)
+            if (isDelete) {
+                viewModel.deleteEvent(idChannel, id)
+            }
+        }
+    }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        val list : MutableList<MutableLiveData<*>> = ArrayList<MutableLiveData<*>>().apply {
+            add(viewModel.isDeleteEventSuccess)
+        }
+        Function.toNull(list)
+        list.add(viewModel.channelList)
+        Function.removeObservers(list, viewLifecycleOwner)
     }
 }

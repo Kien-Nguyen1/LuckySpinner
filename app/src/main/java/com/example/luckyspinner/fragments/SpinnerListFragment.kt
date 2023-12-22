@@ -15,6 +15,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -32,6 +33,7 @@ import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
 import com.example.luckyspinner.util.Constants.ID_SPINNER_KEY
 import com.example.luckyspinner.util.Constants.SPINNER_TITLE
 import com.example.luckyspinner.util.DialogUtil
+import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.viewmodels.SpinnerListViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -244,6 +246,18 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
                 viewModel.deleteSpinner(idChannel, id)
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        val list : MutableList<MutableLiveData<*>> = ArrayList<MutableLiveData<*>>().apply {
+            add(viewModel.isEditingSuccess)
+            add(viewModel.isDeletingSuccess)
+            add(viewModel.isAddingSpinnerSuccess)
+        }
+        Function.toNull(list)
+        list.add(viewModel.spinnerList)
+        Function.removeObservers(list, viewLifecycleOwner)
     }
 
 }

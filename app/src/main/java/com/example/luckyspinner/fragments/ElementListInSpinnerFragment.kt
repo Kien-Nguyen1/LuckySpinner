@@ -15,6 +15,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,6 +31,7 @@ import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
 import com.example.luckyspinner.util.Constants.ID_SPINNER_KEY
 import com.example.luckyspinner.util.Constants.SPINNER_TITLE
 import com.example.luckyspinner.util.DialogUtil
+import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.viewmodels.ElementListInSpinnerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -89,8 +91,8 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
                     element.nameElement = binding.edtEnterElement.text.toString()
                     viewModel.editElement(idChannel, idSpinner, element)
                 }
-                binding.btnDeleteElement.setOnClickListener {
-                    viewModel.deleteElement(idChannel, idSpinner, element.idElement)
+                binding.btnCancelElement.setOnClickListener {
+                    editElementDialog.dismiss()
                 }
 
                 val window : Window = editElementDialog.window!!
@@ -222,4 +224,16 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
             }
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        val list : MutableList<MutableLiveData<*>> = ArrayList<MutableLiveData<*>>().apply {
+            add(viewModel.isAddingSuccess)
+            add(viewModel.isEditingSuccess)
+            add(viewModel.isDeleteSuccess)
+        }
+        Function.toNull(list)
+        list.add(viewModel.elementList)
+        Function.removeObservers(list, viewLifecycleOwner)
+        }
 }

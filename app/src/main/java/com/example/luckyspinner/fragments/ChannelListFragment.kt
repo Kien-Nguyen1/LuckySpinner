@@ -15,6 +15,7 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -31,6 +32,7 @@ import com.example.luckyspinner.util.Constants.EMPTY_STRING
 import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
 import com.example.luckyspinner.util.Constants.ID_TELEGRAM_CHANNEL_KEY
 import com.example.luckyspinner.util.DialogUtil
+import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.viewmodels.ChannelListViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -52,17 +54,6 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         binding = FragmentChannelListBinding.inflate(inflater, container, false)
         progressDialog = ProgressDialog(context)
         setupRecycleView()
-        viewModel.channelList.observe(viewLifecycleOwner) {
-            channelListAdapter.channels = it
-            if (it.isEmpty()) {
-                binding.rvChannelList.visibility = View.GONE
-                binding.imgEmptyList.visibility = View.VISIBLE
-            } else {
-                binding.rvChannelList.visibility = View.VISIBLE
-                binding.imgEmptyList.visibility = View.GONE
-
-            }
-        }
 
         // Inflate the layout for this fragment
         return binding.root
@@ -166,6 +157,17 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     }
 
     fun setupStateObserver() {
+        viewModel.channelList.observe(viewLifecycleOwner) {
+            channelListAdapter.channels = it
+            if (it.isEmpty()) {
+                binding.rvChannelList.visibility = View.GONE
+                binding.imgEmptyList.visibility = View.VISIBLE
+            } else {
+                binding.rvChannelList.visibility = View.VISIBLE
+                binding.imgEmptyList.visibility = View.GONE
+
+            }
+        }
         viewModel.isAddingSuccess.observe(viewLifecycleOwner) {
             println("Here come adding")
             it?.let {
@@ -175,7 +177,6 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 } else {
                     Toast.makeText(requireContext(), "Add failed!", Toast.LENGTH_SHORT).show()
                 }
-                viewModel.isAddingSuccess.value = null
                 viewModel.getChannels()
             }
         }
@@ -187,7 +188,6 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 } else {
                     Toast.makeText(context, "Delete Channel Fail!!", Toast.LENGTH_SHORT).show()
                 }
-                viewModel.isDeleteSuccess.value = null
                 viewModel.getChannels()
             }
         }
@@ -195,6 +195,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             it?.let {
                 if (it) {
                     editChannelDiaLog.dismiss()
+                    Toast.makeText(context, "Edit Channel Successfully!", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(requireContext(), "Edit failed!", Toast.LENGTH_SHORT).show()
                 }
@@ -240,9 +241,16 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     }
     override fun onDestroyView() {
         super.onDestroyView()
-        viewModel.channelList.removeObservers(viewLifecycleOwner)
-        viewModel.isAddingSuccess.removeObservers(viewLifecycleOwner)
-        viewModel.isDeleteSuccess.removeObservers(viewLifecycleOwner)
+        val list : MutableList<MutableLiveData<*>> = ArrayList()
+        list.add(viewModel.isEditingSuccess)
+        list.add(viewModel.isAddingSuccess)
+        list.add(viewModel.isDeleteSuccess)
+
+        Function.toNull(list)
+
+        list.add(viewModel.channelList)
+        Function.removeObservers(list, viewLifecycleOwner)
+
     }
 
 }
