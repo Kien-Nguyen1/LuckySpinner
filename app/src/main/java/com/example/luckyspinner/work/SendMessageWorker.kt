@@ -6,6 +6,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.example.luckyspinner.databinding.EditDialogBinding
 import com.example.luckyspinner.models.ElementSpinner
 import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Member
@@ -20,8 +21,11 @@ import com.example.luckyspinner.util.makeStatusNotification
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.toObject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.Calendar
 import kotlin.random.Random
@@ -48,36 +52,39 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
 
 
     override suspend fun doWork(): Result {
-        getListDayFromEvent(channelId, eventId.toString())
-        getMembers(channelId, eventId)
-        getSpinnerFromEvent(channelId, eventId)
+
 
         suspend fun sendMessage() : Result {
+            var hasHandleElement = false
+            hasGetListDay = getListDayFromEvent(channelId, eventId.toString())
+            hasHandleRandomMember = getMembers(channelId, eventId)
+            var hasGetEvent = getSpinnerFromEvent(channelId, eventId)
+            if (hasGetEvent) {
+                hasHandleElement = handleForLoopElement()
+            }
+
             println("Here do work go")
             return try {
-                withContext(Dispatchers.IO) {
-                    if ((hasHandleRandomSpinner != true) || !hasHandleRandomMember || !hasGetListDay) {
-                        delay(1000)
-                        if (++countDelay > 10) {
-                            return@withContext Result.failure()
+                withContext(Dispatchers.Main) {
+                    if (hasHandleElement && hasGetListDay && hasHandleRandomMember && hasGetEvent && hasHandleElement) {
+                        if (!isSendMessageToDay()) {
+                            return@withContext Result.success()
                         }
-                        return@withContext sendMessage()
-                    }
-                    if (!isSendMessageToDay()) {
-                        return@withContext Result.success()
-                    }
-                    val message = messageMember + messageSpinner
-                    println("Here come fail fake $telegramChannelId")
+                        val message = messageMember + messageSpinner
+                        println("Here come fail fake $telegramChannelId")
 
-                    val respond = TelegramApiClient.telegramApi.sendMessage(telegramChannelId!!, message)
-                    if (!respond.isSuccessful) {
-                        return@withContext Result.failure(
-                            workDataOf(MESSAGE to "Incorrect chat Id! Please make sure your group already add the LifeSpinBot")
-                        )
+                        val respond = TelegramApiClient.telegramApi.sendMessage(telegramChannelId!!, message)
+                        if (!respond.isSuccessful) {
+                            return@withContext Result.failure(
+                                workDataOf(MESSAGE to "Incorrect chat Id! Please make sure your group already add the LifeSpinBot")
+                            )
+                        }
+                        outputData = workDataOf(CHAT_ID to telegramChannelId, MESSAGE to message)
+                        makeStatusNotification("Send message successfully!", applicationContext)
+                        return@withContext Result.success(outputData)
+                    } else {
+                        return@withContext Result.failure()
                     }
-                    outputData = workDataOf(CHAT_ID to telegramChannelId, MESSAGE to message)
-                    makeStatusNotification("Send message successfully!", applicationContext)
-                    return@withContext Result.success(outputData)
                 }
             } catch (e: Exception) {
                 println(e)
@@ -93,150 +100,142 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
 
     fun isSendMessageToDay() : Boolean {
         val today = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
-//        return true//moke
+        return true//moke
         return listDay.contains(today)
     }
-    fun  getElement(idChannel : String?, idSpinner : String?, spinnerName : String, isLast : Boolean) {
+    suspend fun  getElement(idChannel : String?, idSpinner : String?, spinnerName : String, isLast : Boolean) : Boolean {
         val list = ArrayList<ElementSpinner>()
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}/$idSpinner/${Constants.FS_USER_ELEMENT_SPINNER}")
-            .get()
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    println("Here get elements come ${it.result.size()}")
-                    for (document : QueryDocumentSnapshot in it.result) {
-                        Log.d(
-                            Constants.FIRE_STORE,
-                            document.id + " => " + document.data
-                        )
-                        if (document.exists()) {
-                            val  e = document.toObject<ElementSpinner>()
-                            list.add(e)
-                        }
-                    }
-                    if (list.size != 0) {
-                        val randomInt = Random.nextInt(list.size)
-                        messageSpinner += "\n For ${spinnerName} : ${list[randomInt].nameElement} is random chooser."
-                    } else {
-                        messageSpinner += "\n For  ${spinnerName} : Don't have any elements!!"
-                    }
-                    if (isLast) {
-                        hasHandleRandomSpinner = (hasHandleRandomSpinner == null)
-                    }
-
-                } else {
-                    Log.w(
-                        Constants.FIRE_STORE,
-                        "Error getting documents.",
-                        it.exception
-                    )
+        try {
+            val documentQuery = db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}/$idSpinner/${Constants.FS_USER_ELEMENT_SPINNER}")
+                .get()
+                .await()
+            for (document : QueryDocumentSnapshot in documentQuery) {
+                Log.d(
+                    Constants.FIRE_STORE,
+                    document.id + " => " + document.data
+                )
+                if (document.exists()) {
+                    val  e = document.toObject<ElementSpinner>()
+                    list.add(e)
                 }
-
             }
-    }
-    fun handleForLoopElement() {
-        sList.forEachIndexed { index, spinner ->
-            getElement(channelId, spinner.idSpin, spinner.titleSpin, index == sList.size - 1)
+            return true
+        } catch (e : Exception) {
+            return false
         }
     }
-    fun getSpinnerFromEvent(idChannel: String?, idEvent: String?) {
-        db.collection(Constants.FS_LIST_CHANNEL+"/$deviceId/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_SPINNER}")
-            .get()
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    println("Here we go getSpin")
-                    println(it.result.size())
-                    for (document : QueryDocumentSnapshot in it.result) {
-                        Log.d(
-                            Constants.FIRE_STORE,
-                            document.id + " => " + document.data
-                        )
-                        if (document.exists()) {
-                            val  s = document.toObject<Spinner>()
-                            if (s.hasSelected) sList.add(s)
-                        }
-                    }
-                    handleForLoopElement()
-
-                } else {
-                    Log.w(
-                        Constants.FIRE_STORE,
-                        "Error getting documents.",
-                        it.exception
-                    )
-                    getSpinnerFromEvent(idChannel, idEvent)
+    suspend fun handleForLoopElement() : Boolean {
+        return withContext(Dispatchers.Default) {
+            var isDone = true
+            sList.forEachIndexed { index, spinner ->
+                val hasDone = getElement(channelId, spinner.idSpin, spinner.titleSpin, index == sList.size - 1)
+                if (!hasDone) {
+                    isDone = false
                 }
-
             }
+            return@withContext isDone
+        }
+    }
+    suspend fun getSpinnerFromEvent(idChannel: String?, idEvent: String?) : Boolean {
+        try {
+            val document = db.collection(Constants.FS_LIST_CHANNEL+"/$deviceId/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_SPINNER}")
+                .get()
+                .await()
+            for (doc : QueryDocumentSnapshot in document) {
+                Log.d(
+                    Constants.FIRE_STORE,
+                    doc.id + " => " + doc.data
+                )
+                if (doc.exists()) {
+                    val  s = doc.toObject<Spinner>()
+                    if (s.hasSelected) sList.add(s)
+                }
+            }
+            return true
+        } catch (e : Exception) {
+            return false
+        }
     }
 
-    fun  getMembers(idChannel : String?, idEvent: String?) {
-        db.collection(Constants.FS_LIST_CHANNEL+"/$deviceId/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_MEMBER}")
-            .get()
-            .addOnCompleteListener {
-
-                if (it.result.size() == 0) {
+    suspend fun  getMembers(idChannel : String?, idEvent: String?) : Boolean {
+        try {
+            val documents = db.collection(Constants.FS_LIST_CHANNEL+"/$deviceId/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_MEMBER}")
+                .get()
+                .await()
+            documents.forEachIndexed { index, document ->
+                Log.d(
+                    Constants.FIRE_STORE,
+                    document.id + " => " + document.data
+                )
+                if (document.exists()) {
+                    val m = document.toObject<Member>()
+                    if (m.hasSelected)  {
+                        mList.add(m)
+                    }
+                }
+                if (index == documents.size() - 1) {
                     hasHandleRandomMember = true
-                    messageMember = "Can not get members"
-                    return@addOnCompleteListener
-                }
-                if (it.isSuccessful) {
-                    it.result.forEachIndexed { index, document ->
-                        Log.d(
-                            Constants.FIRE_STORE,
-                            document.id + " => " + document.data
-                        )
-                        if (document.exists()) {
-                            val m = document.toObject<Member>()
-                            if (m.hasSelected)  mList.add(m)
-                        }
-                        if (index == it.result.size() - 1) {
-                            hasHandleRandomMember = true
-                            val randomInt = Random.nextInt(mList.size)
-                            messageMember = "The random member : ${mList[randomInt].nameMember}"
-                        }
-                    }
-
-                } else {
-                    Log.w(
-                        Constants.FIRE_STORE,
-                        "Error getting documents.",
-                        it.exception
-                    )
-                    getMembers(idChannel, idEvent)
+                    val randomInt = Random.nextInt(mList.size)
+                    messageMember = "The random member : ${mList[randomInt].nameMember}"
                 }
             }
+            return true
+        } catch (e : Exception) {
+            return  false
+        }
     }
-    fun  getListDayFromEvent(idChannel : String?, eventId : String) {
-        db.collection(Constants.FS_LIST_CHANNEL+"/$deviceId/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
-            .document(eventId)
-            .get()
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    Log.d(
-                        Constants.FIRE_STORE,
-                        it.result.id + " => " + it.result.data
-                    )
-                    if (it.result.exists()) {
-                        val  e = it.result.toObject<Event>()
-                        listDay = if (e != null) {
-                            if (e.typeEvent == null) arrayListOf(2,3,4,5,6,7,1)
-                            else e.listDay
-                        } else {
-                            ArrayList()
-                        }
-
-                        hasGetListDay = true
-                    }
+    suspend fun  getListDayFromEvent(idChannel : String?, eventId : String) : Boolean {
+            try {
+                val document = db.collection(Constants.FS_LIST_CHANNEL+"/$deviceId/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
+                    .document(eventId)
+                    .get()
+                    .await()
+                val  e = document.toObject<Event>()
+                listDay = if (e != null) {
+                    if (e.typeEvent == null) arrayListOf(2,3,4,5,6,7,1)
+                    else e.listDay
                 } else {
-                    Log.w(
-                        Constants.FIRE_STORE,
-                        "Error getting documents.",
-                        it.exception
-                    )
-                    getListDayFromEvent(idChannel, eventId)
+                    ArrayList()
                 }
-
+                return true
+            } catch (e : Exception) {
+                return false
             }
+
+
+
+//                .addOnCompleteListener {
+//                    if (it.isSuccessful) {
+//                        Log.d(
+//                            Constants.FIRE_STORE,
+//                            it.result.id + " => " + it.result.data
+//                        )
+//                        if (it.result.exists()) {
+//                            val  e = it.result.toObject<Event>()
+//                            listDay = if (e != null) {
+//                                if (e.typeEvent == null) arrayListOf(2,3,4,5,6,7,1)
+//                                else e.listDay
+//                            } else {
+//                                ArrayList()
+//                            }
+//
+//                            return true
+//
+//                            hasGetListDay = true
+//                        }
+//                    } else {
+//                        Log.w(
+//                            Constants.FIRE_STORE,
+//                            "Error getting documents.",
+//                            it.exception
+//                        )
+//                        hasGetListDay = false
+////                    CoroutineScope(Dispatchers.IO).launch {
+////                        getListDayFromEvent(idChannel, eventId)
+////                    }
+//                    }
+//
+//                }
     }
 }
