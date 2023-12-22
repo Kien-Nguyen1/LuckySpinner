@@ -50,14 +50,17 @@ class ElementListInSpinnerAdapter(private val listener: Listener) : RecyclerView
 
     override fun onBindViewHolder(holder: ElementListInSpinner, position: Int) {
         holder.binding.apply {
-            val spinner = elementSpinners[position]
-            tvElementInSpinner.text = spinner.nameElement
+            val element = elementSpinners[position]
+            tvElementInSpinner.text = element.nameElement
             root.setOnClickListener {
-                listener.onItemClick(spinner.idElement)
+                listener.onItemClick(element.idElement)
             }
 
             btnEditElementTitle.setOnClickListener {
                 onEditClickListener.onEditClick(position)
+            }
+            btnDeleteElementTitle.setOnClickListener {
+                listener.onDeleteItem(element.idElement)
             }
 
             if (position % 2 != 0) {

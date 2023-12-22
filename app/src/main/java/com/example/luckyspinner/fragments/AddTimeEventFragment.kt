@@ -111,6 +111,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         super.onViewCreated(view, savedInstanceState)
 
         workManager = WorkManager.getInstance(requireContext())
+        workManager.cancelAllWork()
         binding.btnDoneAddTimeEvent.setOnClickListener {
             getTimeAndDatePicker()
         }

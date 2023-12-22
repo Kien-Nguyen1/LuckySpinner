@@ -29,6 +29,7 @@ import com.example.luckyspinner.util.Constants.EMPTY_STRING
 import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
 import com.example.luckyspinner.util.Constants.ID_SPINNER_KEY
 import com.example.luckyspinner.util.Constants.SPINNER_TITLE
+import com.example.luckyspinner.util.DialogUtil
 import com.example.luckyspinner.viewmodels.ElementListInSpinnerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -139,6 +140,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         addElementInSpinnerDiaLog.show()
         binding.btnDoneAddChannel.setOnClickListener {
             if (binding.edtEnterChannelName.text.toString() == EMPTY_STRING) {
+                binding.edtEnterChannelName.error = "Please fill this field"
                 return@setOnClickListener
             }
             viewModel.addElement(idChannel,
@@ -174,7 +176,6 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
             it?.let {
                 if(it) {
                     Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT).show()
-                    editElementDialog.dismiss()
                 } else {
                     Toast.makeText(context, "Delete Channel Fail!!", Toast.LENGTH_SHORT).show()
                 }
@@ -215,7 +216,10 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
 
     override fun onDeleteItem(id: String) {
         lifecycleScope.launch(Dispatchers.Main) {
-            viewModel.deleteElement(idChannel, idSpinner, id)
+            val isDelete = DialogUtil.showYesNoDialog(context)
+            if (isDelete) {
+                viewModel.deleteElement(idChannel, idSpinner, id)
+            }
         }
     }
 }

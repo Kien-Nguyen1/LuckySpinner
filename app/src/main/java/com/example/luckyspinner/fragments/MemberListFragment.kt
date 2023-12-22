@@ -28,6 +28,7 @@ import com.example.luckyspinner.databinding.FragmentMemberListBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.models.Member
 import com.example.luckyspinner.util.Constants
+import com.example.luckyspinner.util.DialogUtil
 import com.example.luckyspinner.viewmodels.MemberListViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -143,14 +144,19 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         addMemberDialog.show()
 
         binding.btnDoneAddChannel.setOnClickListener {
+            val edt = binding.edtEnterChannelName
+            if (edt.text.toString() == Constants.EMPTY_STRING) {
+                edt.error = "Please fill this field"
+                return@setOnClickListener
+            }
             val memberName = binding.edtEnterChannelName.text.toString()
             progressDialog.show()
             viewModel.addMember(idChannel, Member(Calendar.getInstance().timeInMillis.toString(), memberName))
         }
     }
     private fun handleChooseAllMember() {
-        progressDialog.show()
         val list = viewModel.memberList.value ?: return
+        progressDialog.show()
         var isAllSelected = true
         run breaking@{
             list.forEach { member ->
@@ -214,7 +220,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             it?.let {
                 if(it) {
                     Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT).show()
-                    editMemberDiaLog.dismiss()
                 } else {
                     Toast.makeText(context, "Delete Channel Fail!!", Toast.LENGTH_SHORT).show()
                 }
@@ -246,7 +251,13 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     }
 
     override fun onDeleteItem(id: String) {
-        TODO("Not yet implemented")
+        lifecycleScope.launch {
+            val isDelete = DialogUtil.showYesNoDialog(context)
+            if (isDelete) {
+                progressDialog.show()
+                viewModel.deleteMember(idChannel, id)
+            }
+        }
     }
 
     override fun onCheckBoxSelected(id: String, position: Int, isSelected : Boolean) {

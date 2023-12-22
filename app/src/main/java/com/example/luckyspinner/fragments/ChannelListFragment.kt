@@ -18,7 +18,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.adapter.ChannelListAdapter
@@ -31,10 +30,11 @@ import com.example.luckyspinner.util.Constants.CHANNEL_NAME
 import com.example.luckyspinner.util.Constants.EMPTY_STRING
 import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
 import com.example.luckyspinner.util.Constants.ID_TELEGRAM_CHANNEL_KEY
+import com.example.luckyspinner.util.DialogUtil
 import com.example.luckyspinner.viewmodels.ChannelListViewModel
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
@@ -141,8 +141,18 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         binding.btnDoneAddChannel.setOnClickListener {
             val channelTelegramId = binding.edtEnterChannelId.text.toString()
             val channelName = binding.edtEnterChannelName.text.toString()
+            var isValidated = true
+            binding.edtEnterChannelName.apply {
+                if (text.toString() == EMPTY_STRING) {
+                    error = "Please fill your channel name!"
+                    isValidated = false
+                }
+            }
             if (channelTelegramId == EMPTY_STRING) {
                 binding.edtEnterChannelId.error = "Please fill your TelegramId of channel/group to receive the bot message!"
+                isValidated = false
+            }
+            if (!isValidated) {
                 return@setOnClickListener
             }
             lifecycleScope.launch(Dispatchers.IO) {
@@ -173,7 +183,6 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             it?.let {
                 if(it) {
                     Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT).show()
-                    editChannelDiaLog.dismiss()
                 } else {
                     Toast.makeText(context, "Delete Channel Fail!!", Toast.LENGTH_SHORT).show()
                 }
@@ -221,8 +230,11 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     }
 
     override fun onDeleteItem(id: String) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.deleteChannel(id)
+        lifecycleScope.launch(Dispatchers.Main) {
+            val isDelete = DialogUtil.showYesNoDialog(context)
+            if (isDelete) {
+                viewModel.deleteChannel(id)
+            }
         }
     }
     override fun onDestroyView() {

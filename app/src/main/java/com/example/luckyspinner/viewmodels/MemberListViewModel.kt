@@ -66,6 +66,7 @@ class MemberListViewModel : ViewModel() {
                     "DocumentSnapshot successfully deleted!"
                 )
                 isDeletingMemberSuccess.value = true
+                isShowProgressDialog.value = false
                 viewModelScope.launch {
                     getMembers(idChannel)
                 }

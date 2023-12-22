@@ -57,6 +57,9 @@ class MemberListAdapter(private val listener: Listener) : RecyclerView.Adapter<M
             btnEditMemberName.setOnClickListener {
                 onEditClickListener.onEditClick(position)
             }
+            btnDeleteMemberName.setOnClickListener {
+                listener.onDeleteItem(member.idMember)
+            }
             root.setOnClickListener {
                 listener.onItemClick(member.idMember)
             }

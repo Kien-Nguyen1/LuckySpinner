@@ -57,6 +57,9 @@ class SpinnerListAdapter(private val listener: Listener) : RecyclerView.Adapter<
             btnEditSpinnerOrChannel.setOnClickListener {
                 onEditClickListener.onEditClick(position)
             }
+            btnDeleteSpinnerOrChannel.setOnClickListener {
+                listener.onDeleteItem(spinner.idSpin)
+            }
             root.setOnClickListener {
                 listener.onItemClick(spinner.idSpin, spinner.titleSpin)
             }
