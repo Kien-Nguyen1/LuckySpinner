@@ -96,16 +96,17 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
                 val spinner = spinnerAdapter.spinners[position]
 
                 binding.tvNameTitleAddElement.text = "Edit Spinner"
+
                 binding.edtEnterElement.setText(spinner.titleSpin)
 
                 binding.btnDoneAddElement.setOnClickListener {
                     spinner.titleSpin = binding.edtEnterElement.text.toString()
                     viewModel.editSpinner(idChannel, spinner)
                 }
-                binding.btnDeleteElement.setOnClickListener {
-                    viewModel.deleteSpinner(idChannel, spinner.idSpin)
-                }
 
+                binding.btnCancelElement.setOnClickListener {
+                    editSpinnerDiaLog.dismiss()
+                }
 
                 val window : Window = editSpinnerDiaLog.window!!
                 window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
