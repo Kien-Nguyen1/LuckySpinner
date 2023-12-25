@@ -27,6 +27,7 @@ import com.example.luckyspinner.databinding.AddChannelLayoutBinding
 import com.example.luckyspinner.databinding.EditDialogBinding
 import com.example.luckyspinner.databinding.FragmentMemberListBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
+import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Member
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.DialogUtil
@@ -68,10 +69,11 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecycleView()
-        idChannel = arguments?.getString(Constants.ID_CHANNEL_KEY).toString()
+        idChannel = arguments?.getString(Constants.ID_CHANNEL_KEY)!!
         setupObserver()
 
         lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.getEvents(idChannel)
             viewModel.getMembers(idChannel)
         }
 
@@ -183,6 +185,17 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             adapter = memberAdapter
             layoutManager = LinearLayoutManager(context)
             addItemDecoration(decorationItem)
+        }
+        viewModel.eventList.observe(viewLifecycleOwner) {
+            binding.rvMemberList.apply {
+                memberAdapter = MemberListAdapter(this@MemberListFragment, it)
+                adapter = memberAdapter
+                layoutManager = LinearLayoutManager(context)
+                addItemDecoration(decorationItem)
+                if (viewModel.memberList.isInitialized) {
+                    viewModel.memberList.value = viewModel.memberList.value
+                }
+            }
         }
     }
 

@@ -63,6 +63,7 @@ class ChannelListViewModel : ViewModel() {
             }
 
     }
+
     fun  deleteChannel(channelId : String) {
         isShowProgressDialog.value = true
         DataController.deleteChannel(db, channelId)

@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.MemberListItemInEventBinding
 import com.example.luckyspinner.models.Member
 
-class MemberInEventListAdapter(private val listener: Listener, private val eventId : String?) : RecyclerView.Adapter<MemberInEventListAdapter.MemberListViewHolder>() {
+class MemberInEventListAdapter(private val listener: Listener, private val eventId : String) : RecyclerView.Adapter<MemberInEventListAdapter.MemberListViewHolder>() {
 
     interface Listener {
         fun onItemClick(id: String)
@@ -51,11 +51,13 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
         holder.binding.apply {
             val member = members[position]
             tvTitle.text = member.nameMember
-            var isCheck = false
-            member.listEvent.forEach {
-                if (it == eventId) isCheck = true
-            }
-            checkBoxSpinner.isChecked = isCheck
+//            var isCheck = false
+//            member.listEvent.forEach {
+//                if (it == eventId) {
+//                    isCheck = true
+//                }
+//            }
+            checkBoxSpinner.isChecked = member.listEvent.contains(eventId)
 
             checkBoxSpinner.setOnClickListener {
                 listener.onCheckboxClickMember(member.idMember, position, member.hasSelected)

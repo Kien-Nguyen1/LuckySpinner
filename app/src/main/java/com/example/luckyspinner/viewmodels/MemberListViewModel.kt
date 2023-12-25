@@ -8,17 +8,22 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.luckyspinner.controller.DataController
+import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Member
 import com.example.luckyspinner.util.Constants
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class MemberListViewModel : ViewModel() {
     var memberList = MutableLiveData<List<Member>>()
+    val eventList = MutableLiveData<List<Event>>()
     var isAddingMemberSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
     var isDeletingMemberSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
     var isEdtingMemberSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
@@ -58,6 +63,40 @@ class MemberListViewModel : ViewModel() {
                 }
             }
     }
+     fun  getEvents(idChannel : String) {
+         DataController.getEvents(db, idChannel)
+            .addOnCompleteListener {
+                val list : MutableList<Event> = ArrayList()
+                if (it.isSuccessful) {
+                    for (document : QueryDocumentSnapshot in it.result) {
+                        Log.d(
+                            Constants.FIRE_STORE,
+                            document.id + " => " + document.data
+                        )
+                        if (document.exists()) {
+                            val  e = document.toObject<Event>()
+                            if (e.typeEvent != null) {
+                                list.add(e)
+                            }
+                        }
+                    }
+                    eventList.value = list
+                    return@addOnCompleteListener
+
+                } else {
+                    Log.w(
+                        Constants.FIRE_STORE,
+                        "Error getting documents.",
+                        it.exception
+                    )
+                    viewModelScope.launch {
+                        getEvents(idChannel)
+                    }
+                    return@addOnCompleteListener
+                }
+            }
+    }
+
     fun deleteMember(idChannel : String, idMember : String) {
         DataController.deleteMember(db, idChannel, idMember)
             .addOnSuccessListener {

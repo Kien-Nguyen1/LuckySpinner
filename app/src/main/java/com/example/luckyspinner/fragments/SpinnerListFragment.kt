@@ -73,6 +73,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
         setupObservers()
 
         lifecycleScope.launch(Dispatchers.Main) {
+            viewModel.getEvents(idChannel)
             viewModel.getSpinners(idChannel)
         }
 
@@ -163,6 +164,17 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
             adapter = spinnerAdapter
             layoutManager = LinearLayoutManager(context)
             addItemDecoration(itemDecoration)
+        }
+        viewModel.eventList.observe(viewLifecycleOwner) {
+            binding.rvSpinnerList.apply {
+                spinnerAdapter = SpinnerListAdapter(this@SpinnerListFragment, it)
+                adapter = spinnerAdapter
+                layoutManager = LinearLayoutManager(context)
+                addItemDecoration(itemDecoration)
+                if (viewModel.spinnerList.isInitialized) {
+                    viewModel.spinnerList.value = viewModel.spinnerList.value
+                }
+            }
         }
     }
     fun setupObservers() {

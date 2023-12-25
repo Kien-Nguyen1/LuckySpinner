@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.luckyspinner.controller.DataController
 import com.example.luckyspinner.models.Channel
+import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Spinner
 import com.example.luckyspinner.util.Constants
 import com.google.android.gms.tasks.OnFailureListener
@@ -19,6 +20,7 @@ import kotlinx.coroutines.launch
 
 class SpinnerListViewModel : ViewModel() {
     var spinnerList = MutableLiveData<List<Spinner>>()
+    val eventList = MutableLiveData<List<Event>>()
     val isAddingSpinnerSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
     val isEditingSuccess : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
     val isDeletingSuccess : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
@@ -56,6 +58,36 @@ class SpinnerListViewModel : ViewModel() {
                         it.exception
                     )
                     isShowProgressDialog.value = false
+                }
+
+            }
+    }
+     fun  getEvents(idChannel : String) {
+        val list : MutableList<Event> = ArrayList()
+
+        DataController.getEvents(db, idChannel)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    for (document : QueryDocumentSnapshot in it.result) {
+                        Log.d(
+                            Constants.FIRE_STORE,
+                            document.id + " => " + document.data
+                        )
+                        if (document.exists()) {
+                            val  e = document.toObject<Event>()
+                            if (e.typeEvent != null) {
+                                list.add(e)
+                            }
+                        }
+                    }
+                    eventList.value = list
+
+                } else {
+                    Log.w(
+                        Constants.FIRE_STORE,
+                        "Error getting documents.",
+                        it.exception
+                    )
                 }
 
             }

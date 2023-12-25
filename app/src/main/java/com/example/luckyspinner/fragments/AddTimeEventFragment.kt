@@ -14,6 +14,7 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,6 +37,7 @@ import com.example.luckyspinner.databinding.FragmentAddTimeEventBinding
 import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.EMPTY_STRING
+import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
 import kotlinx.coroutines.Dispatchers
@@ -62,8 +64,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     private lateinit var randomSpinnerAdapter : RandomSpinnerListAdapter
     private lateinit var memberInEventAdapter : MemberInEventListAdapter
     private lateinit var dateAdapter : DateListAdapter
-    lateinit var progressDialog : ProgressDialog
-    var isAdd = false
+    private lateinit var progressDialog : ProgressDialog
 
 
     override fun onCreateView(
@@ -87,7 +88,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         if (eventId == null) {
             binding.btnDeleteEvent.visibility = View.GONE
             binding.appBarAddTimeEvent.toolBar.title = "Add Time Event"
-            isAdd = true
         } else {
             binding.appBarAddTimeEvent.toolBar.title = "Edit Time Event"
         }
@@ -97,11 +97,12 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             if (eventId == null) {
                 val timeInMillis = Calendar.getInstance().timeInMillis
                 eventId = "$channelId $timeInMillis"
-                viewModel.getEvent(channelId, null, eventId)
+                viewModel.getEvent(channelId, null, newEventId = eventId)
 
                 viewModel.getMembers(channelId, true)
                 viewModel.getSpinnerFromChannel(channelId, true)
             } else {
+                viewModel.getEvent(channelId, eventId)
                 viewModel.getMembers(channelId, false)
                 viewModel.getSpinnerFromChannel(channelId, false)
 //                viewModel.getSpinnerFromEvent(channelId, eventId!!)
@@ -155,6 +156,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         if (!isEventValidate()) {
             return
         }
+//        workManager.cancelAllWork()
         progressDialog.show()
 
         val selectedHour: Int = binding.timePickerAddTimeEvent.hour
@@ -199,7 +201,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 Constants.ID_TELEGRAM_CHANNEL_KEY to telegramChannelId,
                 Constants.ID_CHANNEL_KEY to channelId,
                 Constants.ID_EVENT_KEY to eventId,
-                "deviceId" to Constants.DEVICE_ID
+                Constants.DEVICE_ID_KEY to Constants.DEVICE_ID
             )
             val workRequest  = PeriodicWorkRequestBuilder<SendMessageWorker>(16, TimeUnit.MINUTES)
                 .setInitialDelay(durationDiff)
@@ -219,17 +221,19 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                     fun navigate() {
                         println("Here come navigate")
                         progressDialog.dismiss()
+                        Toast.makeText(context, "Saving successful" , Toast.LENGTH_LONG).show()
                         findNavController().popBackStack()
                     }
                     viewModel.isSaveListSpinnerSuccess.apply {
                         if (value == true) {
                             navigate()
                         } else {
-                            viewModel.isSaveListSpinnerSuccess.observe(viewLifecycleOwner) {
+                            observe(viewLifecycleOwner) {
                                 if (it) {
                                     navigate()
                                 } else {
-                                    viewModel.saveListSpinner(channelId, eventId!!)
+                                    Toast.makeText(context, "Something wrong. Try again!" , Toast.LENGTH_LONG).show()
+
                                 }
                             }
                         }
@@ -240,14 +244,14 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     private fun setUpRecycleView() {
         bindingRandomDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
         bindingRandomDialog.rvChooseRandomSpinnerList.apply {
-            randomSpinnerAdapter = RandomSpinnerListAdapter(this@AddTimeEventFragment, eventId)
+            randomSpinnerAdapter = RandomSpinnerListAdapter(this@AddTimeEventFragment, eventId!!)
             adapter = randomSpinnerAdapter
             layoutManager = LinearLayoutManager(context)
         }
 
         bindingMemberDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
         bindingMemberDialog.rvChooseRandomSpinnerList.apply {
-            memberInEventAdapter = MemberInEventListAdapter(this@AddTimeEventFragment, eventId)
+            memberInEventAdapter = MemberInEventListAdapter(this@AddTimeEventFragment, eventId!!)
             adapter = memberInEventAdapter
             layoutManager = LinearLayoutManager(context)
         }
@@ -320,8 +324,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         val testId = Calendar.getInstance().timeInMillis.toString()
         val constraints = Constraints(requiredNetworkType = NetworkType.CONNECTED, requiresBatteryNotLow = true)
 
-        viewModel.saveListSpinner(channelId, testId)
-        viewModel.saveListMember(channelId, testId)
+//        viewModel.saveListSpinner(channelId, eventId!!)
+//        viewModel.saveListMember(channelId, eventId!!)
 
         viewModel.saveEvent(
             channelId,
@@ -339,7 +343,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 Constants.ID_TELEGRAM_CHANNEL_KEY to telegramChannelId,
                 Constants.ID_CHANNEL_KEY to channelId,
                 Constants.ID_EVENT_KEY to testId,
-                "deviceId" to Constants.DEVICE_ID
+                Constants.DEVICE_ID_KEY to Constants.DEVICE_ID
             )
             val workRequestTest = OneTimeWorkRequestBuilder<SendMessageWorker>()
                 .setInputData(data)
@@ -405,14 +409,14 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         var isValidated = true
         var memberCount = 0
         var spinnerCount = 0
-        viewModel.memberList.value!!.forEach {
+        viewModel.memberList.value?.forEach {
             if (it.hasSelected) ++memberCount
         }
         if (memberCount < 2) {
             isValidated = false
             Toast.makeText(context, "You must select at least 2 members",Toast.LENGTH_LONG).show()
         }
-        viewModel.spinnerList.value!!.forEach {
+        viewModel.spinnerList.value?.forEach {
             if (it.hasSelected) ++spinnerCount
         }
         if (spinnerCount < 1) {
@@ -425,7 +429,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
     fun getListDay() : List<Int>{
         val list = ArrayList<Int>().toMutableList()
-        viewModel.event.value!!.listDay.forEach {
+        viewModel.event.value?.listDay?.forEach {
             list.add(it)
         }
         return list
@@ -459,5 +463,16 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     fun changeTheNumberOfDay(position : Int) : Int {
         if (position == 6) return Constants.SUNDAY
         return position + 2
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        val list : MutableList<MutableLiveData<*>> = ArrayList()
+        list.add(viewModel.isGettingSpinnerSuccess)
+        list.add(viewModel.isGettingEventSuccess)
+
+        Function.toNull(list)
+
+        Function.removeObservers(list, viewLifecycleOwner)
     }
 }

@@ -6,7 +6,6 @@ import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import com.example.luckyspinner.databinding.EditDialogBinding
 import com.example.luckyspinner.models.ElementSpinner
 import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Member
@@ -21,10 +20,7 @@ import com.example.luckyspinner.util.makeStatusNotification
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.toObject
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.Calendar
@@ -40,15 +36,16 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
     val telegramChannelId = inputData.getString(ID_TELEGRAM_CHANNEL_KEY)
     val channelId = inputData.getString(Constants.ID_CHANNEL_KEY)
     val eventId = inputData.getString(ID_EVENT_KEY)
-    val deviceId = inputData.getString("deviceId")
-    var messageSpinner = ""
-    var messageMember = ""
+    val deviceId = inputData.getString(Constants.DEVICE_ID_KEY)
+    var messageSpinner = "1"
+    var messageMember = "1"
     var hasHandleRandomSpinner : Boolean? = null
     var hasHandleRandomMember : Boolean = false
     var hasGetListDay : Boolean = false
 
     var countDelay = 0
     lateinit var listDay : List<Int>
+    var event : Event? = null
 
 
     override suspend fun doWork(): Result {
@@ -58,12 +55,13 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
             var hasHandleElement = false
             hasGetListDay = getListDayFromEvent(channelId, eventId.toString())
             hasHandleRandomMember = getMembers(channelId, eventId)
-            var hasGetEvent = getSpinnerFromEvent(channelId, eventId)
+            val hasGetEvent = getSpinnerFromEvent(channelId, eventId)
             if (hasGetEvent) {
                 hasHandleElement = handleForLoopElement()
             }
 
-            println("Here do work go")
+
+            println("Here do work go $hasHandleElement")
             return try {
                 withContext(Dispatchers.Main) {
                     if (hasHandleElement && hasGetListDay && hasHandleRandomMember && hasGetEvent && hasHandleElement) {
@@ -120,6 +118,12 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                     list.add(e)
                 }
             }
+            if (list.isEmpty()) {
+                messageSpinner += "\n For $spinnerName : No element in list."
+            } else {
+                val randomInt = Random.nextInt(list.size)
+                messageSpinner += "\n For $spinnerName : ${list[randomInt].nameElement} is random chooser."
+            }
             return true
         } catch (e : Exception) {
             return false
@@ -139,9 +143,10 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
     }
     suspend fun getSpinnerFromEvent(idChannel: String?, idEvent: String?) : Boolean {
         try {
-            val document = db.collection(Constants.FS_LIST_CHANNEL+"/$deviceId/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_SPINNER}")
+            val document = db.collection(Constants.FS_LIST_CHANNEL+"/$deviceId/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}")
                 .get()
                 .await()
+            println("Here come document ${document.size()}")
             for (doc : QueryDocumentSnapshot in document) {
                 Log.d(
                     Constants.FIRE_STORE,
@@ -149,7 +154,14 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                 )
                 if (doc.exists()) {
                     val  s = doc.toObject<Spinner>()
-                    if (s.hasSelected) sList.add(s)
+                    if (s.listEvent.contains(idEvent) || event?.typeEvent == null) {
+                        println("Here come containsss $idEvent")
+                        sList.add(s)
+                    }
+//                    if (s.hasSelected) {
+//                        sList.add(s)
+//                        println("Here we come get spinner")
+//                    }
                 }
             }
             return true
@@ -160,9 +172,10 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
 
     suspend fun  getMembers(idChannel : String?, idEvent: String?) : Boolean {
         try {
-            val documents = db.collection(Constants.FS_LIST_CHANNEL+"/$deviceId/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}/$idEvent/${Constants.FS_USER_MEMBER}")
+            val documents = db.collection(Constants.FS_LIST_CHANNEL+"/$deviceId/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_MEMBER}")
                 .get()
                 .await()
+            println("Here we come documents ${documents.size()}")
             documents.forEachIndexed { index, document ->
                 Log.d(
                     Constants.FIRE_STORE,
@@ -170,14 +183,18 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                 )
                 if (document.exists()) {
                     val m = document.toObject<Member>()
-                    if (m.hasSelected)  {
+                    if (m.listEvent.contains(idEvent) || event?.typeEvent == null)  {
                         mList.add(m)
                     }
                 }
                 if (index == documents.size() - 1) {
-                    hasHandleRandomMember = true
-                    val randomInt = Random.nextInt(mList.size)
-                    messageMember = "The random member : ${mList[randomInt].nameMember}"
+                    if (mList.isEmpty()) {
+                        messageMember = "No members choosen in list"
+                    } else {
+                        //                    hasHandleRandomMember = true
+                        val randomInt = Random.nextInt(mList.size)
+                        messageMember = "The random member : ${mList[randomInt].nameMember}"
+                    }
                 }
             }
             return true
@@ -191,10 +208,13 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                     .document(eventId)
                     .get()
                     .await()
-                val  e = document.toObject<Event>()
-                listDay = if (e != null) {
-                    if (e.typeEvent == null) arrayListOf(2,3,4,5,6,7,1)
-                    else e.listDay
+                event = document.toObject<Event>()
+
+                listDay = if (event != null) {
+                    if (event!!.typeEvent == null) {
+                        arrayListOf(2,3,4,5,6,7,1)
+                    }
+                    else event!!.listDay
                 } else {
                     ArrayList()
                 }

@@ -27,8 +27,10 @@ object Constants {
     const val FS_USER_ELEMENT_SPINNER = "elementSpinners"
 
     const val EMPTY_STRING = ""
+
     const val ID_SPINNER_KEY = "ID_SPINNER_KEY"
     const val ID_CHANNEL_KEY = "ID_CHANNEL_KEY"
+    const val DEVICE_ID_KEY = "DEVICE_ID"
     const val ID_TELEGRAM_CHANNEL_KEY = "ID_TELEGRAM_CHANNEL_KEY"
     const val ID_EVENT_KEY = "ID_EVENT_KEY"
     const val CHANNEL_NAME = "CHANNEL_NAME"

@@ -9,9 +9,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.TitleSpinnerOrChannelItemBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
+import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Spinner
 
-class SpinnerListAdapter(private val listener: Listener) : RecyclerView.Adapter<SpinnerListAdapter.SpinnerListViewHolder>() {
+class SpinnerListAdapter(private val listener: Listener, private val eventList : List<Event>? = null) : RecyclerView.Adapter<SpinnerListAdapter.SpinnerListViewHolder>() {
 
     lateinit var onEditClickListener: OnEditClickListener
 

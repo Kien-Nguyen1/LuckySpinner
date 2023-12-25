@@ -23,8 +23,8 @@ class AddTimeEventViewModel : ViewModel() {
     var event = MutableLiveData<Event>()
     val isShowProgressDialog = MutableLiveData<Boolean>()
 
-    val isGettingSpinnerSuccess = MutableLiveData<Boolean>()
-    val isGettingEventSuccess = MutableLiveData<Boolean>()
+    val isGettingSpinnerSuccess = MutableLiveData<Boolean?>()
+    val isGettingEventSuccess = MutableLiveData<Boolean?>()
     val isSaveListSpinnerSuccess = MutableLiveData<Boolean>()
     val isSaveEventSuccess = MutableLiveData<Boolean>()
     val isDeleteEventSuccess = MutableLiveData<Boolean>()
@@ -34,7 +34,7 @@ class AddTimeEventViewModel : ViewModel() {
 
     private val db = FirebaseFirestore.getInstance()
 
-    fun  getMembers(idChannel : String, isAdd : Boolean) {
+    fun  getMembers(idChannel : String, isNewEvent : Boolean) {
         val list : MutableList<Member> = ArrayList()
 
         DataController.getMembers(db, idChannel)
@@ -52,7 +52,7 @@ class AddTimeEventViewModel : ViewModel() {
                         }
                     }
                     memberList.value = list
-                    if (isAdd){
+                    if (isNewEvent){
                         allCheckboxMember(false)
                     }
 
@@ -133,7 +133,7 @@ class AddTimeEventViewModel : ViewModel() {
             }
     }
 
-    fun  getSpinnerFromChannel(idChannel : String, isAdd: Boolean) {
+    fun  getSpinnerFromChannel(idChannel : String, isNewEvent: Boolean) {
         //only call in add event once
         val sList : MutableList<Spinner> = ArrayList()
         viewModelScope.launch(Dispatchers.Main) {
@@ -155,7 +155,7 @@ class AddTimeEventViewModel : ViewModel() {
                     spinnerList.value = sList
                     isShowProgressDialog.value = false
                     isGettingSpinnerSuccess.value = true
-                    if (isAdd) {
+                    if (isNewEvent) {
                         allCheckboxSpinner(false)
                     }
 
@@ -173,8 +173,9 @@ class AddTimeEventViewModel : ViewModel() {
             }
     }
     fun saveListSpinner(idChannel: String, idEvent: String) {
-        val sList  = spinnerList.value ?: return
+        val sList  = spinnerList.value!!
         println("Here come list $sList")
+        println("Here come list"+idEvent)
         isShowProgressDialog.value = true
         sList.forEachIndexed { index, spinner ->
             DataController.saveSpinner(db, idChannel, spinner)
@@ -249,7 +250,7 @@ class AddTimeEventViewModel : ViewModel() {
                 isSaveEventSuccess.value = false
             }
     }
-    fun getEvent(idChannel: String, idEvent : String?, newEventId : String? ) : Job = viewModelScope.launch(Dispatchers.IO) {
+    fun getEvent(idChannel: String, idEvent : String?, newEventId : String? = null ) : Job = viewModelScope.launch(Dispatchers.IO) {
         if (idEvent == null) {
             this.launch(Dispatchers.Main) {
                 event.value = Event(newEventId!!)
