@@ -9,12 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.RandomSpinnerListItemBinding
 import com.example.luckyspinner.models.Spinner
 
-class RandomSpinnerListAdapter(private val listener: Listener) : RecyclerView.Adapter<RandomSpinnerListAdapter.SpinnerListViewHolder>() {
+class RandomSpinnerListAdapter(private val listener: Listener, private val eventId : String) : RecyclerView.Adapter<RandomSpinnerListAdapter.SpinnerListViewHolder>() {
 
     interface Listener {
         fun onItemClick(id: String)
         fun onDeleteItem(id: String)
-        fun onCheckboxClick(id : String, position: Int, hasSelected : Boolean)
+        fun onCheckboxClickSpinner(id : String, position: Int, hasSelected : Boolean)
 
     }
 
@@ -22,11 +22,11 @@ class RandomSpinnerListAdapter(private val listener: Listener) : RecyclerView.Ad
 
     private val diffCallback = object : DiffUtil.ItemCallback<Spinner>() {
         override fun areItemsTheSame(oldItem: Spinner, newItem: Spinner): Boolean {
-            return oldItem.idSpin == newItem.idSpin
+            return false
         }
 
         override fun areContentsTheSame(oldItem: Spinner, newItem: Spinner): Boolean {
-            return oldItem == newItem
+            return false
         }
     }
 
@@ -51,9 +51,14 @@ class RandomSpinnerListAdapter(private val listener: Listener) : RecyclerView.Ad
         holder.binding.apply {
             val spinner = spinners[position]
             tvTitle.text = spinner.titleSpin
-            checkBoxSpinner.isChecked = spinner.hasSelected
+//            var isCheck = false
+//            spinner.listEvent.forEach {
+//                if (it == eventId) isCheck = true
+//            }
+            checkBoxSpinner.isChecked = spinner.listEvent.contains(eventId)
+
             checkBoxSpinner.setOnClickListener {
-                listener.onCheckboxClick(spinner.idSpin, position, spinner.hasSelected)
+                listener.onCheckboxClickSpinner(spinner.idSpin, position, spinner.hasSelected)
             }
             root.setOnClickListener {
                 listener.onItemClick(spinner.idSpin)

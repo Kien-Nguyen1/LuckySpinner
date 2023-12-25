@@ -9,9 +9,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.TitleSpinnerOrChannelItemBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
+import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Spinner
 
-class SpinnerListAdapter(private val listener: Listener) : RecyclerView.Adapter<SpinnerListAdapter.SpinnerListViewHolder>() {
+class SpinnerListAdapter(private val listener: Listener, private val eventList : List<Event> = ArrayList()) : RecyclerView.Adapter<SpinnerListAdapter.SpinnerListViewHolder>() {
 
     lateinit var onEditClickListener: OnEditClickListener
 
@@ -25,11 +26,11 @@ class SpinnerListAdapter(private val listener: Listener) : RecyclerView.Adapter<
 
     private val diffCallback = object : DiffUtil.ItemCallback<Spinner>() {
         override fun areItemsTheSame(oldItem: Spinner, newItem: Spinner): Boolean {
-            return oldItem.idSpin == newItem.idSpin
+            return false
         }
 
         override fun areContentsTheSame(oldItem: Spinner, newItem: Spinner): Boolean {
-            return oldItem == newItem
+            return false
         }
     }
 
@@ -54,14 +55,29 @@ class SpinnerListAdapter(private val listener: Listener) : RecyclerView.Adapter<
         holder.binding.apply {
             val spinner = spinners[position]
             tvTitleListOrChannelItem.text = spinner.titleSpin
+
+            if (eventList.isNotEmpty()) {
+                var text = ""
+                spinner.listEvent.forEach {id ->
+                    val e = eventList.first {
+                        it.idEvent  == id
+                    }
+                    text += e.idEvent
+                }
+//                tvTitleListOrChannelItem.text = text
+            }
+
             btnEditSpinnerOrChannel.setOnClickListener {
                 onEditClickListener.onEditClick(position)
+            }
+            btnDeleteSpinnerOrChannel.setOnClickListener {
+                listener.onDeleteItem(spinner.idSpin)
             }
             root.setOnClickListener {
                 listener.onItemClick(spinner.idSpin, spinner.titleSpin)
             }
             if (position % 2 != 0) {
-                root.setBackgroundColor(Color.parseColor("#e7f0fd"))
+                root.setBackgroundColor(Color.parseColor("#DFD5EC"))
             }
         }
     }

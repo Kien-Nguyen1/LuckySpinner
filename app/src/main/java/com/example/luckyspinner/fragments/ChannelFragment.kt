@@ -1,23 +1,27 @@
 package com.example.luckyspinner.fragments
 
+import android.app.ProgressDialog
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.EventListAdapter
+import com.example.luckyspinner.controller.DataController
 import com.example.luckyspinner.databinding.FragmentChannelBinding
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.CHANNEL_NAME
 import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
+import com.example.luckyspinner.util.Constants.ID_TELEGRAM_CHANNEL_KEY
+import com.example.luckyspinner.util.DialogUtil
+import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.viewmodels.ChannelViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,17 +30,21 @@ import kotlinx.coroutines.launch
 class ChannelFragment : Fragment(), EventListAdapter.Listener {
     private val viewModel by viewModels<ChannelViewModel>()
     private lateinit var binding: FragmentChannelBinding
-    private var idChannel: String? = null
+    private lateinit var idChannel: String
     private var nameChannel: String? = null
-    private lateinit var eventAdapter: EventListAdapter
+    private var idTelegramChannel: String? = null
+    private lateinit var eventAdapter : EventListAdapter
+    private lateinit var progressDialog : ProgressDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentChannelBinding.inflate(inflater, container, false)
-        idChannel = arguments?.getString(ID_CHANNEL_KEY)
+        progressDialog = ProgressDialog(context)
+        idChannel = arguments?.getString(ID_CHANNEL_KEY)!!
         nameChannel = arguments?.getString(CHANNEL_NAME)
+        idTelegramChannel = arguments?.getString(ID_TELEGRAM_CHANNEL_KEY)
 
         binding.appBarChannel.apply {
             toolBar.title = nameChannel
@@ -47,11 +55,10 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupObserver()
         setupRecycleView()
-        viewModel.eventList.observe(viewLifecycleOwner) {
-            eventAdapter.events = it
-        }
-        lifecycleScope.launch(Dispatchers.IO) {
+
+        lifecycleScope.launch(Dispatchers.Main) {
             viewModel.getEvents(idChannel)
         }
 
@@ -64,7 +71,9 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
                 .actionChannelFragmentToAddTimeEventFragment()
                 .actionId
 
-            findNavController().navigate(direction, bundle)
+            findNavController().navigate(direction, bundle.apply {
+                putString(Constants.ID_TELEGRAM_CHANNEL_KEY, idTelegramChannel)
+            })
         }
 
         binding.appBarChannel.apply {
@@ -107,6 +116,33 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
             layoutManager = LinearLayoutManager(context)
         }
     }
+    fun setupObserver() {
+        viewModel.channelList.observe(viewLifecycleOwner) {
+            eventAdapter.events = it
+            eventAdapter.notifyDataSetChanged()
+            if (it.isEmpty()) {
+                binding.rvEventListOfChannel.visibility = View.GONE
+                binding.imgEmptyList.visibility = View.VISIBLE
+            } else {
+                binding.rvEventListOfChannel.visibility = View.VISIBLE
+                binding.imgEmptyList.visibility = View.GONE
+            }
+        }
+        viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
+            if (it) progressDialog.show()
+            else progressDialog.dismiss()
+        }
+        viewModel.isDeleteEventSuccess.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    Toast.makeText(context, "Delete success!", Toast.LENGTH_SHORT).show()
+                    viewModel.getEvents(idChannel)
+                } else {
+                    Toast.makeText(context, "Delete failed!", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
 
     override fun onItemClick(id: String) {
         val direction = ChannelFragmentDirections
@@ -115,13 +151,27 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
 
         findNavController().navigate(direction, Bundle().apply {
             putString(ID_CHANNEL_KEY, idChannel)
+            putString(ID_TELEGRAM_CHANNEL_KEY, idTelegramChannel)
             putString(Constants.ID_EVENT_KEY, id)
         })
     }
 
     override fun onDeleteItem(id: String) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.deleteEvent(idChannel, id)
+        lifecycleScope.launch {
+            val isDelete = DialogUtil.showYesNoDialog(context)
+            if (isDelete) {
+                viewModel.deleteEvent(idChannel, id)
+            }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        val list : MutableList<MutableLiveData<*>> = ArrayList<MutableLiveData<*>>().apply {
+            add(viewModel.isDeleteEventSuccess)
+        }
+        Function.toNull(list)
+        list.add(viewModel.channelList)
+        Function.removeObservers(list, viewLifecycleOwner)
     }
 }

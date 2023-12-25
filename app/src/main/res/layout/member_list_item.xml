@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp"
+    android:padding="5dp"
     app:cardCornerRadius="10dp">
 
     <TextView
@@ -22,21 +22,25 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <CheckBox
-        android:id="@+id/check_box_member_list_item"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_edit_member_name"
+        style="?attr/materialIconButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginEnd="10dp"
+        app:icon="@drawable/ic_edit"
+        app:iconTint="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/btn_edit_member_name"
+        app:layout_constraintRight_toLeftOf="@+id/btn_delete_member_name"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/btn_edit_member_name"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_delete_member_name"
+        style="?attr/materialIconButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_edit"
+        app:icon="@drawable/ic_delete"
+        app:iconTint="@color/red"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

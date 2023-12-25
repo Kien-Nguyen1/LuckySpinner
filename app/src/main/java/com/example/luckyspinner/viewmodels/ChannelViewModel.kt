@@ -3,6 +3,7 @@ package com.example.luckyspinner.viewmodels
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.luckyspinner.controller.DataController
 import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.util.Constants
 import com.google.firebase.firestore.DocumentSnapshot
@@ -11,15 +12,17 @@ import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.toObject
 
 class ChannelViewModel : ViewModel() {
-    var eventList = MutableLiveData<List<Event>>()
+    var channelList = MutableLiveData<List<Event>>()
     val db = FirebaseFirestore.getInstance()
+    val isShowProgressDialog = MutableLiveData<Boolean>()
+    val isDeleteEventSuccess = MutableLiveData<Boolean?>()
 
 
-    fun  getEvents(idChannel : String?) {
+    fun  getEvents(idChannel : String) {
+        isShowProgressDialog.value = true
         val list : MutableList<Event> = ArrayList()
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
-            .get()
+        DataController.getEvents(db, idChannel)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     for (document : QueryDocumentSnapshot in it.result) {
@@ -29,11 +32,13 @@ class ChannelViewModel : ViewModel() {
                         )
                         if (document.exists()) {
                             val  e = document.toObject<Event>()
-                            list.add(e)
+                            if (e.typeEvent != null) {
+                                list.add(e)
+                            }
                         }
-
                     }
-                    eventList.value = list
+                    channelList.value = list
+                    isShowProgressDialog.value = false
 
                 } else {
                     Log.w(
@@ -41,24 +46,23 @@ class ChannelViewModel : ViewModel() {
                         "Error getting documents.",
                         it.exception
                     )
+                    isShowProgressDialog.value = false
                 }
 
             }
     }
 
-    fun  deleteEvent(idChannel: String?, idEvent : String) {
-
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_EVENT}")
-            .document(idEvent)
-            .delete()
+    fun deleteEvent(idChannel: String, idEvent : String) {
+        isShowProgressDialog.value = true
+        DataController.deleteEvent(db, idChannel, idEvent)
             .addOnSuccessListener {
-                Log.d(
-                    Constants.FIRE_STORE,
-                    "DocumentSnapshot successfully deleted!"
-                )
+                isDeleteEventSuccess.value = true
+                isShowProgressDialog.value = false
             }
-            .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error deleting document", e) }
-
+            .addOnFailureListener {
+                isDeleteEventSuccess.value = false
+                isShowProgressDialog.value = false
+            }
     }
     fun getEventFromFirestore(doc : DocumentSnapshot) : Event {
         val HOUR_EVENT_KEY = "hourElement"

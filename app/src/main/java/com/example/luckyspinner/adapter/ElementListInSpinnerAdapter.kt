@@ -8,10 +8,11 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.ElementInSpinnerItemBinding
+import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.models.ElementSpinner
 
 class ElementListInSpinnerAdapter(private val listener: Listener) : RecyclerView.Adapter<ElementListInSpinnerAdapter.ElementListInSpinner>() {
-
+    lateinit var onEditClickListener: OnEditClickListener
     interface Listener {
         fun onItemClick(id: String)
         fun onDeleteItem(id: String)
@@ -22,7 +23,7 @@ class ElementListInSpinnerAdapter(private val listener: Listener) : RecyclerView
 
     private val diffCallback = object : DiffUtil.ItemCallback<ElementSpinner>() {
         override fun areItemsTheSame(oldItem: ElementSpinner, newItem: ElementSpinner): Boolean {
-            return oldItem.idElement == newItem.idElement
+            return false
         }
 
         override fun areContentsTheSame(oldItem: ElementSpinner, newItem: ElementSpinner): Boolean {
@@ -49,14 +50,21 @@ class ElementListInSpinnerAdapter(private val listener: Listener) : RecyclerView
 
     override fun onBindViewHolder(holder: ElementListInSpinner, position: Int) {
         holder.binding.apply {
-            val spinner = elementSpinners[position]
-            tvElementInSpinner.text = spinner.nameElement
+            val element = elementSpinners[position]
+            tvElementInSpinner.text = element.nameElement
             root.setOnClickListener {
-                listener.onItemClick(spinner.idElement)
+                listener.onItemClick(element.idElement)
             }
 
-            if (position % 2 == 0) {
-                root.setBackgroundColor(Color.parseColor("#e7f0fd"))
+            btnEditElementTitle.setOnClickListener {
+                onEditClickListener.onEditClick(position)
+            }
+            btnDeleteElementTitle.setOnClickListener {
+                listener.onDeleteItem(element.idElement)
+            }
+
+            if (position % 2 != 0) {
+                root.setBackgroundColor(Color.parseColor("#DFD5EC"))
             }
         }
     }

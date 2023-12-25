@@ -1,31 +1,32 @@
 package com.example.luckyspinner.viewmodels
 
+import android.provider.ContactsContract.Data
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.example.luckyspinner.controller.DataController
 import com.example.luckyspinner.models.ElementSpinner
-import com.example.luckyspinner.models.Spinner
 import com.example.luckyspinner.util.Constants
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class ElementListInSpinnerViewModel : ViewModel() {
     var elementList = MutableLiveData<List<ElementSpinner>>()
-
+    var isAddingSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
+    var isDeleteSuccess  : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
+    var isEditingSuccess : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
+    val isShowProgressDialog = MutableLiveData<Boolean>()
 
 
     val db = FirebaseFirestore.getInstance()
 
 
-    fun  getElement(idChannel : String?, idSpinner : String?) {
+    fun  getElement(idChannel : String, idSpinner : String) {
+        isShowProgressDialog.value = true
         val list : MutableList<ElementSpinner> = ArrayList()
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}/$idSpinner/${Constants.FS_USER_ELEMENT_SPINNER}")
-            .get()
+        DataController.getElement(db, idChannel, idSpinner)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     for (document : QueryDocumentSnapshot in it.result) {
@@ -39,6 +40,7 @@ class ElementListInSpinnerViewModel : ViewModel() {
                         }
                     }
                     elementList.value = list
+                    isShowProgressDialog.value = false
 
                 } else {
                     Log.w(
@@ -46,6 +48,8 @@ class ElementListInSpinnerViewModel : ViewModel() {
                         "Error getting documents.",
                         it.exception
                     )
+                    isShowProgressDialog.value = false
+
                 }
 
             }
@@ -60,17 +64,58 @@ class ElementListInSpinnerViewModel : ViewModel() {
 
     }
 
-    fun deleteElement(idChannel : String?, idSpinner : String?, idElement : String) {
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_SPINNER}/$idSpinner/${Constants.FS_USER_ELEMENT_SPINNER}")
-            .document(idElement)
-            .delete()
+    fun deleteElement(idChannel : String, idSpinner : String, idElement : String) {
+        isShowProgressDialog.value = true
+
+        DataController.deleteElement(db, idChannel, idSpinner, idElement)
             .addOnSuccessListener {
                 Log.d(
                     Constants.FIRE_STORE,
                     "DocumentSnapshot successfully deleted!"
                 )
+                isDeleteSuccess.value = true
             }
-            .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error deleting document", e) }
+            .addOnFailureListener {
+                e ->
+                Log.w(Constants.FIRE_STORE, "Error deleting document", e)
+                isDeleteSuccess.value =false
+                isShowProgressDialog.value = false
+
+            }
     }
+    fun addElement(idChannel : String, idSpinner: String, element: ElementSpinner) {
+        isShowProgressDialog.value = true
+
+        DataController.saveElement(db, idChannel, idSpinner, element)
+            .addOnSuccessListener {
+                Log.d(
+                    Constants.FIRE_STORE,
+                    "DocumentSnapshot successfully save!"
+                )
+                isAddingSuccess.value = true
+            }
+            .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error deleting document", e)
+            isAddingSuccess.value = false
+                isShowProgressDialog.value = false
+            }
+    }
+
+    fun editElement(idChannel : String, idSpinner: String, element: ElementSpinner) {
+        isShowProgressDialog.value = true
+
+        DataController.saveElement(db, idChannel, idSpinner, element)
+            .addOnSuccessListener {
+                Log.d(
+                    Constants.FIRE_STORE,
+                    "DocumentSnapshot successfully save!"
+                )
+                isEditingSuccess.value = true
+            }
+            .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error deleting document", e)
+            isEditingSuccess.value = false
+                isShowProgressDialog.value = false
+            }
+    }
+
 
 }

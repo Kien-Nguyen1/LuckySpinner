@@ -7,30 +7,38 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.luckyspinner.controller.DataController
+import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Member
 import com.example.luckyspinner.util.Constants
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class MemberListViewModel : ViewModel() {
     var memberList = MutableLiveData<List<Member>>()
-    var isAddingMemberSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>(null)
-    lateinit var progressDialog: ProgressDialog
+    val eventList = MutableLiveData<List<Event>>()
+    var isAddingMemberSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
+    var isDeletingMemberSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
+    var isEdtingMemberSuccess: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
+    val isShowProgressDialog = MutableLiveData<Boolean>()
+
     private val db = FirebaseFirestore.getInstance()
 
 
     suspend fun  getMembers(idChannel : String) {
         val list : MutableList<Member> = ArrayList()
         withContext(Dispatchers.Main) {
-            progressDialog.show()
+            isShowProgressDialog.value = true
         }
 
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_MEMBER}")
-            .get()
+        DataController.getMembers(db, idChannel)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     for (document : QueryDocumentSnapshot in it.result) {
@@ -41,9 +49,9 @@ class MemberListViewModel : ViewModel() {
                         if (document.exists()) {
                             list.add(document.toObject<Member>())
                         }
-//                        val  s = Spinner.getSpinnerFromFirestore(document)
                     }
                     memberList.value = list
+                    isShowProgressDialog.value = false
 
                 } else {
                     Log.w(
@@ -51,29 +59,63 @@ class MemberListViewModel : ViewModel() {
                         "Error getting documents.",
                         it.exception
                     )
+                    isShowProgressDialog.value = false
                 }
             }
     }
+     fun  getEvents(idChannel : String) {
+         DataController.getEvents(db, idChannel)
+            .addOnCompleteListener {
+                val list : MutableList<Event> = ArrayList()
+                if (it.isSuccessful) {
+                    for (document : QueryDocumentSnapshot in it.result) {
+                        Log.d(
+                            Constants.FIRE_STORE,
+                            document.id + " => " + document.data
+                        )
+                        if (document.exists()) {
+                            val  e = document.toObject<Event>()
+                            if (e.typeEvent != null) {
+                                list.add(e)
+                            }
+                        }
+                    }
+                    eventList.value = list
+                    return@addOnCompleteListener
+
+                } else {
+                    Log.w(
+                        Constants.FIRE_STORE,
+                        "Error getting documents.",
+                        it.exception
+                    )
+                    viewModelScope.launch {
+                        getEvents(idChannel)
+                    }
+                    return@addOnCompleteListener
+                }
+            }
+    }
+
     fun deleteMember(idChannel : String, idMember : String) {
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_MEMBER}")
-            .document(idMember)
-            .delete()
+        DataController.deleteMember(db, idChannel, idMember)
             .addOnSuccessListener {
                 Log.d(
                     Constants.FIRE_STORE,
                     "DocumentSnapshot successfully deleted!"
                 )
+                isDeletingMemberSuccess.value = true
+                isShowProgressDialog.value = false
                 viewModelScope.launch {
                     getMembers(idChannel)
                 }
             }
-            .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error deleting document", e) }
+            .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error deleting document", e)
+                isDeletingMemberSuccess.value = false
+            }
     }
-    fun addMember(idChannel: String, idMember: String, nameMember : String) {
-        val newMember = Member(idMember, nameMember)
-        db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_MEMBER}")
-            .document(idMember)
-            .set(newMember)
+    fun addMember(idChannel: String, member: Member) {
+        DataController.saveMember(db, idChannel, member)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     isAddingMemberSuccess.value = true
@@ -83,33 +125,35 @@ class MemberListViewModel : ViewModel() {
                 isAddingMemberSuccess.value = false
             }
     }
-    suspend fun updateCheckBoxForMember(idChannel: String, idMember: String, isSelected : Boolean) = viewModelScope.launch(Dispatchers.IO){
-        withContext(Dispatchers.Main) {
-            progressDialog.show()
-        }
+    fun editMember(idChannel: String, member: Member) {
+        DataController.saveMember(db, idChannel, member)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    isEdtingMemberSuccess.value = true
+                }
+            }
+            .addOnFailureListener {
+                isEdtingMemberSuccess.value = false
+            }
+    }
+     fun updateCheckBoxForMember(idChannel: String, idMember: String, isSelected : Boolean) = viewModelScope.launch(Dispatchers.IO){
         db.collection(Constants.FS_LIST_CHANNEL+"/${Constants.DEVICE_ID}/${Constants.FS_USER_CHANNEL}/$idChannel/${Constants.FS_USER_MEMBER}")
             .document(idMember)
-            .update("hasSelected", isSelected )
+            .update("hasSelected", !isSelected )
             .addOnSuccessListener {
                 Log.d(
                     Constants.FIRE_STORE,
                     "DocumentSnapshot successfully update!"
                 )
-                viewModelScope.launch {
-                    getMembers(idChannel)
-                    println("Here come getMember")
-                }
             }
             .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error updating document", e)
             }
-        withContext(Dispatchers.Main) {
-            progressDialog.dismiss()
-        }
+
     }
 
     suspend fun updateForChooseAllMember(idChannel: String, list : List<Member>, isSelected : Boolean) = viewModelScope.launch(Dispatchers.IO){
         withContext(Dispatchers.Main) {
-            progressDialog.show()
+            isShowProgressDialog.value = true
         }
         list.forEachIndexed { index, member ->
             if (member.hasSelected == isSelected) {
@@ -124,8 +168,8 @@ class MemberListViewModel : ViewModel() {
                         Constants.FIRE_STORE,
                         "DocumentSnapshot successfully update!"
                     )
-                    if (index == list.lastIndex) viewModelScope.launch {
-                        getMembers(idChannel)
+                    if (index == list.lastIndex) {
+                        isShowProgressDialog.value =false
                     }
                 }
                 .addOnFailureListener { e ->
@@ -134,7 +178,7 @@ class MemberListViewModel : ViewModel() {
                         "Error updating document",
                         e
                     )
-                    progressDialog.dismiss()
+                    isShowProgressDialog.value =false
                 }
         }
     }

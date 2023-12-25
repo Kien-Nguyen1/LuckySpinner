@@ -9,9 +9,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.MemberListItemBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
+import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Member
+import kotlinx.coroutines.withContext
 
-class MemberListAdapter(private val listener: Listener) : RecyclerView.Adapter<MemberListAdapter.MemberListViewHolder>() {
+class MemberListAdapter(private val listener: Listener, private val eventList : List<Event> = ArrayList()) : RecyclerView.Adapter<MemberListAdapter.MemberListViewHolder>() {
 
     lateinit var onEditClickListener: OnEditClickListener
 
@@ -25,11 +27,11 @@ class MemberListAdapter(private val listener: Listener) : RecyclerView.Adapter<M
 
     private val diffCallback = object : DiffUtil.ItemCallback<Member>() {
         override fun areItemsTheSame(oldItem: Member, newItem: Member): Boolean {
-            return oldItem.idMember == newItem.idMember
+            return false
         }
 
         override fun areContentsTheSame(oldItem: Member, newItem: Member): Boolean {
-            return oldItem == newItem
+            return false
         }
     }
 
@@ -54,18 +56,28 @@ class MemberListAdapter(private val listener: Listener) : RecyclerView.Adapter<M
         holder.binding.apply {
             val member = members[position]
             tvMemberNameItem.text = member.nameMember
-            checkBoxMemberListItem.isChecked = member.hasSelected
-            checkBoxMemberListItem.setOnClickListener {
-                listener.onCheckBoxSelected(member.idMember, position, it.isSelected)
+
+            if (eventList.isNotEmpty()) {
+                var text = ""
+                member.listEvent.forEach {id ->
+                    val e = eventList.first {
+                        it.idEvent  == id
+                    }
+                        text += e.idEvent
+                }
+//                tvMemberNameItem.text = text
             }
             btnEditMemberName.setOnClickListener {
                 onEditClickListener.onEditClick(position)
             }
+            btnDeleteMemberName.setOnClickListener {
+                listener.onDeleteItem(member.idMember)
+            }
             root.setOnClickListener {
                 listener.onItemClick(member.idMember)
             }
-            if (position % 2 == 0) {
-                root.setBackgroundColor(Color.parseColor("#e7f0fd"))
+            if (position % 2 != 0) {
+                root.setBackgroundColor(Color.parseColor("#DFD5EC"))
             }
         }
     }

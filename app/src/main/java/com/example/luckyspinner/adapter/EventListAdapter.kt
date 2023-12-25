@@ -22,11 +22,11 @@ class EventListAdapter(private val listener: Listener) : RecyclerView.Adapter<Ev
 
     private val diffCallback = object : DiffUtil.ItemCallback<Event>() {
         override fun areItemsTheSame(oldItem: Event, newItem: Event): Boolean {
-            return oldItem.idEvent == newItem.idEvent
+            return false
         }
 
         override fun areContentsTheSame(oldItem: Event, newItem: Event): Boolean {
-            return oldItem == newItem
+            return false
         }
     }
 
@@ -42,19 +42,36 @@ class EventListAdapter(private val listener: Listener) : RecyclerView.Adapter<Ev
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventListViewHolder {
         return EventListViewHolder(
             EventChannelItemBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            ))
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        ))
     }
 
     override fun onBindViewHolder(holder: EventListViewHolder, position: Int) {
         holder.binding.apply {
             val event = events[position]
-            val typeEvent = if (event.typeEvent == Constants.EVENT_TYPE_EVERY_DAY) "Every day" else "Just Once"
-            tvTitleEventItem.text = "$typeEvent : Time: ${event.hour} : ${event.minute}"
+            var title = ""
+            event.listDay.apply {
+                if (contains(Constants.MONDAY)) title += "Mon"
+                if (contains(Constants.TUESDAY)) title += " Tue"
+                if (contains(Constants.WEDNESDAY)) title += " Wed"
+                if (contains(Constants.THURSDAY)) title += " Thu"
+                if (contains(Constants.FRIDAY)) title += " Fri"
+                if (contains(Constants.SATURDAY)) title += " Sat"
+                if (contains(Constants.SUNDAY)) title += " Sun"
+            }
+            title += "${event.hour} : ${event.minute}"
+
+            tvTitleEventItem.text = title
             btnEditEventItem.setOnClickListener {
                 listener.onItemClick(event.idEvent)
+            }
+            root.setOnClickListener {
+                listener.onItemClick(event.idEvent)
+            }
+            btnDeleteEventItem.setOnClickListener {
+                listener.onDeleteItem(event.idEvent)
             }
         }
     }
