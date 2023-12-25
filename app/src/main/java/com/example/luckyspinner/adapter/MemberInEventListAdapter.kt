@@ -7,10 +7,9 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.MemberListItemInEventBinding
-import com.example.luckyspinner.databinding.RandomSpinnerListItemBinding
 import com.example.luckyspinner.models.Member
 
-class MemberInEventListAdapter(private val listener: Listener) : RecyclerView.Adapter<MemberInEventListAdapter.MemberListViewHolder>() {
+class MemberInEventListAdapter(private val listener: Listener, private val eventId : String?) : RecyclerView.Adapter<MemberInEventListAdapter.MemberListViewHolder>() {
 
     interface Listener {
         fun onItemClick(id: String)
@@ -52,7 +51,12 @@ class MemberInEventListAdapter(private val listener: Listener) : RecyclerView.Ad
         holder.binding.apply {
             val member = members[position]
             tvTitle.text = member.nameMember
-            checkBoxSpinner.isChecked = member.hasSelected
+            var isCheck = false
+            member.listEvent.forEach {
+                if (it == eventId) isCheck = true
+            }
+            checkBoxSpinner.isChecked = isCheck
+
             checkBoxSpinner.setOnClickListener {
                 listener.onCheckboxClickMember(member.idMember, position, member.hasSelected)
             }
@@ -61,4 +65,5 @@ class MemberInEventListAdapter(private val listener: Listener) : RecyclerView.Ad
             }
         }
     }
+
 }

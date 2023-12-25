@@ -22,6 +22,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -62,6 +63,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     private lateinit var memberInEventAdapter : MemberInEventListAdapter
     private lateinit var dateAdapter : DateListAdapter
     lateinit var progressDialog : ProgressDialog
+    var isAdd = false
 
 
     override fun onCreateView(
@@ -84,31 +86,36 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
         if (eventId == null) {
             binding.appBarAddTimeEvent.toolBar.title = "Add Time Event"
+            isAdd = true
         } else {
             binding.appBarAddTimeEvent.toolBar.title = "Edit Time Event"
         }
+
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            if (eventId == null) {
+                val timeInMillis = Calendar.getInstance().timeInMillis
+                eventId = "$channelId $timeInMillis"
+                viewModel.getEvent(channelId, null, eventId)
+
+                viewModel.getMembers(channelId, true)
+                viewModel.getSpinnerFromChannel(channelId, true)
+            } else {
+                viewModel.getMembers(channelId, false)
+                viewModel.getSpinnerFromChannel(channelId, false)
+//                viewModel.getSpinnerFromEvent(channelId, eventId!!)
+//                viewModel.getMemberFromEvent(channelId, eventId!!)
+            }
+        }
+
         setUpRecycleView()
 
         setupObservers()
 
         setUpDatePicker()
 
-        viewModel.getEvent(channelId, eventId)
-
         setupChooseSpinnerDialog()
         setupMemberDialog()
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            if (eventId == null) {
-                viewModel.getMembers(channelId)
-                val timeInMillis = Calendar.getInstance().timeInMillis
-                eventId = "$channelId $timeInMillis"
-                viewModel.getSpinnerFromChannel(channelId)
-            } else {
-                viewModel.getSpinnerFromEvent(channelId, eventId!!)
-                viewModel.getMemberFromEvent(channelId, eventId!!)
-            }
-        }
 
 
         return binding.root
@@ -169,8 +176,12 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         calendar.set(Calendar.HOUR_OF_DAY, selectedHour)
         calendar.set(Calendar.MINUTE, selectedMinutes)
 
-        println("so sanh ${calendar > timeNow}")
-        val durationDiff = if (calendar > timeNow) {
+
+        val durationDiff = if (calendar.get(Calendar.HOUR_OF_DAY) == timeNow.get(Calendar.HOUR_OF_DAY) && timeNow.get(Calendar.MINUTE) == calendar.get(Calendar.MINUTE))
+        {
+            Duration.ZERO
+        }
+                else if (calendar > timeNow) {
             Duration.between(timeNow.toInstant(), calendar.toInstant())
         } else {
             calendar.add(Calendar.DAY_OF_MONTH, 1)
@@ -190,11 +201,12 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 .setInitialDelay(durationDiff)
                 .setInputData(data)
                 .setConstraints(constraints)
+                .addTag(channelId)
                 .build()
 
             enqueueUniquePeriodicWork(
                 eventId!!,
-                ExistingPeriodicWorkPolicy.UPDATE,
+                ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
                 workRequest
             )
         }
@@ -224,14 +236,14 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     private fun setUpRecycleView() {
         bindingRandomDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
         bindingRandomDialog.rvChooseRandomSpinnerList.apply {
-            randomSpinnerAdapter = RandomSpinnerListAdapter(this@AddTimeEventFragment)
+            randomSpinnerAdapter = RandomSpinnerListAdapter(this@AddTimeEventFragment, eventId)
             adapter = randomSpinnerAdapter
             layoutManager = LinearLayoutManager(context)
         }
 
         bindingMemberDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
         bindingMemberDialog.rvChooseRandomSpinnerList.apply {
-            memberInEventAdapter = MemberInEventListAdapter(this@AddTimeEventFragment)
+            memberInEventAdapter = MemberInEventListAdapter(this@AddTimeEventFragment, eventId)
             adapter = memberInEventAdapter
             layoutManager = LinearLayoutManager(context)
         }
