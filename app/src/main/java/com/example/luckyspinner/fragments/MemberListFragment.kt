@@ -54,7 +54,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     ): View? {
         binding = FragmentMemberListBinding.inflate(inflater , container, false)
         progressDialog = ProgressDialog(requireContext())
-        binding.ckbChooseAllMember.isVisible = false
+//        binding.ckbChooseAllMember.isVisible = false
 
         binding.appBarMemberList.apply {
             toolBar.title = "List Member"
@@ -87,9 +87,9 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             }
         }
 
-        binding.ckbChooseAllMember.setOnClickListener {
-            handleChooseAllMember()
-        }
+//        binding.ckbChooseAllMember.setOnClickListener {
+//            handleChooseAllMember()
+//        }
 
         memberAdapter.onEditClickListener = object : OnEditClickListener{
             override fun onEditClick(position: Int) {

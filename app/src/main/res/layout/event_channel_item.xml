@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="10dp">
+        android:padding="5dp">
 
         <TextView
             android:id="@+id/tv_title_event_item"
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             app:icon="@drawable/ic_delete"
-            app:iconTint="@color/black" />
+            app:iconTint="@color/red" />
 
     </LinearLayout>
 
