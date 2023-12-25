@@ -155,6 +155,9 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
                 viewModel.addSpinner(idChannel, Spinner(idSpinner, nameSpinner))
             }
         }
+        binding.btnCancelAddChannel.setOnClickListener {
+            addSpinnerDiaLog.dismiss()
+        }
     }
 
     private fun setupRecycleView() {
@@ -222,6 +225,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
 
         viewModel.spinnerList.observe(viewLifecycleOwner) {
             spinnerAdapter.spinners = it
+            spinnerAdapter.notifyDataSetChanged()
             if (it.isEmpty()) {
                 binding.rvSpinnerList.visibility = View.GONE
                 binding.imgEmptyList.visibility = View.VISIBLE

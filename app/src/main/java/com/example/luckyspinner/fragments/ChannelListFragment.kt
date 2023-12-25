@@ -85,12 +85,23 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
 
                 binding.tvNameTitleAddElement.text = "Edit Channel"
                 binding.edtEnterElement.setText(channel.nameChannel)
+                binding.edtId.setText(channel.idTelegramChannel)
 
                 binding.btnDoneAddElement.setOnClickListener {
+                    if (binding.edtEnterElement.text.toString() == EMPTY_STRING) {
+                        binding.edtEnterElement.error = " Please fill this filed!"
+                        return@setOnClickListener
+                    }
+                    if (binding.edtId.text.toString() == EMPTY_STRING) {
+                        binding.edtId.error = " Please fill this filed!"
+                        return@setOnClickListener
+                    }
                     channel.nameChannel = binding.edtEnterElement.text.toString()
+                    channel.idTelegramChannel = binding.edtId.text.toString()
                     viewModel.editChannel(channel)
                     editChannelDiaLog.dismiss()
                 }
+
 
                 binding.btnCancelElement.setOnClickListener {
                     editChannelDiaLog.dismiss()
@@ -154,11 +165,15 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 viewModel.addChannel(channel)
             }
         }
+        binding.btnCancelAddChannel.setOnClickListener {
+            addDialog.dismiss()
+        }
     }
 
     fun setupStateObserver() {
         viewModel.channelList.observe(viewLifecycleOwner) {
             channelListAdapter.channels = it
+            channelListAdapter.notifyDataSetChanged()
             if (it.isEmpty()) {
                 binding.rvChannelList.visibility = View.GONE
                 binding.imgEmptyList.visibility = View.VISIBLE

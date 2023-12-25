@@ -119,6 +119,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     fun setupObserver() {
         viewModel.channelList.observe(viewLifecycleOwner) {
             eventAdapter.events = it
+            eventAdapter.notifyDataSetChanged()
             if (it.isEmpty()) {
                 binding.rvEventListOfChannel.visibility = View.GONE
                 binding.imgEmptyList.visibility = View.VISIBLE

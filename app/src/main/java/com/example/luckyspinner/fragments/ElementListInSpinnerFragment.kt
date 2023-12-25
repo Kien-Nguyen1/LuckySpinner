@@ -152,6 +152,9 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
                 binding.edtEnterChannelName.text.toString()
             ))
         }
+        binding.btnCancelAddChannel.setOnClickListener {
+            addElementInSpinnerDiaLog.dismiss()
+        }
     }
 
     private fun setupRecycleView() {
@@ -165,6 +168,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
     fun setupObserver() {
         viewModel.elementList.observe(viewLifecycleOwner) {
             elementAdapter.elementSpinners = it
+            elementAdapter.notifyDataSetChanged()
             if (it.isEmpty()) {
                 binding.rvElementListInSpinner.visibility = View.GONE
                 binding.imgEmptyList.visibility = View.VISIBLE

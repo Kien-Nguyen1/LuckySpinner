@@ -284,6 +284,13 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         chooseSpinnerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         chooseSpinnerDialog.setContentView(bindingRandomDialog.root)
 
+        bindingRandomDialog.btnAddElement.setOnClickListener {
+            chooseSpinnerDialog.dismiss()
+            findNavController().navigate(R.id.spinnerListFragment, Bundle().apply {
+                putString(Constants.ID_CHANNEL_KEY, channelId)
+            })
+        }
+
         val window : Window = chooseSpinnerDialog.window!!
         window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -297,6 +304,12 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         chooseMemberDialog = Dialog(requireContext())
         chooseMemberDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         chooseMemberDialog.setContentView(bindingMemberDialog.root)
+        bindingMemberDialog.btnAddElement.setOnClickListener {
+            chooseMemberDialog.dismiss()
+            findNavController().navigate(R.id.memberListFragment, Bundle().apply {
+                putString(Constants.ID_CHANNEL_KEY, channelId)
+            })
+        }
         bindingMemberDialog.tvTitleChooseRandomSpinnerList.text = "Choose Members"
 
         val window : Window = chooseMemberDialog.window!!
@@ -381,15 +394,12 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             println(it.size)
         }
         viewModel.event.observe(viewLifecycleOwner) {
-            if (!isLoadedFirstTime) {
                 it.hour?.let { eventHour ->
                     binding.timePickerAddTimeEvent.apply {
                         hour = eventHour
                         minute = it.minute!!
                     }
                 }
-                isLoadedFirstTime = true
-            }
             dateAdapter.dayList = it.listDay
         }
         viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
