@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="10dp"
     android:orientation="horizontal"
-    android:padding="10dp">
+    android:padding="5dp">
 
     <TextView
         android:id="@+id/tv_element_in_spinner"
@@ -38,6 +38,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         app:icon="@drawable/ic_delete"
-        app:iconTint="@color/black" />
+        app:iconTint="@color/red" />
 
 </LinearLayout>

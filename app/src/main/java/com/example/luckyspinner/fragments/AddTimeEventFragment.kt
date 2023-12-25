@@ -83,7 +83,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         workManager = WorkManager.getInstance(requireContext())
 
         if (eventId == null) {
-            binding.btnDeleteEvent.visibility = View.GONE
             binding.appBarAddTimeEvent.toolBar.title = "Add Time Event"
         } else {
             binding.appBarAddTimeEvent.toolBar.title = "Edit Time Event"
@@ -128,9 +127,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
         binding.btnSpinnerNow.setOnClickListener {
             handleTestNow()
-        }
-        binding.btnDeleteEvent.setOnClickListener {
-            findNavController().popBackStack()
         }
         binding.btnMemberList.setOnClickListener {
             chooseMemberDialog.show()
@@ -243,10 +239,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
 
     private fun setUpDatePicker() {
-        binding.btnEventSchedule.setOnClickListener {
-            dateDialog.show()
-        }
-
         bindingDateDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
         bindingDateDialog.tvTitleChooseRandomSpinnerList.visibility = View.GONE
         bindingDateDialog.rvChooseRandomSpinnerList.apply {

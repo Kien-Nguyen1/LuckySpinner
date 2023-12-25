@@ -64,7 +64,7 @@ class SpinnerListAdapter(private val listener: Listener) : RecyclerView.Adapter<
                 listener.onItemClick(spinner.idSpin, spinner.titleSpin)
             }
             if (position % 2 != 0) {
-                root.setBackgroundColor(Color.parseColor("#e7f0fd"))
+                root.setBackgroundColor(Color.parseColor("#DFD5EC"))
             }
         }
     }

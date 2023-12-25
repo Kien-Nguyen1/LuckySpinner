@@ -68,7 +68,15 @@
         android:id="@+id/addTimeEventFragment"
         android:name="com.example.luckyspinner.fragments.AddTimeEventFragment"
         android:label="fragment_add_time_event"
-        tools:layout="@layout/fragment_add_time_event" />
+        tools:layout="@layout/fragment_add_time_event" >
+        <action
+            android:id="@+id/action_addTimeEventFragment_to_memberListFragment"
+            app:destination="@id/memberListFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
     <fragment
         android:id="@+id/memberListFragment"
         android:name="com.example.luckyspinner.fragments.MemberListFragment"

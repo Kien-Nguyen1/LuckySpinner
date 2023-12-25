@@ -64,7 +64,7 @@ class MemberListAdapter(private val listener: Listener) : RecyclerView.Adapter<M
                 listener.onItemClick(member.idMember)
             }
             if (position % 2 == 0) {
-                root.setBackgroundColor(Color.parseColor("#e7f0fd"))
+                root.setBackgroundColor(Color.parseColor("#DFD5EC"))
             }
         }
     }

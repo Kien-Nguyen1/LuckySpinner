@@ -64,8 +64,8 @@ class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter
             btnDeleteSpinnerOrChannel.setOnClickListener {
                 listener.onDeleteItem(channel.idChannel)
             }
-            if (position % 2 == 0) {
-                titleSpinnerOrChannelLayout.setBackgroundColor(Color.parseColor("#e7f0fd"))
+            if (position % 2 != 0) {
+                titleSpinnerOrChannelLayout.setBackgroundColor(Color.parseColor("#DFD5EC"))
             }
         }
     }
