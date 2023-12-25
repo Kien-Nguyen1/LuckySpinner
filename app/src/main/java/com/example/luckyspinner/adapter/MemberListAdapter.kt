@@ -11,8 +11,9 @@ import com.example.luckyspinner.databinding.MemberListItemBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Member
+import kotlinx.coroutines.withContext
 
-class MemberListAdapter(private val listener: Listener, private val eventList : List<Event>? = null) : RecyclerView.Adapter<MemberListAdapter.MemberListViewHolder>() {
+class MemberListAdapter(private val listener: Listener, private val eventList : List<Event> = ArrayList()) : RecyclerView.Adapter<MemberListAdapter.MemberListViewHolder>() {
 
     lateinit var onEditClickListener: OnEditClickListener
 
@@ -55,6 +56,17 @@ class MemberListAdapter(private val listener: Listener, private val eventList : 
         holder.binding.apply {
             val member = members[position]
             tvMemberNameItem.text = member.nameMember
+
+            if (eventList.isNotEmpty()) {
+                var text = ""
+                member.listEvent.forEach {id ->
+                    val e = eventList.first {
+                        it.idEvent  == id
+                    }
+                        text += e.idEvent
+                }
+//                tvMemberNameItem.text = text
+            }
             btnEditMemberName.setOnClickListener {
                 onEditClickListener.onEditClick(position)
             }

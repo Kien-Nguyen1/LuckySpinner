@@ -167,7 +167,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 typeEvent = Constants.EVERY_WEEK,
                 selectedHour,
                 selectedMinutes,
-                getListDay()
+                getListDay(),
+                binding.edtEventName.text.toString()
             )
         )
         viewModel.saveListMember(channelId, eventId!!)
@@ -229,7 +230,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                                     navigate()
                                 } else {
                                     Toast.makeText(context, "Something wrong. Try again!" , Toast.LENGTH_LONG).show()
-
                                 }
                             }
                         }
@@ -329,8 +329,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         val testId = Calendar.getInstance().timeInMillis.toString()
         val constraints = Constraints(requiredNetworkType = NetworkType.CONNECTED, requiresBatteryNotLow = true)
 
-//        viewModel.saveListSpinner(channelId, eventId!!)
-//        viewModel.saveListMember(channelId, eventId!!)
 
         viewModel.saveEvent(
             channelId,
@@ -429,12 +427,13 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         return isValidated
     }
 
-    fun getListDay() : List<Int>{
-        val list = ArrayList<Int>().toMutableList()
-        viewModel.event.value?.listDay?.forEach {
-            list.add(it)
-        }
-        return list
+    fun getListDay() : List<Int> {
+//        val list = ArrayList<Int>().toMutableList()
+//        viewModel.event.value?.listDay?.forEach {
+//            list.add(it)
+//        }
+//        return list
+        return viewModel.event.value?.listDay ?: ArrayList()
     }
 
 
