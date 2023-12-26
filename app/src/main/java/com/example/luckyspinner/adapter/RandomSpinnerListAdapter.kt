@@ -51,6 +51,7 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
         holder.binding.apply {
             val spinner = spinners[position]
             tvTitle.text = spinner.titleSpin
+            tvTitle.isSelected = true
 //            var isCheck = false
 //            spinner.listEvent.forEach {
 //                if (it == eventId) isCheck = true

@@ -64,6 +64,7 @@ class EventListAdapter(private val listener: Listener) : RecyclerView.Adapter<Ev
             title += "${event.hour} : ${event.minute}"
 
             tvTitleEventItem.text = title
+            tvTitleEventItem.isSelected = true
             btnEditEventItem.setOnClickListener {
                 listener.onItemClick(event.idEvent)
             }

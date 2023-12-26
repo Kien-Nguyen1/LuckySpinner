@@ -56,6 +56,7 @@ class MemberListAdapter(private val listener: Listener, private val eventList : 
         holder.binding.apply {
             val member = members[position]
             tvMemberNameItem.text = member.nameMember
+            tvMemberNameItem.isSelected = true
 
             if (eventList.isNotEmpty()) {
                 var text = ""
@@ -65,7 +66,7 @@ class MemberListAdapter(private val listener: Listener, private val eventList : 
                     }
                         e?.let {text += e.idEvent  }
                 }
-                tvMemberNameItem.text = text
+//                tvMemberNameItem.text = text
             }
             btnEditMemberName.setOnClickListener {
                 onEditClickListener.onEditClick(position)
