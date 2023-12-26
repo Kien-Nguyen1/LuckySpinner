@@ -23,7 +23,6 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -65,7 +64,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     private lateinit var memberInEventAdapter : MemberInEventListAdapter
     private lateinit var dateAdapter : DateListAdapter
     private lateinit var progressDialog : ProgressDialog
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -117,6 +115,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
         setupChooseSpinnerDialog()
         setupMemberDialog()
+
+        handleDayOfWeek()
 
 
         return binding.root
@@ -319,6 +319,55 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         val windowAttribute : WindowManager.LayoutParams = window.attributes
         windowAttribute.gravity = Gravity.CENTER
         window.attributes = windowAttribute
+    }
+
+    private fun handleDayOfWeek() {
+        val isMonday = MutableLiveData<Boolean>(false)
+        binding.dayOfWeek.apply {
+            btnMonday.setOnClickListener {
+                isMonday.value = !isMonday.value!!
+            }
+
+            btnTuesday.setOnClickListener {
+                btnMonday.setBackgroundColor(Color.parseColor("#6750A4"))
+                btnMonday.setTextColor(Color.WHITE)
+            }
+
+            btnWednesday.setOnClickListener {
+                btnMonday.setBackgroundColor(Color.parseColor("#6750A4"))
+                btnMonday.setTextColor(Color.WHITE)
+            }
+
+            btnThursday.setOnClickListener {
+                btnMonday.setBackgroundColor(Color.parseColor("#6750A4"))
+                btnMonday.setTextColor(Color.WHITE)
+            }
+
+            btnFriday.setOnClickListener {
+                btnMonday.setBackgroundColor(Color.parseColor("#6750A4"))
+                btnMonday.setTextColor(Color.WHITE)
+            }
+
+            btnSaturday.setOnClickListener {
+                btnMonday.setBackgroundColor(Color.parseColor("#6750A4"))
+                btnMonday.setTextColor(Color.WHITE)
+            }
+
+            btnSunday.setOnClickListener {
+                btnMonday.setBackgroundColor(Color.parseColor("#6750A4"))
+                btnMonday.setTextColor(Color.WHITE)
+            }
+        }
+
+        isMonday.observe(viewLifecycleOwner) {
+            if (it) {
+                binding.dayOfWeek.btnMonday.setBackgroundColor(Color.parseColor("#6750A4"))
+                binding.dayOfWeek.btnMonday.setTextColor(Color.WHITE)
+            } else {
+                binding.dayOfWeek.btnMonday.setBackgroundColor(Color.WHITE)
+                binding.dayOfWeek.btnMonday.setTextColor(Color.parseColor("#6750A4"))
+            }
+        }
     }
 
     fun handleTestNow() {
