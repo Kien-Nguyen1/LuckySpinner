@@ -180,7 +180,6 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             } else {
                 binding.rvChannelList.visibility = View.VISIBLE
                 binding.imgEmptyList.visibility = View.GONE
-
             }
         }
         viewModel.isAddingSuccess.observe(viewLifecycleOwner) {

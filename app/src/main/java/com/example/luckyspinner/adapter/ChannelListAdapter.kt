@@ -55,7 +55,11 @@ class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter
         holder.binding.apply {
             val channel = channels[position]
             tvTitleListOrChannelItem.text = channel.nameChannel
+
             tvTitleListOrChannelItem.isSelected = true
+
+            tvSubTitle.text = "Telegram ID Channel: ${channel.idTelegramChannel}"
+
             btnEditSpinnerOrChannel.setOnClickListener {
                 onEditClickListener.onEditClick(position)
             }

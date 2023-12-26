@@ -86,15 +86,14 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
                 findNavController().popBackStack()
             }
         }
-
+    }
+    fun createEditListener() {
         spinnerAdapter.onEditClickListener = object : OnEditClickListener {
             override fun onEditClick(position: Int) {
                 val binding : EditDialogBinding = EditDialogBinding.inflate(layoutInflater)
                 editSpinnerDiaLog = Dialog(requireContext())
                 editSpinnerDiaLog.requestWindowFeature(Window.FEATURE_NO_TITLE)
                 editSpinnerDiaLog.setContentView(binding.root)
-
-                println("Here come position $position")
 
                 val spinner = spinnerAdapter.spinners[position]
 
@@ -164,6 +163,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
         val itemDecoration : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.rvSpinnerList.apply {
             spinnerAdapter = SpinnerListAdapter(this@SpinnerListFragment)
+            createEditListener()
             adapter = spinnerAdapter
             layoutManager = LinearLayoutManager(context)
             addItemDecoration(itemDecoration)
@@ -171,6 +171,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
         viewModel.eventList.observe(viewLifecycleOwner) {
             binding.rvSpinnerList.apply {
                 spinnerAdapter = SpinnerListAdapter(this@SpinnerListFragment, it)
+                createEditListener()
                 adapter = spinnerAdapter
                 layoutManager = LinearLayoutManager(context)
                 addItemDecoration(itemDecoration)

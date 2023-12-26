@@ -186,6 +186,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         val decorationItem : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.rvMemberList.apply {
             memberAdapter = MemberListAdapter(this@MemberListFragment)
+            createEditListener()
             adapter = memberAdapter
             layoutManager = LinearLayoutManager(context)
             addItemDecoration(decorationItem)

@@ -61,7 +61,9 @@ class EventListAdapter(private val listener: Listener) : RecyclerView.Adapter<Ev
                 if (contains(Constants.SATURDAY)) title += " Sat"
                 if (contains(Constants.SUNDAY)) title += " Sun"
             }
-            title += "${event.hour} : ${event.minute}"
+            if (title == "") title = "No day in week"
+
+            tvTimeEventItem.text = "${event.hour} : ${event.minute}"
 
             tvTitleEventItem.text = event.nameEvent
             tvTitleEventItem.text = title
