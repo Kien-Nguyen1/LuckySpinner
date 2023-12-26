@@ -51,6 +51,7 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
         holder.binding.apply {
             val member = members[position]
             tvTitle.text = member.nameMember
+            tvTitle.isSelected = true
 //            var isCheck = false
 //            member.listEvent.forEach {
 //                if (it == eventId) {

@@ -20,6 +20,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
             android:singleLine="true"

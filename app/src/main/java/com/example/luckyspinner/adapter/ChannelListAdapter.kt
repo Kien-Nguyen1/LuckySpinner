@@ -55,6 +55,7 @@ class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter
         holder.binding.apply {
             val channel = channels[position]
             tvTitleListOrChannelItem.text = channel.nameChannel
+            tvTitleListOrChannelItem.isSelected = true
             btnEditSpinnerOrChannel.setOnClickListener {
                 onEditClickListener.onEditClick(position)
             }

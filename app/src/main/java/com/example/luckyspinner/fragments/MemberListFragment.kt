@@ -92,6 +92,8 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
 //            handleChooseAllMember()
 //        }
 
+    }
+    fun createEditListener() {
         memberAdapter.onEditClickListener = object : OnEditClickListener{
             override fun onEditClick(position: Int) {
                 val binding : EditDialogBinding = EditDialogBinding.inflate(layoutInflater)
@@ -128,8 +130,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
                 editMemberDiaLog.show()
             }
         }
-
-
     }
 
     private fun openAddMemberDiaLog(gravity: Int) {
@@ -193,6 +193,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         viewModel.eventList.observe(viewLifecycleOwner) {
             binding.rvMemberList.apply {
                 memberAdapter = MemberListAdapter(this@MemberListFragment, it)
+                createEditListener()
                 adapter = memberAdapter
                 layoutManager = LinearLayoutManager(context)
                 addItemDecoration(decorationItem)

@@ -57,6 +57,7 @@ class MemberListAdapter(private val listener: Listener, private val eventList : 
             val member = members[position]
             tvMemberNameItem.text = member.nameMember
             var text = ""
+            tvMemberNameItem.isSelected = true
 
             if (eventList.isNotEmpty()) {
                 val tempArray = ArrayList<String>()
@@ -81,6 +82,7 @@ class MemberListAdapter(private val listener: Listener, private val eventList : 
                 }
             } else {
                 text = "Haven't joined any events!"
+
             }
 //            tvMemberNameItem.text = member.nameMember
 

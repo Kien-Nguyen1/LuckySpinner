@@ -51,6 +51,7 @@ class DateListAdapter(private val listener: Listener) : RecyclerView.Adapter<Dat
         holder.binding.apply {
             root.setPadding(10)
             tvTitle.text = dayOfWeek[position]
+            tvTitle.isSelected = true
             checkBoxSpinner.isChecked = dayList.contains(changeTheNumberOfDay(position))
             println("Here come daylisy $dayList")
             checkBoxSpinner.setOnClickListener {

@@ -12,19 +12,58 @@
         android:orientation="horizontal"
         android:padding="5dp">
 
-        <TextView
-            android:id="@+id/tv_title_event_item"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:ellipsize="marquee"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:singleLine="true"
-            android:text="T7: 19h..."
-            android:textColor="@color/black"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_event_name_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text="Event Name"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_time_event_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text="Hour"
+                android:textSize="15sp"
+                android:textStyle="italic" />
+
+            <TextView
+                android:id="@+id/tv_title_event_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text="Day"
+                android:textSize="15sp"
+                android:textStyle="italic" />
+
+        </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_edit_event_item"
@@ -33,6 +72,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             app:icon="@drawable/ic_edit"
+            android:layout_gravity="center_vertical"
             app:iconTint="@color/black" />
 
         <com.google.android.material.button.MaterialButton
@@ -42,6 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             app:icon="@drawable/ic_delete"
+            android:layout_gravity="center_vertical"
             app:iconTint="@color/red" />
 
     </LinearLayout>

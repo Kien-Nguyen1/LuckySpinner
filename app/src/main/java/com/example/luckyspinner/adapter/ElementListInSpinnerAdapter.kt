@@ -52,6 +52,7 @@ class ElementListInSpinnerAdapter(private val listener: Listener) : RecyclerView
         holder.binding.apply {
             val element = elementSpinners[position]
             tvElementInSpinner.text = element.nameElement
+            tvElementInSpinner.isSelected = true
             root.setOnClickListener {
                 listener.onItemClick(element.idElement)
             }

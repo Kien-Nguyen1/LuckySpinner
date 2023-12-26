@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,39 +10,34 @@
         android:id="@+id/tv_member_name_item"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="2"
         android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:marqueeRepeatLimit="marquee_forever"
         android:scrollHorizontally="true"
         android:singleLine="true"
         android:text="Member Name"
         android:textColor="@color/black"
         android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textStyle="bold" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_edit_member_name"
         style="?attr/materialIconButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
         app:icon="@drawable/ic_edit"
-        app:iconTint="@color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/btn_delete_member_name"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:iconTint="@color/black" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_delete_member_name"
         style="?attr/materialIconButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
         app:icon="@drawable/ic_delete"
-        app:iconTint="@color/red"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:iconTint="@color/red" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
