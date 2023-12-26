@@ -17,36 +17,39 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/tv_schedule_event"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/tv_schedule_event"
-        android:text="Schedule Event"
-        android:textSize="20sp"
         android:layout_marginTop="20dp"
+        android:gravity="center_horizontal"
+        android:text="Schedule Event"
         android:textColor="@color/black"
-        app:layout_constraintTop_toBottomOf="@+id/app_bar_channel"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:gravity="center_horizontal"
-        android:textStyle="bold"/>
+        app:layout_constraintTop_toBottomOf="@+id/app_bar_channel" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_event_list_of_channel"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:clipToPadding="true"
         android:padding="10dp"
+        android:paddingBottom="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_schedule_event"
-        android:layout_marginTop="20dp"
         tools:listitem="@layout/event_channel_item" />
 
     <ImageView
         android:id="@+id/img_empty_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="20dp"
         android:padding="10dp"
         android:src="@drawable/image_empty_list"
         android:visibility="gone"
@@ -55,7 +58,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_schedule_event"
-        android:layout_marginTop="20dp"
         tools:listitem="@layout/event_channel_item" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
