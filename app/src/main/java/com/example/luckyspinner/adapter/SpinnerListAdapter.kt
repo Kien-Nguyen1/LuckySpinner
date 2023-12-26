@@ -12,7 +12,7 @@ import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Spinner
 
-class SpinnerListAdapter(private val listener: Listener, private val eventList : List<Event>? = null) : RecyclerView.Adapter<SpinnerListAdapter.SpinnerListViewHolder>() {
+class SpinnerListAdapter(private val listener: Listener, private val eventList : List<Event> = ArrayList()) : RecyclerView.Adapter<SpinnerListAdapter.SpinnerListViewHolder>() {
 
     lateinit var onEditClickListener: OnEditClickListener
 
@@ -55,6 +55,18 @@ class SpinnerListAdapter(private val listener: Listener, private val eventList :
         holder.binding.apply {
             val spinner = spinners[position]
             tvTitleListOrChannelItem.text = spinner.titleSpin
+
+            if (eventList.isNotEmpty()) {
+                var text = ""
+                spinner.listEvent.forEach {id ->
+                    val e = eventList.first {
+                        it.idEvent  == id
+                    }
+                    text += e.idEvent
+                }
+//                tvTitleListOrChannelItem.text = text
+            }
+
             btnEditSpinnerOrChannel.setOnClickListener {
                 onEditClickListener.onEditClick(position)
             }

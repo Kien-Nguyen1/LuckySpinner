@@ -1,5 +1,6 @@
 package com.example.luckyspinner.fragments
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.app.ProgressDialog
 import android.graphics.Color
@@ -160,6 +161,9 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             progressDialog.show()
             viewModel.addMember(idChannel, Member(Calendar.getInstance().timeInMillis.toString(), memberName))
         }
+        binding.btnCancelAddChannel.setOnClickListener {
+            addMemberDialog.dismiss()
+        }
     }
     private fun handleChooseAllMember() {
         val list = viewModel.memberList.value ?: return
@@ -199,22 +203,13 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun setupObserver() {
         viewModel.memberList.observe(viewLifecycleOwner) {
             memberAdapter.members = it
+            memberAdapter.notifyDataSetChanged()
             binding.rvMemberList.isVisible = it.isNotEmpty()
             binding.imgEmptyList.isVisible = it.isEmpty()
-//            var isAllSelected = true
-//            run breaking@{
-//                it.forEach { member ->
-//                    if (!member.hasSelected) {
-//                        isAllSelected = false
-//                        return@breaking
-//                    }
-//                }
-//            }
-//            binding.ckbChooseAllMember.isChecked = isAllSelected
-//            progressDialog.dismiss()
         }
         viewModel.isAddingMemberSuccess.observe(viewLifecycleOwner) {
             it?.let {
