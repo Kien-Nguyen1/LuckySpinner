@@ -37,6 +37,7 @@ import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.EMPTY_STRING
 import com.example.luckyspinner.util.Function
+import com.example.luckyspinner.util.Function.changeTheNumberOfDay
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
 import com.google.android.material.button.MaterialButton
@@ -327,43 +328,35 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         window.attributes = windowAttribute
     }
 
-    fun handleClickDay(position: Int) {
-        val event = viewModel.event.value ?: return
-        val listDay = event.listDay
-
-        val dayNumber = if (listDay.contains(changeTheNumberOfDay(position))) 0 else changeTheNumberOfDay(position)
-        listDay[position] = dayNumber
-        viewModel.event.value = event
-    }
 
     private fun dayOfWeekClickEvent() {
         binding.dayOfWeek.apply {
             btnMonday.setOnClickListener {
-                handleClickDay(Constants.MONDAY_POSITION)
+                viewModel.handleClickDay(Constants.MONDAY_POSITION)
             }
 
             btnTuesday.setOnClickListener {
-                handleClickDay(Constants.TUESDAY_POSITION)
+                viewModel.handleClickDay(Constants.TUESDAY_POSITION)
             }
 
             btnWednesday.setOnClickListener {
-                handleClickDay(Constants.WEDNESDAY_POSITION)
+                viewModel.handleClickDay(Constants.WEDNESDAY_POSITION)
             }
 
             btnThursday.setOnClickListener {
-                handleClickDay(Constants.THURSDAY_POSITION)
+                viewModel.handleClickDay(Constants.THURSDAY_POSITION)
             }
 
             btnFriday.setOnClickListener {
-                handleClickDay(Constants.FRIDAY_POSITION)
+                viewModel.handleClickDay(Constants.FRIDAY_POSITION)
             }
 
             btnSaturday.setOnClickListener {
-                handleClickDay(Constants.SATURDAY_POSITION)
+                viewModel.handleClickDay(Constants.SATURDAY_POSITION)
             }
 
             btnSunday.setOnClickListener {
-                handleClickDay(Constants.SUNDAY_POSITION)
+                viewModel.handleClickDay(Constants.SUNDAY_POSITION)
             }
         }
     }
@@ -377,7 +370,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             button.setTextColor(getColorBackGround(!isActive))
         }
         binding.dayOfWeek.apply {
-
             event.listDay.apply {
                 customButton(btnMonday, contains(Calendar.MONDAY))
                 customButton(btnTuesday, contains(Calendar.TUESDAY))
@@ -540,11 +532,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             tempList[position] = dayNumber
             listDay = tempList
         }
-    }
-
-    fun changeTheNumberOfDay(position : Int) : Int {
-        if (position == 6) return Constants.SUNDAY
-        return position + 2
     }
 
     override fun onDestroyView() {

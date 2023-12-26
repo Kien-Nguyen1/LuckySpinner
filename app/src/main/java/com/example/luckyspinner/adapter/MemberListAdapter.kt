@@ -56,17 +56,35 @@ class MemberListAdapter(private val listener: Listener, private val eventList : 
         holder.binding.apply {
             val member = members[position]
             tvMemberNameItem.text = member.nameMember
+            var text = ""
 
             if (eventList.isNotEmpty()) {
-                var text = ""
-                member.listEvent.forEach {id ->
+                val tempArray = ArrayList<String>()
+                member.listEvent.forEachIndexed { index, id ->
                     val e = eventList.firstOrNull {
                         it.idEvent  == id
                     }
-                        e?.let {text += e.idEvent  }
+                        e?.let {
+                            tempArray.add(e.nameEvent)
+                        }
                 }
-                tvMemberNameItem.text = text
+                if (tempArray.isEmpty()) {
+                    text = "Haven't joined any events!"
+                } else {
+                    text = "Events joined: ${tempArray[0]}"
+                    tempArray.forEachIndexed { index, s ->
+                        if (index == 0) {
+                            return@forEachIndexed
+                        }
+                        text += ", $s"
+                    }
+                }
+            } else {
+                text = "Haven't joined any events!"
             }
+//            tvMemberNameItem.text = member.nameMember
+
+
             btnEditMemberName.setOnClickListener {
                 onEditClickListener.onEditClick(position)
             }

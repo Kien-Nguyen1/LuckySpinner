@@ -9,6 +9,8 @@ import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Member
 import com.example.luckyspinner.models.Spinner
 import com.example.luckyspinner.util.Constants
+import com.example.luckyspinner.util.Function.changeDayToPosition
+import com.example.luckyspinner.util.Function.changeTheNumberOfDay
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.toObject
@@ -16,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 class AddTimeEventViewModel : ViewModel() {
     var memberList = MutableLiveData<List<Member>>()
@@ -250,10 +253,11 @@ class AddTimeEventViewModel : ViewModel() {
                 isSaveEventSuccess.value = false
             }
     }
-    fun getEvent(idChannel: String, idEvent : String?, newEventId : String? = null ) : Job = viewModelScope.launch(Dispatchers.IO) {
+    fun getEvent(idChannel: String, idEvent : String?, newEventId : String? = null) : Job = viewModelScope.launch(Dispatchers.IO) {
         if (idEvent == null) {
             this.launch(Dispatchers.Main) {
                 event.value = Event(newEventId!!)
+                handleClickDay(changeDayToPosition(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)))
             }
         } else {
             DataController.getEvent(db, idChannel, idEvent)
@@ -273,6 +277,14 @@ class AddTimeEventViewModel : ViewModel() {
                     isGettingEventSuccess.value = false
                 }
         }
+    }
+    fun handleClickDay(position: Int) {
+        val event = event.value ?: return
+        val listDay = event.listDay
+
+        val dayNumber = if (listDay.contains(changeTheNumberOfDay(position))) 0 else changeTheNumberOfDay(position)
+        listDay[position] = dayNumber
+        this.event.value = event
     }
 
      fun allCheckboxSpinner(hasSelected: Boolean) {

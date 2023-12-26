@@ -62,7 +62,7 @@ class SpinnerListAdapter(private val listener: Listener, private val eventList :
                     val e = eventList.firstOrNull {
                         it.idEvent  == id
                     }
-                    e?.let {text += e.idEvent  }
+                    e?.let {text += e.nameEvent  }
                 }
                 tvTitleListOrChannelItem.text = text
             }
