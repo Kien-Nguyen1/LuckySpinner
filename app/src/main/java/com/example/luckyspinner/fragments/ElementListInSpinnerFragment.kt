@@ -85,6 +85,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
                 val element = elementAdapter.elementSpinners[position]
 
                 binding.tvNameTitleAddElement.text = "Edit Element"
+                binding.edtId.isVisible = false
                 binding.edtEnterElement.setText(element.nameElement)
 
                 binding.btnDoneAddElement.setOnClickListener {

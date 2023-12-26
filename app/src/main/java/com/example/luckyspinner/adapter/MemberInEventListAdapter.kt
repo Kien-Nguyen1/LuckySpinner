@@ -35,6 +35,7 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
         get() = differ.currentList
         set(value) {
             differ.submitList(value)
+            notifyDataSetChanged()
         }
 
     override fun getItemCount() = members.size
@@ -52,12 +53,7 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
             val member = members[position]
             tvTitle.text = member.nameMember
             tvTitle.isSelected = true
-//            var isCheck = false
-//            member.listEvent.forEach {
-//                if (it == eventId) {
-//                    isCheck = true
-//                }
-//            }
+
             checkBoxSpinner.isChecked = member.listEvent.contains(eventId)
 
             checkBoxSpinner.setOnClickListener {

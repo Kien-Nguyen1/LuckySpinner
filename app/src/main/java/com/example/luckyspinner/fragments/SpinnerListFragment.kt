@@ -100,6 +100,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
                 binding.tvNameTitleAddElement.text = "Edit Spinner"
 
                 binding.edtEnterElement.setText(spinner.titleSpin)
+                binding.edtId.isVisible = false
 
                 binding.btnDoneAddElement.setOnClickListener {
                     spinner.titleSpin = binding.edtEnterElement.text.toString()

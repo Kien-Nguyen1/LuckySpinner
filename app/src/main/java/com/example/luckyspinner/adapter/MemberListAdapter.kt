@@ -82,7 +82,6 @@ class MemberListAdapter(private val listener: Listener, private val eventList : 
                 }
             } else {
                 text = "Haven't joined any events!"
-
             }
             tvSubtitleMemberItem.text = text
 

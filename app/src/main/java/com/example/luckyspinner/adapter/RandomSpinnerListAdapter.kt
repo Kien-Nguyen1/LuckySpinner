@@ -35,6 +35,7 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
         get() = differ.currentList
         set(value) {
             differ.submitList(value)
+            notifyDataSetChanged()
         }
 
     override fun getItemCount() = spinners.size
@@ -52,10 +53,12 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
             val spinner = spinners[position]
             tvTitle.text = spinner.titleSpin
             tvTitle.isSelected = true
+
 //            var isCheck = false
 //            spinner.listEvent.forEach {
 //                if (it == eventId) isCheck = true
 //            }
+
             checkBoxSpinner.isChecked = spinner.listEvent.contains(eventId)
 
             checkBoxSpinner.setOnClickListener {
