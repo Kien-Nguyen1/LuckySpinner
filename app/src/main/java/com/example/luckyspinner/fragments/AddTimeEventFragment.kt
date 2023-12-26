@@ -39,6 +39,7 @@ import com.example.luckyspinner.util.Constants.EMPTY_STRING
 import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
+import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.Duration
@@ -111,12 +112,15 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
         setupObservers()
 
+
+
         setUpDatePicker()
 
         setupChooseSpinnerDialog()
         setupMemberDialog()
 
-        handleDayOfWeek()
+        dayOfWeekClickEvent()
+
 
 
         return binding.root
@@ -158,8 +162,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         val selectedHour: Int = binding.timePickerAddTimeEvent.hour
         val selectedMinutes: Int = binding.timePickerAddTimeEvent.minute
 
-        eventId?.let { viewModel.saveListSpinner(channelId, it) }
-
         viewModel.saveEvent(
             channelId,
             Event(
@@ -171,7 +173,11 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 binding.edtEventName.text.toString()
             )
         )
-        viewModel.saveListMember(channelId, eventId!!)
+        eventId?.let {
+            viewModel.saveListSpinner(channelId, it)
+            viewModel.saveListMember(channelId, it)
+        }
+
 
         val timeNow = Calendar.getInstance()
 
@@ -321,52 +327,67 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         window.attributes = windowAttribute
     }
 
-    private fun handleDayOfWeek() {
-        val isMonday = MutableLiveData<Boolean>(false)
+    fun handleClickDay(position: Int) {
+        val event = viewModel.event.value ?: return
+        val listDay = event.listDay
+
+        val dayNumber = if (listDay.contains(changeTheNumberOfDay(position))) 0 else changeTheNumberOfDay(position)
+        listDay[position] = dayNumber
+        viewModel.event.value = event
+    }
+
+    private fun dayOfWeekClickEvent() {
         binding.dayOfWeek.apply {
             btnMonday.setOnClickListener {
-                isMonday.value = !isMonday.value!!
+                handleClickDay(Constants.MONDAY_POSITION)
             }
 
             btnTuesday.setOnClickListener {
-                btnMonday.setBackgroundColor(Color.parseColor("#6750A4"))
-                btnMonday.setTextColor(Color.WHITE)
+                handleClickDay(Constants.TUESDAY_POSITION)
             }
 
             btnWednesday.setOnClickListener {
-                btnMonday.setBackgroundColor(Color.parseColor("#6750A4"))
-                btnMonday.setTextColor(Color.WHITE)
+                handleClickDay(Constants.WEDNESDAY_POSITION)
             }
 
             btnThursday.setOnClickListener {
-                btnMonday.setBackgroundColor(Color.parseColor("#6750A4"))
-                btnMonday.setTextColor(Color.WHITE)
+                handleClickDay(Constants.THURSDAY_POSITION)
             }
 
             btnFriday.setOnClickListener {
-                btnMonday.setBackgroundColor(Color.parseColor("#6750A4"))
-                btnMonday.setTextColor(Color.WHITE)
+                handleClickDay(Constants.FRIDAY_POSITION)
             }
 
             btnSaturday.setOnClickListener {
-                btnMonday.setBackgroundColor(Color.parseColor("#6750A4"))
-                btnMonday.setTextColor(Color.WHITE)
+                handleClickDay(Constants.SATURDAY_POSITION)
             }
 
             btnSunday.setOnClickListener {
-                btnMonday.setBackgroundColor(Color.parseColor("#6750A4"))
-                btnMonday.setTextColor(Color.WHITE)
+                handleClickDay(Constants.SUNDAY_POSITION)
             }
         }
-
-        isMonday.observe(viewLifecycleOwner) {
-            if (it) {
-                binding.dayOfWeek.btnMonday.setBackgroundColor(Color.parseColor("#6750A4"))
-                binding.dayOfWeek.btnMonday.setTextColor(Color.WHITE)
-            } else {
-                binding.dayOfWeek.btnMonday.setBackgroundColor(Color.WHITE)
-                binding.dayOfWeek.btnMonday.setTextColor(Color.parseColor("#6750A4"))
+    }
+    fun handleDayOfWeek(event : Event) {
+        fun customButton(button : MaterialButton, isActive : Boolean) {
+            fun getColorBackGround(isActive : Boolean) : Int{
+                return if (isActive)  Color.parseColor("#6750A4") else Color.WHITE
             }
+
+            button.setBackgroundColor(getColorBackGround(isActive))
+            button.setTextColor(getColorBackGround(!isActive))
+        }
+        binding.dayOfWeek.apply {
+
+            event.listDay.apply {
+                customButton(btnMonday, contains(Calendar.MONDAY))
+                customButton(btnTuesday, contains(Calendar.TUESDAY))
+                customButton(btnWednesday, contains(Calendar.WEDNESDAY))
+                customButton(btnThursday, contains(Calendar.THURSDAY))
+                customButton(btnFriday, contains(Calendar.FRIDAY))
+                customButton(btnSaturday, contains(Calendar.SATURDAY))
+                customButton(btnSunday, contains(Calendar.SUNDAY))
+            }
+
         }
     }
 
@@ -445,9 +466,18 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                     binding.timePickerAddTimeEvent.apply {
                         hour = eventHour
                         minute = it.minute!!
+//                        binding.timePickerAddTimeEvent.setOnTimeChangedListener { view, hourOfDay, minute ->
+//                            if (viewModel.event.isInitialized) {
+//                                val event = viewModel.event.value!!
+//                                event.hour = hourOfDay
+//                                event.minute = minute
+//                                viewModel.event.value = event
+//                            }
+//                        }
                     }
                 }
             binding.edtEventName.setText(it.nameEvent)
+            handleDayOfWeek(it)
             dateAdapter.dayList = it.listDay
         }
         viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
@@ -483,7 +513,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         return isValidated
     }
 
-    fun getListDay() : List<Int> {
+    fun getListDay() : MutableList<Int> {
         return viewModel.event.value?.listDay ?: ArrayList()
     }
 

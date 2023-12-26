@@ -53,6 +53,14 @@ object Constants {
     const val SATURDAY = 7
     const val SUNDAY = 1
 
+    const val MONDAY_POSITION = 0
+    const val TUESDAY_POSITION = 1
+    const val WEDNESDAY_POSITION = 2
+    const val THURSDAY_POSITION = 3
+    const val FRIDAY_POSITION = 4
+    const val SATURDAY_POSITION = 5
+    const val SUNDAY_POSITION = 6
+
     const val DELAY_TIME_MILLIS: Long = 3000
     lateinit var DEVICE_ID : String
 }
