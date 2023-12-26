@@ -59,12 +59,12 @@ class SpinnerListAdapter(private val listener: Listener, private val eventList :
             if (eventList.isNotEmpty()) {
                 var text = ""
                 spinner.listEvent.forEach {id ->
-                    val e = eventList.first {
+                    val e = eventList.firstOrNull {
                         it.idEvent  == id
                     }
-                    text += e.idEvent
+                    e?.let {text += e.idEvent  }
                 }
-//                tvTitleListOrChannelItem.text = text
+                tvTitleListOrChannelItem.text = text
             }
 
             btnEditSpinnerOrChannel.setOnClickListener {

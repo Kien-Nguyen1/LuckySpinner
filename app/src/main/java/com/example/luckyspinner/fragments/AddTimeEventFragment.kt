@@ -398,6 +398,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                         minute = it.minute!!
                     }
                 }
+            binding.edtEventName.setText(it.nameEvent)
             dateAdapter.dayList = it.listDay
         }
         viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
@@ -423,16 +424,17 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             isValidated = false
             Toast.makeText(context, "You must select at least 1 spinner",Toast.LENGTH_LONG).show()
         }
+        binding.edtEventName.apply {
+            if (text.toString() == "") {
+                error = "Please fill this fields!"
+                isValidated = false
+            }
+        }
 
         return isValidated
     }
 
     fun getListDay() : List<Int> {
-//        val list = ArrayList<Int>().toMutableList()
-//        viewModel.event.value?.listDay?.forEach {
-//            list.add(it)
-//        }
-//        return list
         return viewModel.event.value?.listDay ?: ArrayList()
     }
 
