@@ -255,12 +255,10 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         }
     }
     private fun setupRecycleView() {
-        val itemDecoration : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.rvChannelList.apply {
             channelListAdapter = ChannelListAdapter(this@ChannelListFragment)
             adapter = channelListAdapter
             layoutManager = LinearLayoutManager(context)
-            addItemDecoration(itemDecoration)
         }
     }
 
