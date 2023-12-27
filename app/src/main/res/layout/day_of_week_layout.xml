@@ -20,7 +20,7 @@
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:text="Mon"
-            android:textSize="12sp" />
+            android:textSize="10sp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_tuesday"
@@ -28,7 +28,7 @@
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:text="Tue"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_wednesday"
@@ -36,7 +36,7 @@
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:text="Wed"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_thursday"
@@ -44,7 +44,7 @@
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:text="Thu"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_friday"
@@ -52,7 +52,7 @@
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:text="Fri"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_saturday"
@@ -60,7 +60,7 @@
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:text="Sat"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_sunday"
@@ -68,7 +68,7 @@
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:text="Sun"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
 
     </LinearLayout>
 

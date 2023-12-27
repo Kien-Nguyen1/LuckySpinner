@@ -582,5 +582,4 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
         Function.removeObservers(list, viewLifecycleOwner)
     }
-
 }
