@@ -21,15 +21,23 @@
             android:textSize="25sp"
             android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/edt_enter_channel_id"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_field_add_channel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="30dp"
-            android:layout_marginTop="10dp"
-            android:gravity="center_horizontal"
-            android:hint="Enter ID"
-            android:textColor="@color/black" />
+            app:endIconMode="clear_text"
+            style="?attr/textInputOutlinedDenseStyle"
+            android:hint="ID"
+            android:layout_marginTop="10dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_enter_channel_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <EditText
             android:id="@+id/edt_enter_channel_name"
