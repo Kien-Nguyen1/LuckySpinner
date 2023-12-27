@@ -104,6 +104,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
                 val member = memberAdapter.members[position]
 
                 binding.tvNameTitleAddElement.text = "Edit Member"
+                binding.edtId.isVisible = false
 
                 binding.edtEnterElement.setText(member.nameMember)
 

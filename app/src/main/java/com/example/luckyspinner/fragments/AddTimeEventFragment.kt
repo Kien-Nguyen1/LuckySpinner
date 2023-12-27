@@ -253,6 +253,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
 
         bindingMemberDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
+
+
         bindingMemberDialog.rvChooseRandomSpinnerList.apply {
             memberInEventAdapter = MemberInEventListAdapter(this@AddTimeEventFragment, eventId!!)
             adapter = memberInEventAdapter
@@ -448,10 +450,36 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     fun setupObservers() {
         viewModel.spinnerList.observe(viewLifecycleOwner) {
             randomSpinnerAdapter.spinners = it
+            var isAllSelected = true
+            run breaking@{
+                it.forEach { spinner ->
+                    if (!spinner.listEvent.contains(eventId)) {
+                        isAllSelected = false
+                        return@breaking
+                    }
+                }
+            }
+            bindingRandomDialog.checkBoxAll.isChecked = isAllSelected
+            bindingRandomDialog.checkBoxAll.setOnClickListener {
+                viewModel.allCheckboxSpinner(!bindingRandomDialog.checkBoxAll.isChecked)
+            }
         }
         viewModel.memberList.observe(viewLifecycleOwner) {
             memberInEventAdapter.members = it
-            println(it.size)
+            var isAllSelected = true
+            run breaking@{
+                it.forEach { member ->
+                    if (!member.listEvent.contains(eventId)) {
+                        isAllSelected = false
+                        return@breaking
+                    }
+                }
+            }
+            bindingMemberDialog.checkBoxAll.isChecked = isAllSelected
+            println("Here come is $isAllSelected")
+            bindingMemberDialog.checkBoxAll.setOnClickListener {
+                viewModel.allCheckboxMember(!bindingMemberDialog.checkBoxAll.isChecked)
+            }
         }
         viewModel.event.observe(viewLifecycleOwner) {
                 it.hour?.let { eventHour ->
@@ -544,4 +572,5 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
         Function.removeObservers(list, viewLifecycleOwner)
     }
+
 }

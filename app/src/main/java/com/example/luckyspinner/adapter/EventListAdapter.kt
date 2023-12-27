@@ -51,6 +51,9 @@ class EventListAdapter(private val listener: Listener) : RecyclerView.Adapter<Ev
     override fun onBindViewHolder(holder: EventListViewHolder, position: Int) {
         holder.binding.apply {
             val event = events[position]
+
+            tvEventNameItem.text = event.nameEvent
+
             var title = ""
             event.listDay.apply {
                 if (contains(Constants.MONDAY)) title += "Mon"
@@ -65,9 +68,10 @@ class EventListAdapter(private val listener: Listener) : RecyclerView.Adapter<Ev
 
             tvTimeEventItem.text = "${event.hour} : ${event.minute}"
 
-            tvTitleEventItem.text = event.nameEvent
-            tvTitleEventItem.text = title
+
             tvTitleEventItem.isSelected = true
+            tvTitleEventItem.text = title
+
             btnEditEventItem.setOnClickListener {
                 listener.onItemClick(event.idEvent)
             }

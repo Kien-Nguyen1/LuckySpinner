@@ -216,11 +216,10 @@ class AddTimeEventViewModel : ViewModel() {
     fun checkBoxSpinner(position : Int, hasSelected : Boolean) {
         val spinners = spinnerList.value!!
         spinners[position].hasSelected = !hasSelected
-        val listEvent = spinners[position].listEvent
         if (hasSelected) {
-            listEvent.filter {
-                it == event.value!!.idEvent
-            }.toList()
+            spinners[position].listEvent = spinners[position].listEvent.filter {
+                it != event.value!!.idEvent
+            }.toMutableList()
         } else {
             spinners[position].listEvent.add(event.value!!.idEvent)
         }
@@ -230,15 +229,13 @@ class AddTimeEventViewModel : ViewModel() {
         val members = memberList.value!!
         println("Here come $members")
         members[position].hasSelected = !hasSelected
-        val listEvent = members[position].listEvent
         if (hasSelected) {
-            listEvent.filter {
-                it == event.value!!.idEvent
-            }
+            members[position].listEvent = members[position].listEvent.filter {
+                it != event.value!!.idEvent
+            }.toMutableList()
         } else {
             members[position].listEvent.add(event.value!!.idEvent)
         }
-        println("Here come lisEvent $listEvent")
         println("Here come $members")
         memberList.value = members
     }
@@ -291,11 +288,22 @@ class AddTimeEventViewModel : ViewModel() {
         spinnerList.value!!.forEachIndexed { index, spinner ->
             checkBoxSpinner(index, hasSelected)
         }
-        println("Here come ")
     }
      fun allCheckboxMember(hasSelected: Boolean) {
         memberList.value!!.forEachIndexed { index, member ->
-            checkBoxMember(index, hasSelected)
+            val members = memberList.value!!
+            members[index].hasSelected = !hasSelected
+            if (hasSelected) {
+                members[index].listEvent = members[index].listEvent.filter {
+                    it != event.value!!.idEvent
+                }.toMutableList()
+            } else {
+                members[index].listEvent.add(event.value!!.idEvent)
+            }
+            if (index == members.size - 1) {
+                println("Here come 123123 $members")
+                memberList.value = members
+            }
         }
     }
 }
