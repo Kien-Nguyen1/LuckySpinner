@@ -48,6 +48,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
     private lateinit var addElementInSpinnerDiaLog : Dialog
     private lateinit var editElementDialog : Dialog
     private lateinit var progressDialog : Dialog
+    var isFirstLoad = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -109,7 +110,10 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         }
 
         lifecycleScope.launch(Dispatchers.Main) {
-            viewModel.getElement(idChannel, idSpinner)
+            if (isFirstLoad) {
+                viewModel.getElement(idChannel, idSpinner)
+                isFirstLoad = false
+            }
         }
 
         binding.appBarElementListSpinner.apply {

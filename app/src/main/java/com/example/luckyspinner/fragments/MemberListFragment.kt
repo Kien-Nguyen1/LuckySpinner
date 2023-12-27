@@ -48,6 +48,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     private lateinit var addMemberDialog : Dialog
     private lateinit var progressDialog : ProgressDialog
     private lateinit var editMemberDiaLog : Dialog
+    var isFirstLoad = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,7 +56,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     ): View? {
         binding = FragmentMemberListBinding.inflate(inflater , container, false)
         progressDialog = ProgressDialog(requireContext())
-//        binding.ckbChooseAllMember.isVisible = false
 
         binding.appBarMemberList.apply {
             toolBar.title = "List Member"
@@ -74,8 +74,11 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         setupObserver()
 
         lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.getEvents(idChannel)
-            viewModel.getMembers(idChannel)
+            if (isFirstLoad) {
+                viewModel.getEvents(idChannel)
+                viewModel.getMembers(idChannel)
+                isFirstLoad = false
+            }
         }
 
         binding.btnAddMemberList.setOnClickListener {
@@ -87,10 +90,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
                 findNavController().popBackStack()
             }
         }
-
-//        binding.ckbChooseAllMember.setOnClickListener {
-//            handleChooseAllMember()
-//        }
 
     }
     fun createEditListener() {

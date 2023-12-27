@@ -35,32 +35,42 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     private var idTelegramChannel: String? = null
     private lateinit var eventAdapter : EventListAdapter
     private lateinit var progressDialog : ProgressDialog
+    var isFirstLoad = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        binding = FragmentChannelBinding.inflate(inflater, container, false)
-        progressDialog = ProgressDialog(context)
+        println("channelss oncreateview")
         idChannel = arguments?.getString(ID_CHANNEL_KEY)!!
         nameChannel = arguments?.getString(CHANNEL_NAME)
+
+
+        binding = FragmentChannelBinding.inflate(inflater, container, false)
+        progressDialog = ProgressDialog(context)
         idTelegramChannel = arguments?.getString(ID_TELEGRAM_CHANNEL_KEY)
+        setupRecycleView()
+
+        setupObserver()
+
+        if (isFirstLoad) {
+            viewModel.getEvents(idChannel)
+            isFirstLoad = false
+        }
 
         binding.appBarChannel.apply {
             toolBar.title = nameChannel
         }
+
+        println("channelss oncreateview")
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupObserver()
-        setupRecycleView()
+        println("channelss onviewcreated")
 
-        lifecycleScope.launch(Dispatchers.Main) {
-            viewModel.getEvents(idChannel)
-        }
 
         val bundle = Bundle().apply {
             putString(ID_CHANNEL_KEY, idChannel)

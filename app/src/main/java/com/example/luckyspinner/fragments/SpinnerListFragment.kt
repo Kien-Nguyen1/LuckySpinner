@@ -48,6 +48,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
     private lateinit var addSpinnerDiaLog : Dialog
     private lateinit var editSpinnerDiaLog : Dialog
     private lateinit var progressDialog : Dialog
+    var isFirstLoad = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,8 +74,11 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
         setupObservers()
 
         lifecycleScope.launch(Dispatchers.Main) {
-            viewModel.getEvents(idChannel)
-            viewModel.getSpinners(idChannel)
+            if (isFirstLoad) {
+                viewModel.getEvents(idChannel)
+                viewModel.getSpinners(idChannel)
+                isFirstLoad = false
+            }
         }
 
         binding.btnAddSpinner.setOnClickListener {

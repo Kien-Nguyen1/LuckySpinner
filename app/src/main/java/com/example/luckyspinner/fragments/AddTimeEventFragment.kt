@@ -71,6 +71,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
+        println("addtime HHere come oncreateview")
         binding = FragmentAddTimeEventBinding.inflate(inflater, container, false)
         progressDialog =  ProgressDialog(context)
 

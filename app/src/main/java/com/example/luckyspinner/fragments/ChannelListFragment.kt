@@ -46,14 +46,29 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     private lateinit var addDialog : Dialog
     private lateinit var editChannelDiaLog : Dialog
     private lateinit var progressDialog: ProgressDialog
+    var isFirstLoad = true
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        println("listchannel HHere come oncreate")
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        println("HHere come oncreateview")
+        println("listchannel HHere come oncreateview")
         binding = FragmentChannelListBinding.inflate(inflater, container, false)
         progressDialog = ProgressDialog(context)
+        setupStateObserver()
+
         setupRecycleView()
+
+        if (isFirstLoad) {
+            viewModel.getChannels()
+            isFirstLoad = false
+            println("listchannel Here come get channels")
+        }
 
         // Inflate the layout for this fragment
         return binding.root
@@ -61,12 +76,12 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupStateObserver()
+        println("listchannel HHere come onviewcreated")
+
 
         viewModel.message.observe(viewLifecycleOwner) {
 //            Toast.makeText(requireContext(), it , Toast.LENGTH_SHORT).show()
         }
-        viewModel.getChannels()
 
 
         binding.btnAddChannel.setOnClickListener {

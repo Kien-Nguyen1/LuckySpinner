@@ -17,7 +17,6 @@ class ChannelViewModel : ViewModel() {
     val isShowProgressDialog = MutableLiveData<Boolean>()
     val isDeleteEventSuccess = MutableLiveData<Boolean?>()
 
-
     fun  getEvents(idChannel : String) {
         isShowProgressDialog.value = true
         val list : MutableList<Event> = ArrayList()
