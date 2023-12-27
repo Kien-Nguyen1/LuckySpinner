@@ -98,6 +98,10 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
 
     fun isSendMessageToDay() : Boolean {
         val today = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
+<<<<<<< HEAD
+=======
+//        return true//moke
+>>>>>>> fa6d3dbd928b2f2490cdc2011a4defee5986f4fb
         return listDay.contains(today)
     }
     suspend fun  getElement(idChannel : String?, idSpinner : String?, spinnerName : String, isLast : Boolean) : Boolean {

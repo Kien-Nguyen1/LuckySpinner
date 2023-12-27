@@ -301,6 +301,10 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             })
         }
 
+        bindingRandomDialog.btnBack.setOnClickListener {
+            chooseSpinnerDialog.dismiss()
+        }
+
         val window : Window = chooseSpinnerDialog.window!!
         window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -320,7 +324,12 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 putString(Constants.ID_CHANNEL_KEY, channelId)
             })
         }
+
         bindingMemberDialog.tvTitleChooseRandomSpinnerList.text = "Choose Members"
+
+        bindingMemberDialog.btnBack.setOnClickListener {
+            chooseMemberDialog.dismiss()
+        }
 
         val window : Window = chooseMemberDialog.window!!
         window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
