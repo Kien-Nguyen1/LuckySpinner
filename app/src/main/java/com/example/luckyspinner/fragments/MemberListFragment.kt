@@ -36,6 +36,7 @@ import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.viewmodels.MemberListViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -107,6 +108,8 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
 
                 binding.edtEnterElement.setText(member.nameMember)
 
+                binding.edtEnterElement.setSelection(binding.edtEnterElement.text.length)
+
                 binding.btnCancelElement.setOnClickListener {
                     editMemberDiaLog.dismiss()
                 }
@@ -128,6 +131,10 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
                 window.attributes = windowAttribute
 
                 editMemberDiaLog.show()
+                lifecycleScope.launch {
+                    delay(1)
+                    Function.showKeyBoard(context, binding.edtEnterElement)
+                }
             }
         }
     }
@@ -163,6 +170,10 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         }
         binding.btnCancelAddChannel.setOnClickListener {
             addMemberDialog.dismiss()
+        }
+        lifecycleScope.launch {
+            delay(1)
+            Function.showKeyBoard(context, binding.edtEnterChannelName)
         }
     }
     private fun handleChooseAllMember() {

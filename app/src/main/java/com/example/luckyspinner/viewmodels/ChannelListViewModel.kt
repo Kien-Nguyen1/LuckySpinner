@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.WorkManager
 import com.example.luckyspinner.controller.DataController
 import com.example.luckyspinner.models.Channel
 import com.example.luckyspinner.util.Constants
@@ -73,6 +74,7 @@ class ChannelListViewModel : ViewModel() {
                 Log.d(Constants.FIRE_STORE, "DocumentSnapshot successfully deleted!")
                 message.value = Constants.MESSAGE_DELETE_SUCCESSFUL
                 isDeleteSuccess.value = true
+                WorkManager.getInstance().cancelAllWorkByTag(channelId)
             }
             .addOnFailureListener { e ->
                 Log.w(Constants.FIRE_STORE, "Error deleting document", e)

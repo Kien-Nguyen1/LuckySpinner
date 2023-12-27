@@ -2,18 +2,22 @@ package com.example.luckyspinner.fragments
 
 import android.app.Dialog
 import android.app.ProgressDialog
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.ContextCompat.getSystemServiceName
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
@@ -35,9 +39,10 @@ import com.example.luckyspinner.util.DialogUtil
 import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.viewmodels.ChannelListViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Calendar
+
 
 class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     private lateinit var binding : FragmentChannelListBinding
@@ -102,6 +107,10 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 binding.edtEnterElement.setText(channel.nameChannel)
                 binding.edtId.setText(channel.idTelegramChannel)
 
+                binding.edtId.setSelection(channel.idTelegramChannel.length)
+                binding.edtEnterElement.setSelection(binding.edtEnterElement.selectionEnd)
+
+
                 binding.btnDoneAddElement.setOnClickListener {
                     if (binding.edtEnterElement.text.toString() == EMPTY_STRING) {
                         binding.edtEnterElement.error = " Please fill this filed!"
@@ -134,6 +143,11 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 window.attributes = windowAttribute
 
                 editChannelDiaLog.show()
+
+                lifecycleScope.launch {
+                    delay(1)
+                    Function.showKeyBoard(context, binding.edtId)
+                }
             }
         }
     }
@@ -182,6 +196,10 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         }
         binding.btnCancelAddChannel.setOnClickListener {
             addDialog.dismiss()
+        }
+        lifecycleScope.launch {
+            delay(1)
+            Function.showKeyBoard(context, binding.edtEnterChannelId)
         }
     }
 

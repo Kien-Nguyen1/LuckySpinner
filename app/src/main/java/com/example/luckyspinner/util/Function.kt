@@ -1,7 +1,11 @@
 package com.example.luckyspinner.util
 
+import android.content.Context
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.firestore.core.View
 import java.util.Calendar
 
 object Function {
@@ -24,5 +28,13 @@ object Function {
     fun changeDayToPosition(day : Int) : Int {
         if (day == Calendar.SUNDAY) return  6
         return day - 2
+    }
+
+    fun showKeyBoard(context: Context?, editText : EditText) {
+        editText.requestFocus()
+
+        val inputMethodManager = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
     }
 }

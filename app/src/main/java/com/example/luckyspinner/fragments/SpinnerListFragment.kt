@@ -36,6 +36,7 @@ import com.example.luckyspinner.util.DialogUtil
 import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.viewmodels.SpinnerListViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -106,6 +107,8 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
                 binding.edtEnterElement.setText(spinner.titleSpin)
                 binding.edtId.isVisible = false
 
+                binding.edtEnterElement.setSelection(binding.edtEnterElement.text.length)
+
                 binding.btnDoneAddElement.setOnClickListener {
                     spinner.titleSpin = binding.edtEnterElement.text.toString()
                     viewModel.editSpinner(idChannel, spinner)
@@ -124,6 +127,10 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
                 window.attributes = windowAttribute
 
                 editSpinnerDiaLog.show()
+                lifecycleScope.launch {
+                    delay(1)
+                    Function.showKeyBoard(context, binding.edtEnterElement)
+                }
             }
         }
     }
@@ -161,6 +168,11 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
         }
         binding.btnCancelAddChannel.setOnClickListener {
             addSpinnerDiaLog.dismiss()
+        }
+
+        lifecycleScope.launch {
+            delay(1)
+            Function.showKeyBoard(context, binding.edtEnterChannelName)
         }
     }
 
