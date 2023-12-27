@@ -53,8 +53,9 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
 
         setupObserver()
 
+        viewModel.getEvents(idChannel)
+
         if (isFirstLoad) {
-            viewModel.getEvents(idChannel)
             isFirstLoad = false
         }
 
