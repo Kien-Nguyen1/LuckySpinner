@@ -55,6 +55,7 @@ class SpinnerListAdapter(private val listener: Listener, private val eventList :
         holder.binding.apply {
             val spinner = spinners[position]
             tvTitleListOrChannelItem.text = spinner.titleSpin
+            tvTitleListOrChannelItem.isSelected = true
             tvSubTitle.isSelected = true
 
             var text = ""

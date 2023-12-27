@@ -68,7 +68,8 @@ class EventListAdapter(private val listener: Listener) : RecyclerView.Adapter<Ev
 
             tvTimeEventItem.text = "${event.hour} : ${event.minute}"
 
-
+            tvTitleEventItem.isSelected = true
+            tvEventNameItem.isSelected = true
             tvTitleEventItem.isSelected = true
             tvTitleEventItem.text = title
 
