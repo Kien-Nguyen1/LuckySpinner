@@ -3,6 +3,7 @@ package com.example.luckyspinner.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -72,6 +73,9 @@ class EventListAdapter(private val listener: Listener) : RecyclerView.Adapter<Ev
             tvEventNameItem.isSelected = true
             tvTitleEventItem.isSelected = true
             tvTitleEventItem.text = title
+
+            btnDeleteEventItem.isVisible = false
+            btnEditEventItem.isVisible = false
 
             btnEditEventItem.setOnClickListener {
                 listener.onItemClick(event.idEvent)

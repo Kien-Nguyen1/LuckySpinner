@@ -4,6 +4,7 @@ package com.example.luckyspinner.adapter
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -86,11 +87,16 @@ class MemberListAdapter(private val listener: Listener, private val eventList : 
             tvSubtitleMemberItem.text = text
 
 
+            btnDeleteMemberName.isVisible = false
             btnEditMemberName.setOnClickListener {
                 onEditClickListener.onEditClick(position)
             }
             btnDeleteMemberName.setOnClickListener {
                 listener.onDeleteItem(member.idMember)
+            }
+            root.setOnLongClickListener {
+                listener.onDeleteItem(member.idMember)
+                true
             }
             root.setOnClickListener {
                 listener.onItemClick(member.idMember)

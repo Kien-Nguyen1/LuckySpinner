@@ -4,6 +4,7 @@ package com.example.luckyspinner.adapter
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -56,6 +57,7 @@ class ElementListInSpinnerAdapter(private val listener: Listener) : RecyclerView
             root.setOnClickListener {
                 listener.onItemClick(element.idElement)
             }
+            btnDeleteElementTitle.isVisible = false
 
             btnEditElementTitle.setOnClickListener {
                 onEditClickListener.onEditClick(position)

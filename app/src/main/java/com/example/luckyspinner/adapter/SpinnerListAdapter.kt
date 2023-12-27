@@ -4,6 +4,7 @@ package com.example.luckyspinner.adapter
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -85,6 +86,7 @@ class SpinnerListAdapter(private val listener: Listener, private val eventList :
             }
             tvSubTitle.text = text
 
+            btnDeleteSpinnerOrChannel.isVisible = false
             btnEditSpinnerOrChannel.setOnClickListener {
                 onEditClickListener.onEditClick(position)
             }

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -63,6 +64,7 @@ class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter
             btnEditSpinnerOrChannel.setOnClickListener {
                 onEditClickListener.onEditClick(position)
             }
+            btnDeleteSpinnerOrChannel.isVisible = false
             root.setOnClickListener {
                 listener.onItemClick(channel)
             }
