@@ -42,13 +42,14 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         savedInstanceState: Bundle?,
     ): View? {
         println("channelss oncreateview")
+        binding = FragmentChannelBinding.inflate(inflater, container, false)
+        progressDialog = ProgressDialog(context)
+
         idChannel = arguments?.getString(ID_CHANNEL_KEY)!!
         nameChannel = arguments?.getString(CHANNEL_NAME)
 
-
-        binding = FragmentChannelBinding.inflate(inflater, container, false)
-        progressDialog = ProgressDialog(context)
         idTelegramChannel = arguments?.getString(ID_TELEGRAM_CHANNEL_KEY)
+
         setupRecycleView()
 
         setupObserver()
