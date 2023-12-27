@@ -194,13 +194,11 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     }
 
     private fun setupRecycleView() {
-        val decorationItem : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.rvMemberList.apply {
             memberAdapter = MemberListAdapter(this@MemberListFragment)
             createEditListener()
             adapter = memberAdapter
             layoutManager = LinearLayoutManager(context)
-            addItemDecoration(decorationItem)
         }
         viewModel.eventList.observe(viewLifecycleOwner) {
             binding.rvMemberList.apply {
@@ -208,7 +206,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
                 createEditListener()
                 adapter = memberAdapter
                 layoutManager = LinearLayoutManager(context)
-                addItemDecoration(decorationItem)
                 if (viewModel.memberList.isInitialized) {
                     viewModel.memberList.value = viewModel.memberList.value
                 }

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginHorizontal="10dp"
     android:layout_marginBottom="10dp"
-    app:cardCornerRadius="10dp">
+    app:cardCornerRadius="10dp"
+    app:cardElevation="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,6 +17,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
             android:layout_weight="2"
             android:orientation="vertical">
 
@@ -70,9 +73,10 @@
             style="?attr/materialIconButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            app:icon="@drawable/ic_edit"
             android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
+            android:visibility="gone"
+            app:icon="@drawable/ic_edit"
             app:iconTint="@color/black" />
 
         <com.google.android.material.button.MaterialButton
@@ -80,11 +84,22 @@
             style="?attr/materialIconButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            app:icon="@drawable/ic_delete"
             android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
+            android:visibility="gone"
+            app:icon="@drawable/ic_delete"
             app:iconTint="@color/red" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/btn_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="15dp"
+            app:thumbIcon="@drawable/ic_done"
+            app:thumbIconTint="?attr/colorOutline" />
 
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

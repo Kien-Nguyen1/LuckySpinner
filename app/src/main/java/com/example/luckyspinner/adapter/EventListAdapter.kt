@@ -1,6 +1,7 @@
 package com.example.luckyspinner.adapter
 
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -11,7 +12,8 @@ import com.example.luckyspinner.databinding.EventChannelItemBinding
 import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.util.Constants
 
-class EventListAdapter(private val listener: Listener) : RecyclerView.Adapter<EventListAdapter.EventListViewHolder>() {
+class EventListAdapter(private val listener: Listener) :
+    RecyclerView.Adapter<EventListAdapter.EventListViewHolder>() {
 
     interface Listener {
         fun onItemClick(id: String)
@@ -19,7 +21,8 @@ class EventListAdapter(private val listener: Listener) : RecyclerView.Adapter<Ev
 
     }
 
-    inner class EventListViewHolder(val binding: EventChannelItemBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class EventListViewHolder(val binding: EventChannelItemBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
     private val diffCallback = object : DiffUtil.ItemCallback<Event>() {
         override fun areItemsTheSame(oldItem: Event, newItem: Event): Boolean {
@@ -43,10 +46,11 @@ class EventListAdapter(private val listener: Listener) : RecyclerView.Adapter<Ev
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventListViewHolder {
         return EventListViewHolder(
             EventChannelItemBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        ))
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: EventListViewHolder, position: Int) {
@@ -83,8 +87,13 @@ class EventListAdapter(private val listener: Listener) : RecyclerView.Adapter<Ev
             root.setOnClickListener {
                 listener.onItemClick(event.idEvent)
             }
+
             btnDeleteEventItem.setOnClickListener {
                 listener.onDeleteItem(event.idEvent)
+            }
+
+            if (position % 2 == 0) {
+                root.setBackgroundColor(Color.WHITE)
             }
         }
     }

@@ -177,13 +177,11 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
     }
 
     private fun setupRecycleView() {
-        val itemDecoration : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.rvSpinnerList.apply {
             spinnerAdapter = SpinnerListAdapter(this@SpinnerListFragment)
             createEditListener()
             adapter = spinnerAdapter
             layoutManager = LinearLayoutManager(context)
-            addItemDecoration(itemDecoration)
         }
         viewModel.eventList.observe(viewLifecycleOwner) {
             binding.rvSpinnerList.apply {
@@ -191,7 +189,6 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
                 createEditListener()
                 adapter = spinnerAdapter
                 layoutManager = LinearLayoutManager(context)
-                addItemDecoration(itemDecoration)
                 if (viewModel.spinnerList.isInitialized) {
                     viewModel.spinnerList.value = viewModel.spinnerList.value
                 }

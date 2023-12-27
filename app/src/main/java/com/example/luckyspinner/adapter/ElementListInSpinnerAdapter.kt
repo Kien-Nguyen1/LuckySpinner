@@ -66,8 +66,8 @@ class ElementListInSpinnerAdapter(private val listener: Listener) : RecyclerView
                 listener.onDeleteItem(element.idElement)
             }
 
-            if (position % 2 != 0) {
-                root.setBackgroundColor(Color.parseColor("#DFD5EC"))
+            if (position % 2 == 0) {
+                root.setBackgroundColor(Color.WHITE)
             }
         }
     }
