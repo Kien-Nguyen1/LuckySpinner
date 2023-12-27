@@ -3,6 +3,7 @@ package com.example.luckyspinner.viewmodels
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.work.WorkManager
 import com.example.luckyspinner.controller.DataController
 import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.util.Constants
@@ -57,6 +58,7 @@ class ChannelViewModel : ViewModel() {
             .addOnSuccessListener {
                 isDeleteEventSuccess.value = true
                 isShowProgressDialog.value = false
+                WorkManager.getInstance().cancelUniqueWork(idEvent)
             }
             .addOnFailureListener {
                 isDeleteEventSuccess.value = false
