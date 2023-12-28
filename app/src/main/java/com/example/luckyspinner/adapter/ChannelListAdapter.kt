@@ -68,6 +68,10 @@ class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter
             root.setOnClickListener {
                 listener.onItemClick(channel)
             }
+            root.setOnLongClickListener {
+                listener.onDeleteItem(channel.idChannel)
+                true
+            }
             btnDeleteSpinnerOrChannel.setOnClickListener {
                 listener.onDeleteItem(channel.idChannel)
             }

@@ -8,5 +8,6 @@ data class Event(
     var hour : Int? = null,
     var minute : Int? = null,
     var listDay : MutableList<Int> = arrayListOf(0,0,0,0,0,0,0),
-    var nameEvent : String = Constants.EMPTY_STRING
+    var nameEvent : String = Constants.EMPTY_STRING,
+    var isTurnOn : Boolean = true
 )

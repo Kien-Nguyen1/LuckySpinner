@@ -29,7 +29,7 @@ class AddTimeEventViewModel : ViewModel() {
     val isGettingSpinnerSuccess = MutableLiveData<Boolean?>()
     val isGettingEventSuccess = MutableLiveData<Boolean?>()
     val isSaveListSpinnerSuccess = MutableLiveData<Boolean>()
-    val isSaveEventSuccess = MutableLiveData<Boolean>()
+    val isSaveEventSuccess = MutableLiveData<Boolean?>()
     val isDeleteEventSuccess = MutableLiveData<Boolean>()
 
 

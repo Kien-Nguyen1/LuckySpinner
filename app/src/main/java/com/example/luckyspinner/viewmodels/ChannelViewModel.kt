@@ -13,7 +13,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.toObject
 
 class ChannelViewModel : ViewModel() {
-    var channelList = MutableLiveData<List<Event>>()
+    var eventList = MutableLiveData<List<Event>>()
     val db = FirebaseFirestore.getInstance()
     val isShowProgressDialog = MutableLiveData<Boolean>()
     val isDeleteEventSuccess = MutableLiveData<Boolean?>()
@@ -37,7 +37,7 @@ class ChannelViewModel : ViewModel() {
                             }
                         }
                     }
-                    channelList.value = list
+                    eventList.value = list
                     isShowProgressDialog.value = false
 
                 } else {
@@ -51,7 +51,14 @@ class ChannelViewModel : ViewModel() {
 
             }
     }
+    fun saveEvent(idChannel: String, event : Event)  {
+        DataController.saveEvent(db, idChannel, event)
+            .addOnSuccessListener {
+            }
+            .addOnFailureListener {
 
+            }
+    }
     fun deleteEvent(idChannel: String, idEvent : String) {
         isShowProgressDialog.value = true
         DataController.deleteEvent(db, idChannel, idEvent)

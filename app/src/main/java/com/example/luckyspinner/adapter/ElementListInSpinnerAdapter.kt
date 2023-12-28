@@ -57,6 +57,10 @@ class ElementListInSpinnerAdapter(private val listener: Listener) : RecyclerView
             root.setOnClickListener {
                 listener.onItemClick(element.idElement)
             }
+            root.setOnLongClickListener {
+                listener.onDeleteItem(element.idElement)
+                true
+            }
             btnDeleteElementTitle.isVisible = false
 
             btnEditElementTitle.setOnClickListener {

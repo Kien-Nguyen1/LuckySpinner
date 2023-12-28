@@ -19,6 +19,8 @@ class EventListAdapter(private val listener: Listener) :
         fun onItemClick(id: String)
         fun onDeleteItem(id: String)
 
+        fun onSwitchClick(id: String, position: Int)
+
     }
 
     inner class EventListViewHolder(val binding: EventChannelItemBinding) :
@@ -68,10 +70,19 @@ class EventListAdapter(private val listener: Listener) :
                 if (contains(Constants.FRIDAY)) title += " Fri"
                 if (contains(Constants.SATURDAY)) title += " Sat"
                 if (contains(Constants.SUNDAY)) title += " Sun"
+
+                if ( this.containsAll(arrayListOf(1,2,3,4,5,6,7))) {
+                    title = "All week"
+                }
             }
             if (title == "") title = "No day in week"
 
             tvTimeEventItem.text = "${event.hour} : ${event.minute}"
+
+            btnSwitch.isChecked = event.isTurnOn
+            btnSwitch.setOnClickListener {
+                listener.onSwitchClick(event.idEvent, position)
+            }
 
             tvTitleEventItem.isSelected = true
             tvEventNameItem.isSelected = true
@@ -86,6 +97,10 @@ class EventListAdapter(private val listener: Listener) :
             }
             root.setOnClickListener {
                 listener.onItemClick(event.idEvent)
+            }
+            root.setOnLongClickListener {
+                listener.onDeleteItem(event.idEvent)
+                true
             }
 
             btnDeleteEventItem.setOnClickListener {

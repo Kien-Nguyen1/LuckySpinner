@@ -14,9 +14,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.EventListAdapter
-import com.example.luckyspinner.controller.DataController
 import com.example.luckyspinner.databinding.FragmentChannelBinding
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.CHANNEL_NAME
@@ -25,8 +30,11 @@ import com.example.luckyspinner.util.Constants.ID_TELEGRAM_CHANNEL_KEY
 import com.example.luckyspinner.util.DialogUtil
 import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.viewmodels.ChannelViewModel
-import kotlinx.coroutines.Dispatchers
+import com.example.luckyspinner.work.SendMessageWorker
 import kotlinx.coroutines.launch
+import java.time.Duration
+import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 
 class ChannelFragment : Fragment(), EventListAdapter.Listener {
@@ -169,7 +177,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         }
     }
     fun setupObserver() {
-        viewModel.channelList.observe(viewLifecycleOwner) {
+        viewModel.eventList.observe(viewLifecycleOwner) {
             eventAdapter.events = it
             eventAdapter.notifyDataSetChanged()
             if (it.isEmpty()) {
@@ -217,13 +225,74 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         }
     }
 
+    override fun onSwitchClick(id: String, position: Int) {
+        println("Here come switch ")
+        val eventList = viewModel.eventList.value!!
+        val event = eventList[position]
+        val workManager = WorkManager.getInstance()
+
+        val timeNow = Calendar.getInstance()
+
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.HOUR_OF_DAY, event.hour!!)
+        calendar.set(Calendar.MINUTE, event.minute!!)
+
+
+        val durationDiff = if (calendar.get(Calendar.HOUR_OF_DAY) == timeNow.get(Calendar.HOUR_OF_DAY) && timeNow.get(
+                Calendar.MINUTE) == calendar.get(Calendar.MINUTE))
+        {
+            Duration.ZERO
+        }
+        else if (calendar > timeNow) {
+            Duration.between(timeNow.toInstant(), calendar.toInstant())
+        } else {
+            calendar.add(Calendar.DAY_OF_MONTH, 1)
+            Duration.between(timeNow.toInstant(), calendar.toInstant())
+        }
+
+        if (event.isTurnOn) { // on at this moment
+            workManager.cancelUniqueWork(id)
+        } else {
+            val constraints = Constraints(
+                requiredNetworkType = NetworkType.CONNECTED,
+                requiresBatteryNotLow = true
+            )
+
+            workManager.apply {
+                val data = workDataOf(
+                    ID_TELEGRAM_CHANNEL_KEY to idTelegramChannel,
+                    ID_CHANNEL_KEY to idChannel,
+                    Constants.ID_EVENT_KEY to id,
+                    Constants.DEVICE_ID_KEY to Constants.DEVICE_ID
+                )
+                val workRequest =
+                    PeriodicWorkRequestBuilder<SendMessageWorker>(16, TimeUnit.MINUTES)
+                        .setInitialDelay(durationDiff)
+                        .setInputData(data)
+                        .setConstraints(constraints)
+                        .addTag(idChannel)
+                        .build()
+
+                enqueueUniquePeriodicWork(
+                    id,
+                    ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                    workRequest
+                )
+            }
+        }
+        viewModel.saveEvent(idChannel, event.apply {
+            isTurnOn = !isTurnOn
+        })
+
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         val list : MutableList<MutableLiveData<*>> = ArrayList<MutableLiveData<*>>().apply {
             add(viewModel.isDeleteEventSuccess)
         }
         Function.toNull(list)
-        list.add(viewModel.channelList)
+        list.add(viewModel.eventList)
         Function.removeObservers(list, viewLifecycleOwner)
     }
 }

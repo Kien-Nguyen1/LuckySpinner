@@ -93,6 +93,10 @@ class SpinnerListAdapter(private val listener: Listener, private val eventList :
             btnDeleteSpinnerOrChannel.setOnClickListener {
                 listener.onDeleteItem(spinner.idSpin)
             }
+            root.setOnLongClickListener {
+                listener.onDeleteItem(spinner.idSpin)
+                true
+            }
             root.setOnClickListener {
                 listener.onItemClick(spinner.idSpin, spinner.titleSpin)
             }

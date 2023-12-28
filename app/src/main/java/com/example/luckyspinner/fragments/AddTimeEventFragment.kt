@@ -221,28 +221,33 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 workRequest
             )
         }
-        viewModel.isSaveEventSuccess.observe(viewLifecycleOwner) { isSave ->
+        viewModel.isSaveEventSuccess.observe(viewLifecycleOwner) {
+            it?.let {
+                isSave ->
             if (isSave) {
-                    fun navigate() {
-                        println("Here come navigate")
-                        progressDialog.dismiss()
-                        Toast.makeText(context, "Saving successful" , Toast.LENGTH_LONG).show()
-                        findNavController().popBackStack()
-                    }
-                    viewModel.isSaveListSpinnerSuccess.apply {
-                        if (value == true) {
-                            navigate()
-                        } else {
-                            observe(viewLifecycleOwner) {
-                                if (it) {
-                                    navigate()
-                                } else {
-                                    Toast.makeText(context, "Something wrong. Try again!" , Toast.LENGTH_LONG).show()
-                                }
+                fun navigate() {
+                    println("Here come navigate")
+                    progressDialog.dismiss()
+                    Toast.makeText(context, "Saving successful" , Toast.LENGTH_LONG).show()
+                    findNavController().popBackStack()
+                }
+                viewModel.isSaveListSpinnerSuccess.apply {
+                    if (value == true) {
+                        navigate()
+                        println("navigate 1")
+                    } else {
+                        observe(viewLifecycleOwner) {
+                            if (it) {
+                                navigate()
+                                println("navigate 2")
+                            } else {
+                                Toast.makeText(context, "Something wrong. Try again!" , Toast.LENGTH_LONG).show()
                             }
                         }
                     }
                 }
+            }
+        }
         }
     }
     private fun setUpRecycleView() {
@@ -577,6 +582,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         val list : MutableList<MutableLiveData<*>> = ArrayList()
         list.add(viewModel.isGettingSpinnerSuccess)
         list.add(viewModel.isGettingEventSuccess)
+        list.add(viewModel.isSaveEventSuccess)
 
         Function.toNull(list)
 
