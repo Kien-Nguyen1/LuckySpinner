@@ -6,6 +6,7 @@ import android.app.ProgressDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -50,6 +51,8 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     private lateinit var progressDialog : ProgressDialog
     private lateinit var editMemberDiaLog : Dialog
     var isFirstLoad = true
+    private var isListBeingDragged = false
+    private var countdownTimer : CountDownTimer?= null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -92,7 +95,43 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             }
         }
 
+        binding.rvMemberList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                when(newState) {
+                    RecyclerView.SCROLL_STATE_DRAGGING -> {
+                        isListBeingDragged = true
+                        startOnResetCountdownTimer()
+                    }
+                    RecyclerView.SCROLL_STATE_IDLE -> {
+                        isListBeingDragged = false
+                        cancelCountdownTimer()
+                    }
+                }
+            }
+        })
     }
+
+    private fun startOnResetCountdownTimer() {
+        cancelCountdownTimer()
+
+        countdownTimer = object : CountDownTimer(3000, 1000) {
+            override fun onTick(p0: Long) {
+                //
+            }
+
+            override fun onFinish() {
+                if (!isListBeingDragged) {
+                    binding.btnAddMemberList.hide()
+                }
+            }
+        }
+    }
+
+    private fun cancelCountdownTimer() {
+        countdownTimer?.cancel()
+    }
+
     fun createEditListener() {
         memberAdapter.onEditClickListener = object : OnEditClickListener{
             override fun onEditClick(position: Int) {
