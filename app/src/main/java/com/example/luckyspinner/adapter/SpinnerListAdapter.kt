@@ -100,9 +100,6 @@ class SpinnerListAdapter(private val listener: Listener, private val eventList :
             root.setOnClickListener {
                 listener.onItemClick(spinner.idSpin, spinner.titleSpin)
             }
-            if (position % 2 == 0) {
-                root.setBackgroundColor(Color.WHITE)
-            }
         }
     }
 }

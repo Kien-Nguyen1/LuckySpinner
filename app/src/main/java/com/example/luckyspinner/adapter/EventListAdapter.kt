@@ -106,10 +106,6 @@ class EventListAdapter(private val listener: Listener) :
             btnDeleteEventItem.setOnClickListener {
                 listener.onDeleteItem(event.idEvent)
             }
-
-            if (position % 2 == 0) {
-                root.setBackgroundColor(Color.WHITE)
-            }
         }
     }
 }

@@ -69,10 +69,6 @@ class ElementListInSpinnerAdapter(private val listener: Listener) : RecyclerView
             btnDeleteElementTitle.setOnClickListener {
                 listener.onDeleteItem(element.idElement)
             }
-
-            if (position % 2 == 0) {
-                root.setBackgroundColor(Color.WHITE)
-            }
         }
     }
 }

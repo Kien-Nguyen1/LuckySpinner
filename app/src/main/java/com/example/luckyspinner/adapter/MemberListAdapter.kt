@@ -101,9 +101,6 @@ class MemberListAdapter(private val listener: Listener, private val eventList : 
             root.setOnClickListener {
                 listener.onItemClick(member.idMember)
             }
-            if (position % 2 == 0) {
-                root.setBackgroundColor(Color.WHITE)
-            }
         }
     }
 }
