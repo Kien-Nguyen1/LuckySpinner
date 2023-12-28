@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -52,6 +53,8 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     private lateinit var editChannelDiaLog : Dialog
     private lateinit var progressDialog: ProgressDialog
     var isFirstLoad = true
+    private var isListBeingDragged = false
+    private var countdownTimer : CountDownTimer ?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -150,6 +153,42 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 }
             }
         }
+
+        binding.rvChannelList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                when(newState) {
+                    RecyclerView.SCROLL_STATE_DRAGGING -> {
+                        isListBeingDragged = true
+                        startOnResetCountdownTimer()
+                    }
+                    RecyclerView.SCROLL_STATE_IDLE -> {
+                        isListBeingDragged = false
+                        cancelCountdownTimer()
+                    }
+                }
+            }
+        })
+    }
+
+    private fun startOnResetCountdownTimer() {
+        cancelCountdownTimer()
+
+        countdownTimer = object : CountDownTimer(3000, 1000){
+            override fun onTick(p0: Long) {
+                //
+            }
+
+            override fun onFinish() {
+                if(!isListBeingDragged) {
+                    binding.btnAddChannel.hide()
+                }
+            }
+        }.start()
+    }
+
+    private fun cancelCountdownTimer() {
+        countdownTimer?.cancel()
     }
 
     private fun openAddChannelDialog(gravity: Int) {

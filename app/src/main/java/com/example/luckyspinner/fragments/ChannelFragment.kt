@@ -2,6 +2,7 @@ package com.example.luckyspinner.fragments
 
 import android.app.ProgressDialog
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.EventListAdapter
 import com.example.luckyspinner.controller.DataController
@@ -36,6 +38,8 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     private lateinit var eventAdapter : EventListAdapter
     private lateinit var progressDialog : ProgressDialog
     var isFirstLoad = true
+    private var isListBeingDragged = false
+    private var countdownTimer : CountDownTimer?= null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -119,6 +123,42 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
                 }
             }
         }
+
+        binding.rvEventListOfChannel.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                when(newState) {
+                    RecyclerView.SCROLL_STATE_DRAGGING -> {
+                        isListBeingDragged = true
+                        startOnResetCountdownTimer()
+                    }
+                    RecyclerView.SCROLL_STATE_IDLE -> {
+                        isListBeingDragged = false
+                        cancelCountdownTimer()
+                    }
+                }
+            }
+        })
+    }
+
+    private fun startOnResetCountdownTimer() {
+        cancelCountdownTimer()
+
+        countdownTimer = object : CountDownTimer(3000, 1000) {
+            override fun onTick(p0: Long) {
+                //
+            }
+
+            override fun onFinish() {
+                if (!isListBeingDragged) {
+                    binding.btnAddEventOfChannel.hide()
+                }
+            }
+        }
+    }
+
+    private fun cancelCountdownTimer() {
+        countdownTimer?.cancel()
     }
 
     private fun setupRecycleView() {
