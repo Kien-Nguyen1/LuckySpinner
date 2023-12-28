@@ -28,7 +28,6 @@
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:text="Tue"
-            android:layout_marginStart="4dp"
             android:textSize="11sp" />
 
         <com.google.android.material.button.MaterialButton
@@ -37,7 +36,6 @@
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:text="Wed"
-            android:layout_marginStart="4dp"
             android:textSize="11sp" />
 
         <com.google.android.material.button.MaterialButton
@@ -46,7 +44,6 @@
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:text="Thu"
-            android:layout_marginStart="4dp"
             android:textSize="11sp" />
 
         <com.google.android.material.button.MaterialButton
@@ -55,7 +52,6 @@
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:text="Fri"
-            android:layout_marginStart="4dp"
             android:textSize="11sp" />
 
         <com.google.android.material.button.MaterialButton
@@ -64,7 +60,6 @@
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:text="Sat"
-            android:layout_marginStart="4dp"
             android:textSize="11sp" />
 
         <com.google.android.material.button.MaterialButton
@@ -73,7 +68,6 @@
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:text="Sun"
-            android:layout_marginStart="4dp"
             android:textSize="11sp" />
 
     </LinearLayout>
