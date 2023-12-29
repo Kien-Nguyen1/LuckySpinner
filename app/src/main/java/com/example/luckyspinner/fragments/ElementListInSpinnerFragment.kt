@@ -34,6 +34,7 @@ import com.example.luckyspinner.util.Constants.ID_SPINNER_KEY
 import com.example.luckyspinner.util.Constants.SPINNER_TITLE
 import com.example.luckyspinner.util.DialogUtil
 import com.example.luckyspinner.util.Function
+import com.example.luckyspinner.util.Function.addFabScrollListener
 import com.example.luckyspinner.viewmodels.ElementListInSpinnerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -52,8 +53,6 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
     private lateinit var editElementDialog : Dialog
     private lateinit var progressDialog : Dialog
     var isFirstLoad = true
-    private var isListBeingDragged = false
-    private var countdownTimer : CountDownTimer?= null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -138,41 +137,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
             openAddElementInSpinnerDiaLog(Gravity.CENTER)
         }
 
-        binding.rvElementListInSpinner.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                when(newState) {
-                    RecyclerView.SCROLL_STATE_DRAGGING -> {
-                        isListBeingDragged = true
-                        startOnResetCountdownTimer()
-                    }
-                    RecyclerView.SCROLL_STATE_IDLE -> {
-                        isListBeingDragged = false
-                        cancelCountdownTimer()
-                    }
-                }
-            }
-        })
-    }
-
-    private fun startOnResetCountdownTimer() {
-        cancelCountdownTimer()
-
-        countdownTimer = object : CountDownTimer(3000, 1000) {
-            override fun onTick(p0: Long) {
-                //
-            }
-
-            override fun onFinish() {
-                if (!isListBeingDragged) {
-                    binding.btnAddElementListInSpinner.hide()
-                }
-            }
-        }
-    }
-
-    private fun cancelCountdownTimer() {
-        countdownTimer?.cancel()
+        binding.rvElementListInSpinner.addFabScrollListener(binding.btnAddElementListInSpinner)
     }
 
     private fun openAddElementInSpinnerDiaLog(gravity: Int) {

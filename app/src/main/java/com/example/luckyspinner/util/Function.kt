@@ -1,10 +1,13 @@
 package com.example.luckyspinner.util
 
 import android.content.Context
+import android.os.CountDownTimer
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.core.View
 import java.util.Calendar
 
@@ -36,5 +39,36 @@ object Function {
         val inputMethodManager = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
+    }
+
+    fun RecyclerView.addFabScrollListener(fab : FloatingActionButton) {
+        var countDownTimer : CountDownTimer ?= null
+
+        this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy != 0 && !fab.isShown) {
+                    fab.show()
+                } else if (dy != 0 && fab.isShown) {
+                    fab.hide()
+                    countDownTimer?.cancel()
+
+                    countDownTimer = object : CountDownTimer(2000, 1000) {
+                        override fun onTick(p0: Long) {
+                            //
+                        }
+
+                        override fun onFinish() {
+                            if (!fab.isShown) {
+                                fab.show()
+                            }
+                        }
+                    }.start()
+                }
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+            }
+        })
     }
 }

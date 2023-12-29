@@ -49,8 +49,7 @@
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:text="Hour"
-                android:textSize="15sp"
-                android:textStyle="italic" />
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/tv_title_event_item"
@@ -64,8 +63,7 @@
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:text="Day"
-                android:textSize="15sp"
-                android:textStyle="italic" />
+                android:textSize="15sp" />
 
         </LinearLayout>
 
