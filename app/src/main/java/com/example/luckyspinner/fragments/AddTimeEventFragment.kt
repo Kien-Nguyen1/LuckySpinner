@@ -64,6 +64,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     private var eventId : String? = null
     private lateinit var telegramChannelId : String
     private var isFirstLoad = true
+    private var hasSetNameAndTime = false
     private var isAdd = false
     private lateinit var chooseSpinnerDialog : Dialog
     private lateinit var chooseMemberDialog : Dialog
@@ -80,6 +81,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         println("addtime HHere come oncreateview")
         binding = FragmentAddTimeEventBinding.inflate(inflater, container, false)
         progressDialog =  ProgressDialog(context)
+
+        hasSetNameAndTime = false
 
         channelId = arguments?.getString(Constants.ID_CHANNEL_KEY)!!
 
@@ -104,9 +107,31 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             binding.appBarAddTimeEvent.toolBar.title = "Edit Time Event"
         }
 
-        binding.textFieldEventName.editText?.doAfterTextChanged {
-            viewModel.event.value = viewModel.event.value?.apply {
-                nameEvent = binding.edtEventName.toString()
+        viewModel.isGettingEventSuccess.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    lifecycleScope.launch {
+
+                    }
+
+                }
+            }
+        }
+
+        binding.edtEventName.doAfterTextChanged {
+            if (hasSetNameAndTime) {
+                viewModel.event.value = viewModel.event.value?.apply {
+                    nameEvent = it.toString()
+                }
+            }
+        }
+        binding.timePickerAddTimeEvent.setOnTimeChangedListener { view, hourOfDay, minute ->
+            if (viewModel.event.value == null) return@setOnTimeChangedListener
+            if (hasSetNameAndTime) {
+                 viewModel.event.value = viewModel.event.value?.apply {
+                     this.hour = hourOfDay
+                     this.minute = minute
+                 }
             }
         }
 
@@ -538,22 +563,16 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             }
         }
         viewModel.event.observe(viewLifecycleOwner) {
+
+            if (!hasSetNameAndTime) {
                 it.hour?.let { eventHour ->
                     binding.timePickerAddTimeEvent.apply {
                         hour = eventHour
                         minute = it.minute!!
-//                        binding.timePickerAddTimeEvent.setOnTimeChangedListener { view, hourOfDay, minute ->
-//                            if (viewModel.event.isInitialized) {
-//                                val event = viewModel.event.value!!
-//                                event.hour = hourOfDay
-//                                event.minute = minute
-//                                viewModel.event.value = event
-//                            }
-//                        }
                     }
                 }
-            if (!isAdd) {
                 binding.edtEventName.setText(it.nameEvent)
+                hasSetNameAndTime = true
             }
 
             handleDayOfWeek(it)
