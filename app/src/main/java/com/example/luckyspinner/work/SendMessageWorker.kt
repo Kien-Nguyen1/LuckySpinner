@@ -17,7 +17,6 @@ import com.example.luckyspinner.util.Constants.CHAT_ID
 import com.example.luckyspinner.util.Constants.ID_EVENT_KEY
 import com.example.luckyspinner.util.Constants.ID_TELEGRAM_CHANNEL_KEY
 import com.example.luckyspinner.util.Constants.MESSAGE
-import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.util.makeStatusNotification
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot

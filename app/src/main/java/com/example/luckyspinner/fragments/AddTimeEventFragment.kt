@@ -104,6 +104,11 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             binding.appBarAddTimeEvent.toolBar.title = "Edit Time Event"
         }
 
+        binding.textFieldEventName.editText?.doAfterTextChanged {
+            viewModel.event.value = viewModel.event.value?.apply {
+                nameEvent = binding.edtEventName.toString()
+            }
+        }
 
         lifecycleScope.launch(Dispatchers.IO) {
             if (isFirstLoad) {
@@ -162,10 +167,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             chooseMemberDialog.show()
         }
 
-        binding.textFieldEventName.editText?.doAfterTextChanged {
-            viewModel.event.value = viewModel.event.value?.apply {
-                nameEvent = binding.edtEventName.toString()
-            }        }
+
 
         binding.appBarAddTimeEvent.apply {
             toolBar.setNavigationOnClickListener {
@@ -550,7 +552,10 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 //                        }
                     }
                 }
-            binding.edtEventName.setText(it.nameEvent)
+            if (!isAdd) {
+                binding.edtEventName.setText(it.nameEvent)
+            }
+
             handleDayOfWeek(it)
             dateAdapter.dayList = it.listDay
         }
