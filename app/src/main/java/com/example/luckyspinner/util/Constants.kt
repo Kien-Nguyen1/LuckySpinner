@@ -42,6 +42,8 @@ object Constants {
     const val MESSAGE_GET_FAILED = "Get failed"
     const val MESSAGE_DELETE_SUCCESSFUL = "Delete successful"
     const val MESSAGE_DELETE_FAILED = "Delete failed"
+
+    const val ONCE = 0
     const val EVERY_WEEK: Int = 1
 
 

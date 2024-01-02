@@ -75,7 +75,7 @@ class EventListAdapter(private val listener: Listener) :
                     title = "All week"
                 }
             }
-            if (title == "") title = "No day in week"
+            if (title == "") title = "Once time"
 
             tvTimeEventItem.text = "${event.hour} : ${event.minute}"
 

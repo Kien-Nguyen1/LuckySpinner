@@ -6,6 +6,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.example.luckyspinner.controller.DataController
 import com.example.luckyspinner.models.ElementSpinner
 import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Member
@@ -16,6 +17,7 @@ import com.example.luckyspinner.util.Constants.CHAT_ID
 import com.example.luckyspinner.util.Constants.ID_EVENT_KEY
 import com.example.luckyspinner.util.Constants.ID_TELEGRAM_CHANNEL_KEY
 import com.example.luckyspinner.util.Constants.MESSAGE
+import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.util.makeStatusNotification
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
@@ -79,6 +81,9 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                         }
                         outputData = workDataOf(CHAT_ID to telegramChannelId, MESSAGE to message)
                         makeStatusNotification("Send message successfully!", applicationContext)
+                        DataController.saveEvent(db, channelId!!, event!!.apply {
+                            isTurnOn = false
+                        })
                         return@withContext Result.success(outputData)
                     } else {
                         return@withContext Result.failure()
@@ -211,7 +216,7 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                 event = document.toObject<Event>()
 
                 listDay = if (event != null) {
-                    if (event!!.typeEvent == null) {
+                    if (event!!.typeEvent == null || event!!.typeEvent == Constants.ONCE) {
                         arrayListOf(2,3,4,5,6,7,1)
                     }
                     else event!!.listDay

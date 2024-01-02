@@ -164,11 +164,14 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         val selectedHour: Int = binding.timePickerAddTimeEvent.hour
         val selectedMinutes: Int = binding.timePickerAddTimeEvent.minute
 
+        val typeEvent = if (getListDay() == Event().listDay) Constants.ONCE else Constants.EVERY_WEEK
+
+
         viewModel.saveEvent(
             channelId,
             Event(
                 eventId!!,
-                typeEvent = Constants.EVERY_WEEK,
+                typeEvent,
                 selectedHour,
                 selectedMinutes,
                 getListDay(),
@@ -208,18 +211,33 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 Constants.ID_EVENT_KEY to eventId,
                 Constants.DEVICE_ID_KEY to Constants.DEVICE_ID
             )
-            val workRequest  = PeriodicWorkRequestBuilder<SendMessageWorker>(16, TimeUnit.MINUTES)
-                .setInitialDelay(durationDiff)
-                .setInputData(data)
-                .setConstraints(constraints)
-                .addTag(channelId)
-                .build()
+            if (typeEvent == Constants.EVERY_WEEK) {
+                val workRequest  = PeriodicWorkRequestBuilder<SendMessageWorker>(1, TimeUnit.DAYS)
+                    .setInitialDelay(durationDiff)
+                    .setInputData(data)
+                    .setConstraints(constraints)
+                    .addTag(channelId)
+                    .build()
 
-            enqueueUniquePeriodicWork(
-                eventId!!,
-                ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-                workRequest
-            )
+                enqueueUniquePeriodicWork(
+                    eventId!!,
+                    ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                    workRequest
+                )
+            } else {
+                val workRequest = OneTimeWorkRequestBuilder<SendMessageWorker>()
+                    .setInitialDelay(durationDiff)
+                    .setInputData(data)
+                    .setConstraints(constraints)
+                    .addTag(channelId)
+                    .build()
+
+                enqueueUniqueWork(
+                    eventId!!,
+                    ExistingWorkPolicy.REPLACE,
+                    workRequest
+                )
+            }
         }
         viewModel.isSaveEventSuccess.observe(viewLifecycleOwner) {
             it?.let {
