@@ -81,13 +81,13 @@
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:hint="Event Name"
         app:layout_constraintTop_toBottomOf="@+id/day_of_week">
 
         <EditText
             android:id="@+id/edt_event_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Event Name"
             android:maxLines="1"
             android:textColor="@color/black" />
 

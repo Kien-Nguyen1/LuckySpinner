@@ -5,6 +5,8 @@ import android.app.ProgressDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -13,6 +15,8 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
@@ -42,6 +46,7 @@ import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.util.Calendar
@@ -58,7 +63,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     private var channelId : String = EMPTY_STRING
     private var eventId : String? = null
     private lateinit var telegramChannelId : String
-    private var isLoadedFirstTime = false
+    private var isFirstLoad = true
+    private var isAdd = false
     private lateinit var chooseSpinnerDialog : Dialog
     private lateinit var chooseMemberDialog : Dialog
     private lateinit var dateDialog : Dialog
@@ -76,17 +82,23 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         progressDialog =  ProgressDialog(context)
 
         channelId = arguments?.getString(Constants.ID_CHANNEL_KEY)!!
-        eventId = arguments?.getString(Constants.ID_EVENT_KEY)
+
+        if (isFirstLoad) {
+            eventId = arguments?.getString(Constants.ID_EVENT_KEY)
+        }
 
         telegramChannelId = arguments?.getString(Constants.ID_TELEGRAM_CHANNEL_KEY)!!
-        println("Here come teleid $telegramChannelId")
+
         binding.appBarAddTimeEvent.apply {
             toolBar.menu.findItem(R.id.memberListFragment)?.isVisible = false
             toolBar.menu.findItem(R.id.spinnerListFragment)?.isVisible = false
         }
         workManager = WorkManager.getInstance(requireContext())
-
         if (eventId == null) {
+            isAdd = true
+        }
+
+        if (isAdd) {
             binding.appBarAddTimeEvent.toolBar.title = "Add Time Event"
         } else {
             binding.appBarAddTimeEvent.toolBar.title = "Edit Time Event"
@@ -94,20 +106,24 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
 
         lifecycleScope.launch(Dispatchers.IO) {
-            if (eventId == null) {
-                val timeInMillis = Calendar.getInstance().timeInMillis
-                eventId = "$channelId $timeInMillis"
-                viewModel.getEvent(channelId, null, newEventId = eventId)
-
-                viewModel.getMembers(channelId, true)
-                viewModel.getSpinnerFromChannel(channelId, true)
+            if (isFirstLoad) {
+                if (eventId == null) {
+                    val timeInMillis = Calendar.getInstance().timeInMillis
+                    eventId = "$channelId $timeInMillis"
+                    viewModel.getMembers(channelId, isAdd)
+                    viewModel.getSpinnerFromChannel(channelId, isAdd)
+                    viewModel.getEvent(channelId, null, newEventId = eventId!!)
+                } else {
+                    viewModel.getEvent(channelId, eventId)
+                    viewModel.getMembers(channelId, isAdd)
+                    viewModel.getSpinnerFromChannel(channelId, isAdd)
+                }
+                isFirstLoad = false
             } else {
-                viewModel.getEvent(channelId, eventId)
-                viewModel.getMembers(channelId, false)
-                viewModel.getSpinnerFromChannel(channelId, false)
-//                viewModel.getSpinnerFromEvent(channelId, eventId!!)
-//                viewModel.getMemberFromEvent(channelId, eventId!!)
+                viewModel.getMembers(channelId, isAdd)
+                viewModel.getSpinnerFromChannel(channelId, isAdd)
             }
+
         }
 
         setUpRecycleView()
@@ -145,6 +161,11 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         binding.btnMemberList.setOnClickListener {
             chooseMemberDialog.show()
         }
+
+        binding.textFieldEventName.editText?.doAfterTextChanged {
+            viewModel.event.value = viewModel.event.value?.apply {
+                nameEvent = binding.edtEventName.toString()
+            }        }
 
         binding.appBarAddTimeEvent.apply {
             toolBar.setNavigationOnClickListener {

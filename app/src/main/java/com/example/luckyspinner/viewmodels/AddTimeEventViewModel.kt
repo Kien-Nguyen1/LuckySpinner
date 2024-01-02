@@ -250,10 +250,10 @@ class AddTimeEventViewModel : ViewModel() {
                 isSaveEventSuccess.value = false
             }
     }
-    fun getEvent(idChannel: String, idEvent : String?, newEventId : String? = null) : Job = viewModelScope.launch(Dispatchers.IO) {
+    fun getEvent(idChannel: String, idEvent : String?, newEventId : String = "") : Job = viewModelScope.launch(Dispatchers.IO) {
         if (idEvent == null) {
             this.launch(Dispatchers.Main) {
-                event.value = Event(newEventId!!)
+                event.value = Event(newEventId)
                 handleClickDay(changeDayToPosition(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)))
             }
         } else {
