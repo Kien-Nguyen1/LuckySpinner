@@ -5,8 +5,6 @@ import android.app.ProgressDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,7 +14,6 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
@@ -46,7 +43,6 @@ import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.util.Calendar
@@ -107,17 +103,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             binding.appBarAddTimeEvent.toolBar.title = "Edit Time Event"
         }
 
-        viewModel.isGettingEventSuccess.observe(viewLifecycleOwner) {
-            it?.let {
-                if (it) {
-                    lifecycleScope.launch {
-
-                    }
-
-                }
-            }
-        }
-
         binding.edtEventName.doAfterTextChanged {
             if (hasSetNameAndTime) {
                 viewModel.event.value = viewModel.event.value?.apply {
@@ -126,7 +111,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             }
         }
         binding.timePickerAddTimeEvent.setOnTimeChangedListener { view, hourOfDay, minute ->
-            if (viewModel.event.value == null) return@setOnTimeChangedListener
             if (hasSetNameAndTime) {
                  viewModel.event.value = viewModel.event.value?.apply {
                      this.hour = hourOfDay
@@ -602,7 +586,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             Toast.makeText(context, "You must select at least 1 spinner",Toast.LENGTH_LONG).show()
         }
         binding.edtEventName.apply {
-            if (text.toString() == "") {
+            if (text.toString().trim() == "") {
                 error = "Please fill this fields!"
                 isValidated = false
             }

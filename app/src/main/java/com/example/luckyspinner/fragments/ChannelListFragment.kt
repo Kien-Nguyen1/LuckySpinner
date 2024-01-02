@@ -114,11 +114,11 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
 
 
                 binding.btnDoneAddElement.setOnClickListener {
-                    if (binding.edtEnterElement.text.toString() == EMPTY_STRING) {
+                    if (binding.edtEnterElement.text.toString().trim() == EMPTY_STRING) {
                         binding.edtEnterElement.error = " Please fill this filed!"
                         return@setOnClickListener
                     }
-                    if (binding.edtId.text.toString() == EMPTY_STRING) {
+                    if (binding.edtId.text.toString().trim() == EMPTY_STRING) {
                         binding.edtId.error = " Please fill this filed!"
                         return@setOnClickListener
                     }
@@ -179,7 +179,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             val channelName = binding.edtEnterChannelName.text.toString()
             var isValidated = true
             binding.edtEnterChannelName.apply {
-                if (text.toString() == EMPTY_STRING) {
+                if (text.toString().trim() == EMPTY_STRING) {
                     error = "Please fill your channel name!"
                     isValidated = false
                 }

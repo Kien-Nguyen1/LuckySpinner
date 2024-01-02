@@ -97,6 +97,10 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
 
 
                 binding.btnDoneAddElement.setOnClickListener {
+                    if (binding.edtEnterElement.text.toString().trim().isEmpty()) {
+                        binding.edtEnterElement.error = "Please fill this field"
+                        return@setOnClickListener
+                    }
                     element.nameElement = binding.edtEnterElement.text.toString()
                     viewModel.editElement(idChannel, idSpinner, element)
                 }
@@ -159,7 +163,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
 
         addElementInSpinnerDiaLog.show()
         binding.btnDoneAddChannel.setOnClickListener {
-            if (binding.edtEnterChannelName.text.toString() == EMPTY_STRING) {
+            if (binding.edtEnterChannelName.text.toString().trim() == EMPTY_STRING) {
                 binding.edtEnterChannelName.error = "Please fill this field"
                 return@setOnClickListener
             }

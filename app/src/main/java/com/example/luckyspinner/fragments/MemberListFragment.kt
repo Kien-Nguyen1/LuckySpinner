@@ -121,6 +121,10 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
                 }
 
                 binding.btnDoneAddElement.setOnClickListener {
+                    if (binding.edtEnterElement.text.toString().isEmpty()) {
+                        binding.edtEnterElement.error = "Please fill this filed"
+                        return@setOnClickListener
+                    }
                     member.nameMember = binding.edtEnterElement.text.toString()
                     viewModel.editMember(
                         idChannel,
@@ -166,7 +170,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
 
         binding.btnDoneAddChannel.setOnClickListener {
             val edt = binding.edtEnterChannelName
-            if (edt.text.toString() == Constants.EMPTY_STRING) {
+            if (edt.text.toString().trim() == Constants.EMPTY_STRING) {
                 edt.error = "Please fill this field"
                 return@setOnClickListener
             }

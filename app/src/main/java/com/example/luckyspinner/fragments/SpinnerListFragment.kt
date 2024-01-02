@@ -115,6 +115,10 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
                 binding.edtEnterElement.setSelection(binding.edtEnterElement.text.length)
 
                 binding.btnDoneAddElement.setOnClickListener {
+                    if (binding.edtEnterElement.text.toString().isEmpty()) {
+                        binding.edtEnterElement.error = "Please fill this field!"
+                        return@setOnClickListener
+                    }
                     spinner.titleSpin = binding.edtEnterElement.text.toString()
                     viewModel.editSpinner(idChannel, spinner)
                 }
@@ -162,7 +166,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
 
         binding.btnDoneAddChannel.setOnClickListener {
             lifecycleScope.launch(Dispatchers.Main) {
-                val nameSpinner = binding.edtEnterChannelName.text.toString()
+                val nameSpinner = binding.edtEnterChannelName.text.toString().trim()
                 if (nameSpinner == EMPTY_STRING) {
                     binding.edtEnterChannelName.error = "Please fill this field"
                     return@launch
