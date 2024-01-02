@@ -42,7 +42,17 @@ object Function {
     }
 
     fun RecyclerView.addFabScrollListener(fab : FloatingActionButton) {
-        var countDownTimer : CountDownTimer ?= null
+        val countDownTimer : CountDownTimer = object : CountDownTimer(2000, 1000) {
+            override fun onTick(p0: Long) {
+                //
+            }
+
+            override fun onFinish() {
+                if (!fab.isShown) {
+                    fab.show()
+                }
+            }
+        }
 
         this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -50,19 +60,8 @@ object Function {
                     fab.show()
                 } else if (dy != 0 && fab.isShown) {
                     fab.hide()
-                    countDownTimer?.cancel()
-
-                    countDownTimer = object : CountDownTimer(2000, 1000) {
-                        override fun onTick(p0: Long) {
-                            //
-                        }
-
-                        override fun onFinish() {
-                            if (!fab.isShown) {
-                                fab.show()
-                            }
-                        }
-                    }.start()
+                    countDownTimer.cancel()
+                    countDownTimer.start()
                 }
             }
 
