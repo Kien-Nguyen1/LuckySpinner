@@ -44,8 +44,8 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     private lateinit var idChannel: String
     private var nameChannel: String? = null
     private var idTelegramChannel: String? = null
-    private lateinit var eventAdapter : EventListAdapter
-    private lateinit var progressDialog : ProgressDialog
+    private lateinit var eventAdapter: EventListAdapter
+    private lateinit var progressDialog: ProgressDialog
     var isFirstLoad = true
 
     override fun onCreateView(
@@ -72,7 +72,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         }
 
         binding.appBarChannel.apply {
-            toolBar.title = nameChannel
+            tvTitleAppBar.text = nameChannel
         }
 
         println("channelss oncreateview")
@@ -100,34 +100,26 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         }
 
         binding.appBarChannel.apply {
-            toolBar.setNavigationOnClickListener {
+            btnBack.setOnClickListener {
                 findNavController().popBackStack()
             }
         }
 
         binding.appBarChannel.apply {
-            toolBar.setOnMenuItemClickListener { menuItem ->
-                when (menuItem.itemId) {
-                    R.id.spinnerListFragment -> {
-                        val direction = ChannelFragmentDirections
-                            .actionChannelFragmentToSpinnerListFragment()
-                            .actionId
+            btnSpinnerList.setOnClickListener {
+                val direction = ChannelFragmentDirections
+                    .actionChannelFragmentToSpinnerListFragment()
+                    .actionId
 
-                        findNavController().navigate(direction, bundle)
-                        true
-                    }
+                findNavController().navigate(direction, bundle)
+            }
 
-                    R.id.memberListFragment -> {
-                        val direction = ChannelFragmentDirections
-                            .actionChannelFragmentToMemberListFragment()
-                            .actionId
+            btnMemberList.setOnClickListener {
+                val direction = ChannelFragmentDirections
+                    .actionChannelFragmentToMemberListFragment()
+                    .actionId
 
-                        findNavController().navigate(direction, bundle)
-                        true
-                    }
-
-                    else -> false
-                }
+                findNavController().navigate(direction, bundle)
             }
         }
 
@@ -141,6 +133,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
             layoutManager = LinearLayoutManager(context)
         }
     }
+
     fun setupObserver() {
         viewModel.eventList.observe(viewLifecycleOwner) {
             eventAdapter.events = it
@@ -203,17 +196,18 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         calendar.set(Calendar.MINUTE, event.minute!!)
 
 
-        val durationDiff = if (calendar.get(Calendar.HOUR_OF_DAY) == timeNow.get(Calendar.HOUR_OF_DAY) && timeNow.get(
-                Calendar.MINUTE) == calendar.get(Calendar.MINUTE))
-        {
-            Duration.ZERO
-        }
-        else if (calendar > timeNow) {
-            Duration.between(timeNow.toInstant(), calendar.toInstant())
-        } else {
-            calendar.add(Calendar.DAY_OF_MONTH, 1)
-            Duration.between(timeNow.toInstant(), calendar.toInstant())
-        }
+        val durationDiff =
+            if (calendar.get(Calendar.HOUR_OF_DAY) == timeNow.get(Calendar.HOUR_OF_DAY) && timeNow.get(
+                    Calendar.MINUTE
+                ) == calendar.get(Calendar.MINUTE)
+            ) {
+                Duration.ZERO
+            } else if (calendar > timeNow) {
+                Duration.between(timeNow.toInstant(), calendar.toInstant())
+            } else {
+                calendar.add(Calendar.DAY_OF_MONTH, 1)
+                Duration.between(timeNow.toInstant(), calendar.toInstant())
+            }
 
         if (event.isTurnOn) { // on at this moment
             workManager.cancelUniqueWork(id)
@@ -253,7 +247,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        val list : MutableList<MutableLiveData<*>> = ArrayList<MutableLiveData<*>>().apply {
+        val list: MutableList<MutableLiveData<*>> = ArrayList<MutableLiveData<*>>().apply {
             add(viewModel.isDeleteEventSuccess)
         }
         Function.toNull(list)

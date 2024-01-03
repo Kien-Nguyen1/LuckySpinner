@@ -63,9 +63,9 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         progressDialog = ProgressDialog(requireContext())
 
         binding.appBarMemberList.apply {
-            toolBar.title = "List Member"
-            toolBar.menu.findItem(R.id.spinnerListFragment)?.isVisible = false
-            toolBar.menu.findItem(R.id.memberListFragment)?.isVisible = false
+            tvTitleAppBar.text = "List Member"
+            btnSpinnerList.visibility = View.GONE
+            btnMemberList.visibility = View.GONE
         }
 
         // Inflate the layout for this fragment
@@ -91,7 +91,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         }
 
         binding.appBarMemberList.apply {
-            toolBar.setNavigationOnClickListener {
+            btnBack.setOnClickListener {
                 findNavController().popBackStack()
             }
         }

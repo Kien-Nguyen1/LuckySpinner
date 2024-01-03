@@ -8,27 +8,13 @@
 
     <include
         android:id="@+id/app_bar_channel"
-        layout="@layout/app_bar_layout"
+        layout="@layout/custom_app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tv_schedule_event"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:gravity="center_horizontal"
-        android:text="Schedule Event"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/app_bar_channel" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_event_list_of_channel"
@@ -39,7 +25,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_schedule_event"
+        app:layout_constraintTop_toBottomOf="@+id/app_bar_channel"
         tools:listitem="@layout/event_channel_item" />
 
     <ImageView
@@ -54,7 +40,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_schedule_event"
+        app:layout_constraintTop_toBottomOf="@+id/app_bar_channel"
         tools:listitem="@layout/event_channel_item" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -64,6 +50,7 @@
         android:layout_margin="16dp"
         android:src="@drawable/ic_add_alert"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        android:contentDescription="Add Event" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

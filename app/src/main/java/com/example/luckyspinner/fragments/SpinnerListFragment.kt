@@ -63,9 +63,9 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
         idChannel = arguments?.getString(ID_CHANNEL_KEY).toString()
 
         binding.appBarSpinnerList.apply {
-            toolBar.title = "Spinner List"
-            toolBar.menu.findItem(R.id.spinnerListFragment)?.isVisible = false
-            toolBar.menu.findItem(R.id.memberListFragment)?.isVisible = false
+            tvTitleAppBar.text = "Spinner List"
+            btnSpinnerList.visibility = View.GONE
+            btnMemberList.visibility = View.GONE
         }
 
         return binding.root
@@ -89,7 +89,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
         }
 
         binding.appBarSpinnerList.apply {
-            toolBar.setNavigationOnClickListener {
+            btnBack.setOnClickListener {
                 findNavController().popBackStack()
             }
         }
