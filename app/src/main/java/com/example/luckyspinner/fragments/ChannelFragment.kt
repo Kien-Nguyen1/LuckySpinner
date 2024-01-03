@@ -16,7 +16,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
@@ -184,7 +186,6 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     }
 
     override fun onSwitchClick(id: String, position: Int) {
-        println("Here come switch ")
         val eventList = viewModel.eventList.value!!
         val event = eventList[position]
         val workManager = WorkManager.getInstance()
@@ -224,19 +225,35 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
                     Constants.ID_EVENT_KEY to id,
                     Constants.DEVICE_ID_KEY to Constants.DEVICE_ID
                 )
-                val workRequest =
-                    PeriodicWorkRequestBuilder<SendMessageWorker>(16, TimeUnit.MINUTES)
+                if (event.typeEvent == Constants.EVERY_WEEK) {
+                    val workRequest =
+                        PeriodicWorkRequestBuilder<SendMessageWorker>(1, TimeUnit.DAYS)
+                            .setInitialDelay(durationDiff)
+                            .setInputData(data)
+                            .setConstraints(constraints)
+                            .addTag(idChannel)
+                            .build()
+
+                    enqueueUniquePeriodicWork(
+                        id,
+                        ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                        workRequest
+                    )
+                } else if (event.typeEvent == Constants.ONCE) {
+                    val workRequest = OneTimeWorkRequestBuilder<SendMessageWorker>()
                         .setInitialDelay(durationDiff)
                         .setInputData(data)
                         .setConstraints(constraints)
                         .addTag(idChannel)
                         .build()
 
-                enqueueUniquePeriodicWork(
-                    id,
-                    ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-                    workRequest
-                )
+                    enqueueUniqueWork(
+                        id,
+                        ExistingWorkPolicy.REPLACE,
+                        workRequest
+                    )
+                }
+
             }
         }
         viewModel.saveEvent(idChannel, event.apply {
