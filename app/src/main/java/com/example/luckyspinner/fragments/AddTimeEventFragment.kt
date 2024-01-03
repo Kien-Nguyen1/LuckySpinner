@@ -172,7 +172,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         binding.btnSpinnerNow.setOnClickListener {
             handleTestNow()
         }
-        binding.btnMemberList.setOnClickListener {
+        binding.btnMemberList2.setOnClickListener {
+            println("Let go member")
             chooseMemberDialog.show()
         }
 
