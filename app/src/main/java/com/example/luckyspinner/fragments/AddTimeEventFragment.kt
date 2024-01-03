@@ -177,8 +177,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             chooseMemberDialog.show()
         }
 
-
-
         binding.appBarAddTimeEvent.apply {
             btnBack.setOnClickListener {
                 findNavController().popBackStack()
