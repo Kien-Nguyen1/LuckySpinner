@@ -1,91 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_monday"
-        style="?attr/materialIconButtonOutlinedStyle"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:text="Mon"
-        android:textSize="10sp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btn_tuesday" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_tuesday"
-        style="?attr/materialIconButtonOutlinedStyle"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:text="Tue"
-        android:textSize="11sp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn_monday"
-        app:layout_constraintEnd_toStartOf="@+id/btn_wednesday"/>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_wednesday"
-        style="?attr/materialIconButtonOutlinedStyle"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:text="Wed"
-        android:textSize="11sp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn_tuesday"
-        app:layout_constraintEnd_toStartOf="@+id/btn_thursday"/>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_thursday"
-        style="?attr/materialIconButtonOutlinedStyle"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:text="Thu"
-        android:textSize="11sp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn_wednesday"
-        app:layout_constraintEnd_toStartOf="@+id/btn_friday"/>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_friday"
-        style="?attr/materialIconButtonOutlinedStyle"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:text="Fri"
-        android:textSize="11sp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn_thursday"
-        app:layout_constraintEnd_toStartOf="@+id/btn_saturday"/>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_saturday"
-        style="?attr/materialIconButtonOutlinedStyle"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:text="Sat"
-        android:textSize="11sp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn_friday"
-        app:layout_constraintEnd_toStartOf="@+id/btn_sunday"/>
+    android:layout_height="wrap_content">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_sunday"
         style="?attr/materialIconButtonOutlinedStyle"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:text="Sun"
-        android:textSize="11sp"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginHorizontal="5dp"
+        android:contentDescription="Sunday"
+        android:text="S"
+        android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn_saturday"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toStartOf="@+id/btn_monday"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SmallSp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_monday"
+        style="?attr/materialIconButtonOutlinedStyle"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="5dp"
+        android:contentDescription="Monday"
+        android:text="M"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_tuesday"
+        app:layout_constraintStart_toEndOf="@+id/btn_sunday"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SmallSp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_tuesday"
+        style="?attr/materialIconButtonOutlinedStyle"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="5dp"
+        android:contentDescription="Tuesday"
+        android:text="T"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_wednesday"
+        app:layout_constraintStart_toEndOf="@+id/btn_monday"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SmallSp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_wednesday"
+        style="?attr/materialIconButtonOutlinedStyle"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="5dp"
+        android:contentDescription="Wednesday"
+        android:text="W"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_thursday"
+        app:layout_constraintStart_toEndOf="@+id/btn_tuesday"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SmallSp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_thursday"
+        style="?attr/materialIconButtonOutlinedStyle"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="5dp"
+        android:contentDescription="Thursday"
+        android:text="T"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_friday"
+        app:layout_constraintStart_toEndOf="@+id/btn_wednesday"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SmallSp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_friday"
+        style="?attr/materialIconButtonOutlinedStyle"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="5dp"
+        android:contentDescription="Friday"
+        android:text="F"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_saturday"
+        app:layout_constraintStart_toEndOf="@+id/btn_thursday"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SmallSp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_saturday"
+        style="?attr/materialIconButtonOutlinedStyle"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="5dp"
+        android:contentDescription="Saturday"
+        android:text="S"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_friday"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SmallSp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

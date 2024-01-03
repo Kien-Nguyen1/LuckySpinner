@@ -66,9 +66,9 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         titleSpinner = arguments?.getString(SPINNER_TITLE)
 
         binding.appBarElementListSpinner.apply {
-            toolBar.title = titleSpinner
-            toolBar.menu.findItem(R.id.spinnerListFragment)?.isVisible = false
-            toolBar.menu.findItem(R.id.memberListFragment)?.isVisible = false
+            tvTitleAppBar.text = titleSpinner
+            btnSpinnerList.visibility = View.GONE
+            btnMemberList.visibility = View.GONE
         }
 
         return binding.root
@@ -132,7 +132,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         }
 
         binding.appBarElementListSpinner.apply {
-            toolBar.setNavigationOnClickListener {
+            btnBack.setOnClickListener {
                 findNavController().popBackStack()
             }
         }

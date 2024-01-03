@@ -4,15 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
-    android:layout_marginBottom="10dp"
+    android:layout_marginBottom="16dp"
     app:cardCornerRadius="10dp"
     app:cardElevation="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:background="@color/white"
+        android:orientation="horizontal"
         android:padding="10dp">
 
         <TextView
@@ -39,6 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:contentDescription="Edit"
             app:icon="@drawable/ic_edit"
             app:iconTint="@color/black" />
 
@@ -48,6 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:visibility="gone"
             app:icon="@drawable/ic_delete"
             app:iconTint="@color/red" />
 

@@ -89,8 +89,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         telegramChannelId = arguments?.getString(Constants.ID_TELEGRAM_CHANNEL_KEY)!!
 
         binding.appBarAddTimeEvent.apply {
-            toolBar.menu.findItem(R.id.memberListFragment)?.isVisible = false
-            toolBar.menu.findItem(R.id.spinnerListFragment)?.isVisible = false
+            btnSpinnerList.visibility = View.GONE
+            btnMemberList.visibility = View.GONE
         }
         workManager = WorkManager.getInstance(requireContext())
         if (eventId == null) {
@@ -98,9 +98,9 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
 
         if (isAdd) {
-            binding.appBarAddTimeEvent.toolBar.title = "Add Time Event"
+            binding.appBarAddTimeEvent.tvTitleAppBar.text = "Add Time Event"
         } else {
-            binding.appBarAddTimeEvent.toolBar.title = "Edit Time Event"
+            binding.appBarAddTimeEvent.tvTitleAppBar.text = "Edit Time Event"
         }
 
         binding.edtEventName.doAfterTextChanged {
@@ -179,7 +179,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
 
         binding.appBarAddTimeEvent.apply {
-            toolBar.setNavigationOnClickListener {
+            btnBack.setOnClickListener {
                 findNavController().popBackStack()
             }
         }
