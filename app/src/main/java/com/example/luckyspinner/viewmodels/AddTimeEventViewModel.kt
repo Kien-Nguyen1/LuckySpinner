@@ -240,14 +240,14 @@ class AddTimeEventViewModel : ViewModel() {
         memberList.value = members
     }
 
-    fun saveEvent(idChannel: String, event : Event )  {
+    fun saveEvent(idChannel: String, event : Event, isTest : Boolean = false )  {
         DataController.saveEvent(db, idChannel, event)
             .addOnSuccessListener {
-                isSaveEventSuccess.value = true
+                if (!isTest) isSaveEventSuccess.value = true
             }
             .addOnFailureListener {
                 saveEvent(idChannel, event)
-                isSaveEventSuccess.value = false
+                if (!isTest) isSaveEventSuccess.value = false
             }
     }
     fun getEvent(idChannel: String, idEvent : String?, newEventId : String = "") : Job = viewModelScope.launch(Dispatchers.IO) {

@@ -465,7 +465,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 0,
                 0,
                 getListDay()
-            )
+            ),
+            true
         )
 
         workManager.apply {
