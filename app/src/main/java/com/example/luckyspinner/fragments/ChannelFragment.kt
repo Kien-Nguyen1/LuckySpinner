@@ -20,11 +20,13 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.EventListAdapter
 import com.example.luckyspinner.databinding.FragmentChannelBinding
+import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.CHANNEL_NAME
 import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
@@ -137,16 +139,38 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     }
 
     fun setupObserver() {
-        viewModel.eventList.observe(viewLifecycleOwner) {
-            eventAdapter.events = it
-            eventAdapter.notifyDataSetChanged()
-            if (it.isEmpty()) {
+        viewModel.eventList.observe(viewLifecycleOwner) { eventList ->
+            eventAdapter.events = eventList
+            if (eventList.isEmpty()) {
                 binding.rvEventListOfChannel.visibility = View.GONE
                 binding.imgEmptyList.visibility = View.VISIBLE
             } else {
                 binding.rvEventListOfChannel.visibility = View.VISIBLE
                 binding.imgEmptyList.visibility = View.GONE
             }
+//            eventList.filter {
+//                it.typeEvent == Constants.ONCE
+//            }.forEach {
+//                WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData(it.idEvent)
+//                    .observe(viewLifecycleOwner) {
+//                        if (it.size != 0) {
+//                            if (it[0].state == WorkInfo.State.SUCCEEDED) {
+//                                progressDialog.dismiss()
+//                                println("Success from workInfor ${it[0].outputData.getString("")}")
+//                            }
+//                            if (it[0].state == WorkInfo.State.FAILED) {
+//                                progressDialog.dismiss()
+//                                val message = it[0].outputData.getString(Constants.MESSAGE)
+//                                message?.let {
+//                                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+//                                }
+//                            }
+//                        } else {
+//                            println("WorkInfo is null")
+//                        }
+//
+//                    }
+//            }
         }
         viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
             if (it) progressDialog.show()
@@ -162,6 +186,11 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
                 }
             }
         }
+
+        WorkManager.getInstance().getWorkInfosByTagLiveData(idChannel)
+            .observe(viewLifecycleOwner) {
+                viewModel.getEvents(idChannel)
+            }
     }
 
     override fun onItemClick(id: String) {
@@ -185,9 +214,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         }
     }
 
-    override fun onSwitchClick(id: String, position: Int) {
-        val eventList = viewModel.eventList.value!!
-        val event = eventList[position]
+    override fun onSwitchClick(id: String, event: Event) {
         val workManager = WorkManager.getInstance()
 
         val timeNow = Calendar.getInstance()

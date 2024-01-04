@@ -189,7 +189,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         if (!isEventValidate()) {
             return
         }
-//        workManager.cancelAllWork()
         progressDialog.show()
 
         val selectedHour: Int = binding.timePickerAddTimeEvent.hour
@@ -546,7 +545,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             }
         }
         viewModel.event.observe(viewLifecycleOwner) {
-
             if (!hasSetNameAndTime) {
                 it.hour?.let { eventHour ->
                     binding.timePickerAddTimeEvent.apply {
@@ -571,14 +569,14 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         var memberCount = 0
         var spinnerCount = 0
         viewModel.memberList.value?.forEach {
-            if (it.hasSelected) ++memberCount
+            if (it.listEvent.contains(eventId)) ++memberCount
         }
         if (memberCount < 2) {
             isValidated = false
             Toast.makeText(context, "You must select at least 2 members",Toast.LENGTH_LONG).show()
         }
         viewModel.spinnerList.value?.forEach {
-            if (it.hasSelected) ++spinnerCount
+            if (it.listEvent.contains(eventId)) ++spinnerCount
         }
         if (spinnerCount < 1) {
             isValidated = false
