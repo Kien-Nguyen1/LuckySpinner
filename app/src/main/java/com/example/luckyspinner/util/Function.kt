@@ -1,15 +1,20 @@
 package com.example.luckyspinner.util
 
 import android.content.Context
+import android.graphics.Rect
 import android.os.CountDownTimer
+import android.util.DisplayMetrics
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.core.View
 import java.util.Calendar
+import kotlin.math.roundToInt
 
 object Function {
     fun removeObservers(listItem : List<MutableLiveData<*>>, owner: LifecycleOwner) {
@@ -58,7 +63,7 @@ object Function {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (dy != 0 && !fab.isShown) {
                     fab.show()
-                } else if (dy != 0 && fab.isShown) {
+                } else if (dy > 0 && fab.isShown) {
                     fab.hide()
                     countDownTimer.cancel()
                     countDownTimer.start()
@@ -69,5 +74,29 @@ object Function {
                 super.onScrollStateChanged(recyclerView, newState)
             }
         })
+    }
+
+    fun addMarginToLastItem(recyclerView: RecyclerView, marginInDp: Int) {
+        recyclerView.addItemDecoration(
+            object : RecyclerView.ItemDecoration() {
+                override fun getItemOffsets(
+                    outRect: Rect,
+                    view: android.view.View,
+                    parent: RecyclerView,
+                    state: RecyclerView.State
+                ) {
+                    val position = parent.getChildAdapterPosition(view)
+                    if (position == parent.adapter?.itemCount?.minus(1)) {
+                        val marginInPx = dpToPx(view.context, marginInDp)
+                        (view.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin = marginInPx
+                    }
+                }
+            }
+        )
+    }
+
+    private fun dpToPx(context: Context, dp: Int): Int {
+        val displayMetrics: DisplayMetrics = context.resources.displayMetrics
+        return (dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT)).roundToInt()
     }
 }

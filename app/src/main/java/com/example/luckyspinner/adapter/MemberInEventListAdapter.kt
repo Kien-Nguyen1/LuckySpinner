@@ -10,7 +10,6 @@ import com.example.luckyspinner.databinding.MemberListItemInEventBinding
 import com.example.luckyspinner.models.Member
 
 class MemberInEventListAdapter(private val listener: Listener, private val eventId : String) : RecyclerView.Adapter<MemberInEventListAdapter.MemberListViewHolder>() {
-
     interface Listener {
         fun onItemClick(id: String)
         fun onDeleteItem(id: String)

@@ -1,7 +1,9 @@
 package com.example.luckyspinner.adapter
 
 
+import android.content.Context
 import android.graphics.Color
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.ElementInSpinnerItemBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.models.ElementSpinner
+import kotlin.math.roundToInt
 
 class ElementListInSpinnerAdapter(private val listener: Listener) : RecyclerView.Adapter<ElementListInSpinnerAdapter.ElementListInSpinner>() {
     lateinit var onEditClickListener: OnEditClickListener
