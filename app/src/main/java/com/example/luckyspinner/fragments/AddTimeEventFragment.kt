@@ -38,6 +38,7 @@ import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.EMPTY_STRING
 import com.example.luckyspinner.util.Function
+import com.example.luckyspinner.util.Function.addMarginToLastItem
 import com.example.luckyspinner.util.Function.changeTheNumberOfDay
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
@@ -161,7 +162,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 
         binding.btnDoneAddTimeEvent.setOnClickListener {
             getTimeAndDatePicker()
@@ -304,6 +304,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             randomSpinnerAdapter = RandomSpinnerListAdapter(this@AddTimeEventFragment, eventId!!)
             adapter = randomSpinnerAdapter
             layoutManager = LinearLayoutManager(context)
+            addMarginToLastItem(bindingRandomDialog.rvChooseRandomSpinnerList, 10)
         }
 
         bindingMemberDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
@@ -313,6 +314,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             memberInEventAdapter = MemberInEventListAdapter(this@AddTimeEventFragment, eventId!!)
             adapter = memberInEventAdapter
             layoutManager = LinearLayoutManager(context)
+            addMarginToLastItem(bindingMemberDialog.rvChooseRandomSpinnerList, 10)
         }
     }
 
@@ -371,12 +373,15 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         chooseMemberDialog = Dialog(requireContext())
         chooseMemberDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         chooseMemberDialog.setContentView(bindingMemberDialog.root)
+
         bindingMemberDialog.btnAddElement.setOnClickListener {
             chooseMemberDialog.dismiss()
             findNavController().navigate(R.id.memberListFragment, Bundle().apply {
                 putString(Constants.ID_CHANNEL_KEY, channelId)
             })
         }
+
+        addMarginToLastItem(bindingMemberDialog.rvChooseRandomSpinnerList, 10)
 
         bindingMemberDialog.tvTitleChooseRandomSpinnerList.text = "Choose Members"
 

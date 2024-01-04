@@ -1,9 +1,12 @@
 package com.example.luckyspinner.adapter
 
 
+import android.content.Context
 import android.graphics.Color
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.core.view.isVisible
@@ -14,6 +17,8 @@ import com.example.luckyspinner.R
 import com.example.luckyspinner.databinding.TitleSpinnerOrChannelItemBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.models.Channel
+import kotlin.math.roundToInt
+import kotlin.math.sign
 
 class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter<ChannelListAdapter.ChannelListViewHolder>() {
     interface Listener {
@@ -53,8 +58,9 @@ class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter
     }
 
     override fun onBindViewHolder(holder: ChannelListViewHolder, position: Int) {
+        val channel = channels[position]
+
         holder.binding.apply {
-            val channel = channels[position]
             tvTitleListOrChannelItem.text = channel.nameChannel
 
             tvTitleListOrChannelItem.isSelected = true
@@ -64,6 +70,7 @@ class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter
             btnEditSpinnerOrChannel.setOnClickListener {
                 onEditClickListener.onEditClick(position)
             }
+
             btnDeleteSpinnerOrChannel.isVisible = false
             root.setOnClickListener {
                 listener.onItemClick(channel)

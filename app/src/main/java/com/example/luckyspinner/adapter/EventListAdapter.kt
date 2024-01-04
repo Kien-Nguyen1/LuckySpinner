@@ -1,7 +1,8 @@
 package com.example.luckyspinner.adapter
 
 
-import android.graphics.Color
+import android.content.Context
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.EventChannelItemBinding
 import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.util.Constants
+import kotlin.math.roundToInt
 
 class EventListAdapter(private val listener: Listener) :
     RecyclerView.Adapter<EventListAdapter.EventListViewHolder>() {
@@ -71,7 +73,7 @@ class EventListAdapter(private val listener: Listener) :
                 if (contains(Constants.SATURDAY)) title += "Sat "
                 if (contains(Constants.SUNDAY)) title += "Sun "
 
-                if ( this.containsAll(arrayListOf(1,2,3,4,5,6,7))) {
+                if (this.containsAll(arrayListOf(1, 2, 3, 4, 5, 6, 7))) {
                     title = "All week"
                 }
             }

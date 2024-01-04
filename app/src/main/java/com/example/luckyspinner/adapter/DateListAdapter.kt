@@ -1,6 +1,7 @@
 package com.example.luckyspinner.adapter
 
 
+
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.setPadding
@@ -13,10 +14,11 @@ import com.example.luckyspinner.util.Constants
 class DateListAdapter(private val listener: Listener) : RecyclerView.Adapter<DateListAdapter.DateListViewHolder>() {
 
     interface Listener {
-        fun onDateClick(position: Int, isChecked : Boolean)
+        fun onDateClick(position: Int, isChecked: Boolean)
     }
 
-    inner class DateListViewHolder(val binding: DateListItemBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class DateListViewHolder(val binding: DateListItemBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
     private val diffCallback = object : DiffUtil.ItemCallback<Int>() {
         override fun areItemsTheSame(oldItem: Int, newItem: Int): Boolean {
@@ -35,16 +37,19 @@ class DateListAdapter(private val listener: Listener) : RecyclerView.Adapter<Dat
             differ.submitList(value)
         }
 
-    val dayOfWeek = arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "SunDay")
+    val dayOfWeek =
+        arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "SunDay")
 
     override fun getItemCount() = dayOfWeek.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DateListViewHolder {
-        return DateListViewHolder(DateListItemBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        ))
+        return DateListViewHolder(
+            DateListItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: DateListViewHolder, position: Int) {
@@ -59,7 +64,8 @@ class DateListAdapter(private val listener: Listener) : RecyclerView.Adapter<Dat
             }
         }
     }
-    fun changeTheNumberOfDay (position : Int) : Int {
+
+    fun changeTheNumberOfDay(position: Int): Int {
         if (position == 6) return Constants.SUNDAY
         return position + 2
     }

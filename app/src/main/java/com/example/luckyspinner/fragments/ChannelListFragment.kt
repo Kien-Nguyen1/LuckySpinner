@@ -263,6 +263,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             channelListAdapter = ChannelListAdapter(this@ChannelListFragment)
             adapter = channelListAdapter
             layoutManager = LinearLayoutManager(context)
+            Function.addMarginToLastItem(binding.rvChannelList, 16)
         }
     }
 

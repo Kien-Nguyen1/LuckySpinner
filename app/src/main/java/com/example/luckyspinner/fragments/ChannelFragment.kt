@@ -135,6 +135,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
             eventAdapter = EventListAdapter(this@ChannelFragment)
             adapter = eventAdapter
             layoutManager = LinearLayoutManager(context)
+            Function.addMarginToLastItem(binding.rvEventListOfChannel, 16)
         }
     }
 
