@@ -21,7 +21,7 @@ class EventListAdapter(private val listener: Listener) :
         fun onItemClick(id: String)
         fun onDeleteItem(id: String)
 
-        fun onSwitchClick(id: String, position: Int)
+        fun onSwitchClick(id: String, event: Event)
 
     }
 
@@ -30,11 +30,11 @@ class EventListAdapter(private val listener: Listener) :
 
     private val diffCallback = object : DiffUtil.ItemCallback<Event>() {
         override fun areItemsTheSame(oldItem: Event, newItem: Event): Boolean {
-            return false
+            return oldItem.idEvent == newItem.idEvent
         }
 
         override fun areContentsTheSame(oldItem: Event, newItem: Event): Boolean {
-            return false
+            return oldItem == newItem
         }
     }
 
@@ -83,7 +83,7 @@ class EventListAdapter(private val listener: Listener) :
 
             btnSwitch.isChecked = event.isTurnOn
             btnSwitch.setOnClickListener {
-                listener.onSwitchClick(event.idEvent, position)
+                listener.onSwitchClick(event.idEvent, event)
             }
 
             tvTitleEventItem.isSelected = true
