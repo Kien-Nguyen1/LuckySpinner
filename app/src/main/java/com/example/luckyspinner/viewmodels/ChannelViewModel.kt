@@ -19,7 +19,6 @@ class ChannelViewModel : ViewModel() {
     val isDeleteEventSuccess = MutableLiveData<Boolean?>()
 
     fun  getEvents(idChannel : String) {
-        isShowProgressDialog.value = true
         val list : MutableList<Event> = ArrayList()
 
         DataController.getEvents(db, idChannel)
@@ -38,7 +37,6 @@ class ChannelViewModel : ViewModel() {
                         }
                     }
                     eventList.value = list
-                    isShowProgressDialog.value = false
 
                 } else {
                     Log.w(
@@ -46,7 +44,6 @@ class ChannelViewModel : ViewModel() {
                         "Error getting documents.",
                         it.exception
                     )
-                    isShowProgressDialog.value = false
                 }
 
             }

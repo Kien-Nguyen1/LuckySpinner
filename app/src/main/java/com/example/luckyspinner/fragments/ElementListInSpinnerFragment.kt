@@ -51,7 +51,6 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
     private lateinit var idChannel : String
     private lateinit var addElementInSpinnerDiaLog : Dialog
     private lateinit var editElementDialog : Dialog
-    private lateinit var progressDialog : Dialog
     var isFirstLoad = true
 
     override fun onCreateView(
@@ -59,7 +58,6 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentElementListInSpinnerBinding.inflate(inflater, container, false)
-        progressDialog = ProgressDialog(context)
 
         idChannel = arguments?.getString(ID_CHANNEL_KEY)!!
         idSpinner = arguments?.getString(ID_SPINNER_KEY)!!
@@ -236,10 +234,6 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
                 }
                 viewModel.getElement(idChannel, idSpinner)
             }
-        }
-        viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
-            if (it) progressDialog.show()
-            else progressDialog.dismiss()
         }
     }
 

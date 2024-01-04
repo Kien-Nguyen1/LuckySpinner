@@ -43,9 +43,7 @@ class AddTimeEventViewModel : ViewModel() {
         DataController.getMembers(db, idChannel)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-
                     for (document : QueryDocumentSnapshot in it.result) {
-
                         Log.d(
                             Constants.FIRE_STORE,
                             document.id + " => " + document.data
@@ -66,82 +64,12 @@ class AddTimeEventViewModel : ViewModel() {
                         it.exception
                     )
                 }
-
-            }
-    }
-    fun  getSpinnerFromEvent(idChannel : String, idEvent : String) {
-        val sList : MutableList<Spinner> = ArrayList()
-
-        viewModelScope.launch(Dispatchers.Main) {
-            isShowProgressDialog.value = true
-        }
-
-        DataController.getSpinnerFromEvent(db, idChannel, idEvent)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    println("getspin ${it.result.size()}")
-                    for (document : QueryDocumentSnapshot in it.result) {
-                        Log.d(
-                            Constants.FIRE_STORE,
-                            document.id + " => " + document.data
-                        )
-                        if (document.exists()) {
-                            val  s = document.toObject<Spinner>()
-                            sList.add(s)
-                        }
-                    }
-                    spinnerList.value = sList
-                    isShowProgressDialog.value = false
-                    isGettingSpinnerSuccess.value = true
-
-                } else {
-                    Log.w(
-                        Constants.FIRE_STORE,
-                        "Error getting documents.",
-                        it.exception
-                    )
-                    isShowProgressDialog.value = false
-                    isGettingSpinnerSuccess.value = false
-
-                }
-            }
-    }
-
-    fun  getMemberFromEvent(idChannel : String, idEvent : String) {
-        val list : MutableList<Member> = ArrayList()
-
-        DataController.getMemberFromEvent(db, idChannel, idEvent)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    for (document : QueryDocumentSnapshot in it.result) {
-                        Log.d(
-                            Constants.FIRE_STORE,
-                            document.id + " => " + document.data
-                        )
-                        if (document.exists()) {
-                            val  m = document.toObject<Member>()
-                            list.add(m)
-                        }
-                    }
-                    memberList.value = list
-
-                } else {
-                    Log.w(
-                        Constants.FIRE_STORE,
-                        "Error getting documents.",
-                        it.exception
-                    )
-                }
-
             }
     }
 
     fun  getSpinnerFromChannel(idChannel : String, isNewEvent: Boolean) {
         //only call in add event once
         val sList : MutableList<Spinner> = ArrayList()
-        viewModelScope.launch(Dispatchers.Main) {
-            isShowProgressDialog.value = true
-        }
         DataController.getSpinners(db, idChannel)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
@@ -156,7 +84,6 @@ class AddTimeEventViewModel : ViewModel() {
                         }
                     }
                     spinnerList.value = sList
-                    isShowProgressDialog.value = false
                     isGettingSpinnerSuccess.value = true
                     if (isNewEvent) {
                         allCheckboxSpinner(false)
@@ -169,7 +96,6 @@ class AddTimeEventViewModel : ViewModel() {
                         "Error getting documents.",
                         it.exception
                     )
-                    isShowProgressDialog.value = false
                     isGettingSpinnerSuccess.value = false
                 }
 

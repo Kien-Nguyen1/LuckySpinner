@@ -34,10 +34,6 @@ class MemberListViewModel : ViewModel() {
 
     suspend fun  getMembers(idChannel : String) {
         val list : MutableList<Member> = ArrayList()
-        withContext(Dispatchers.Main) {
-            isShowProgressDialog.value = true
-        }
-
         DataController.getMembers(db, idChannel)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
@@ -51,7 +47,6 @@ class MemberListViewModel : ViewModel() {
                         }
                     }
                     memberList.value = list
-                    isShowProgressDialog.value = false
 
                 } else {
                     Log.w(
@@ -59,7 +54,6 @@ class MemberListViewModel : ViewModel() {
                         "Error getting documents.",
                         it.exception
                     )
-                    isShowProgressDialog.value = false
                 }
             }
     }
@@ -81,8 +75,6 @@ class MemberListViewModel : ViewModel() {
                         }
                     }
                     eventList.value = list
-                    return@addOnCompleteListener
-
                 } else {
                     Log.w(
                         Constants.FIRE_STORE,
@@ -92,12 +84,12 @@ class MemberListViewModel : ViewModel() {
                     viewModelScope.launch {
                         getEvents(idChannel)
                     }
-                    return@addOnCompleteListener
                 }
             }
     }
 
     fun deleteMember(idChannel : String, idMember : String) {
+        isShowProgressDialog.postValue(true)
         DataController.deleteMember(db, idChannel, idMember)
             .addOnSuccessListener {
                 Log.d(
@@ -112,28 +104,35 @@ class MemberListViewModel : ViewModel() {
             }
             .addOnFailureListener { e -> Log.w(Constants.FIRE_STORE, "Error deleting document", e)
                 isDeletingMemberSuccess.value = false
+                isShowProgressDialog.value = false
             }
     }
     fun addMember(idChannel: String, member: Member) {
+        isShowProgressDialog.postValue(true)
         DataController.saveMember(db, idChannel, member)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
+                    isShowProgressDialog.value = false
                     isAddingMemberSuccess.value = true
                 }
             }
             .addOnFailureListener {
                 isAddingMemberSuccess.value = false
+                isShowProgressDialog.value = false
             }
     }
     fun editMember(idChannel: String, member: Member) {
+        isShowProgressDialog.postValue(true)
         DataController.saveMember(db, idChannel, member)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     isEdtingMemberSuccess.value = true
+                    isShowProgressDialog.value = false
                 }
             }
             .addOnFailureListener {
                 isEdtingMemberSuccess.value = false
+                isShowProgressDialog.value = false
             }
     }
      fun updateCheckBoxForMember(idChannel: String, idMember: String, isSelected : Boolean) = viewModelScope.launch(Dispatchers.IO){

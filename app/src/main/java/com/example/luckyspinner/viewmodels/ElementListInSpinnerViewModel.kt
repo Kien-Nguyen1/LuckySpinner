@@ -23,7 +23,6 @@ class ElementListInSpinnerViewModel : ViewModel() {
 
 
     fun  getElement(idChannel : String, idSpinner : String) {
-        isShowProgressDialog.value = true
         val list : MutableList<ElementSpinner> = ArrayList()
 
         DataController.getElement(db, idChannel, idSpinner)
@@ -40,7 +39,6 @@ class ElementListInSpinnerViewModel : ViewModel() {
                         }
                     }
                     elementList.value = list
-                    isShowProgressDialog.value = false
 
                 } else {
                     Log.w(
@@ -48,8 +46,6 @@ class ElementListInSpinnerViewModel : ViewModel() {
                         "Error getting documents.",
                         it.exception
                     )
-                    isShowProgressDialog.value = false
-
                 }
 
             }

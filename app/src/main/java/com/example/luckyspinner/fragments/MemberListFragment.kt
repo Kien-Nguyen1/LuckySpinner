@@ -175,7 +175,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
                 return@setOnClickListener
             }
             val memberName = binding.edtEnterChannelName.text.toString()
-            progressDialog.show()
             viewModel.addMember(idChannel, Member(Calendar.getInstance().timeInMillis.toString(), memberName))
         }
         binding.btnCancelAddChannel.setOnClickListener {
@@ -287,7 +286,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         lifecycleScope.launch {
             val isDelete = DialogUtil.showYesNoDialog(context)
             if (isDelete) {
-                progressDialog.show()
                 viewModel.deleteMember(idChannel, id)
             }
         }

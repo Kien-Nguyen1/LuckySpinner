@@ -49,7 +49,6 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     private var nameChannel: String? = null
     private var idTelegramChannel: String? = null
     private lateinit var eventAdapter: EventListAdapter
-    private lateinit var progressDialog: ProgressDialog
     var isFirstLoad = true
 
     override fun onCreateView(
@@ -58,7 +57,6 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
     ): View? {
         println("channelss oncreateview")
         binding = FragmentChannelBinding.inflate(inflater, container, false)
-        progressDialog = ProgressDialog(context)
 
         idChannel = arguments?.getString(ID_CHANNEL_KEY)!!
         nameChannel = arguments?.getString(CHANNEL_NAME)
@@ -149,33 +147,6 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
                 binding.rvEventListOfChannel.visibility = View.VISIBLE
                 binding.imgEmptyList.visibility = View.GONE
             }
-//            eventList.filter {
-//                it.typeEvent == Constants.ONCE
-//            }.forEach {
-//                WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData(it.idEvent)
-//                    .observe(viewLifecycleOwner) {
-//                        if (it.size != 0) {
-//                            if (it[0].state == WorkInfo.State.SUCCEEDED) {
-//                                progressDialog.dismiss()
-//                                println("Success from workInfor ${it[0].outputData.getString("")}")
-//                            }
-//                            if (it[0].state == WorkInfo.State.FAILED) {
-//                                progressDialog.dismiss()
-//                                val message = it[0].outputData.getString(Constants.MESSAGE)
-//                                message?.let {
-//                                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-//                                }
-//                            }
-//                        } else {
-//                            println("WorkInfo is null")
-//                        }
-//
-//                    }
-//            }
-        }
-        viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
-            if (it) progressDialog.show()
-            else progressDialog.dismiss()
         }
         viewModel.isDeleteEventSuccess.observe(viewLifecycleOwner) {
             it?.let {

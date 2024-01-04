@@ -253,10 +253,6 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 viewModel.getChannels()
             }
         }
-        viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
-            if (it) progressDialog.show()
-            else progressDialog.dismiss()
-        }
     }
     private fun setupRecycleView() {
         binding.rvChannelList.apply {

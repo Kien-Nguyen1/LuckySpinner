@@ -37,7 +37,6 @@ class ChannelListViewModel : ViewModel() {
 
     fun  getChannels() {
         val cList : MutableList<Channel> = ArrayList()
-        isShowProgressDialog.value = true
         DataController.getChannels(db)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
@@ -52,7 +51,6 @@ class ChannelListViewModel : ViewModel() {
                         }
                     }
                     channelList.value = cList
-                    isShowProgressDialog.value = false
 
                 } else {
                     Log.w(
@@ -61,7 +59,6 @@ class ChannelListViewModel : ViewModel() {
                         it.exception
                     )
                     message.value = Constants.MESSAGE_GET_FAILED
-                    isShowProgressDialog.value = false
                 }
             }
 
