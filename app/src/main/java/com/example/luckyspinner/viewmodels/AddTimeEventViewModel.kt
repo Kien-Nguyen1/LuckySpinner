@@ -227,7 +227,6 @@ class AddTimeEventViewModel : ViewModel() {
                 members[index].listEvent.add(event.value!!.idEvent)
             }
             if (index == members.size - 1) {
-                println("Here come 123123 $members")
                 memberList.value = members
             }
         }

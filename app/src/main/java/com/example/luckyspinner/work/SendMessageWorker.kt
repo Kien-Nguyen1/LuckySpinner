@@ -83,6 +83,9 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                         DataController.saveEvent(db, channelId!!, event!!.apply {
                             isTurnOn = false
                         })
+                        event!!.typeEvent?.let {
+                            DataController.deleteEvent(db, channelId, eventId!!)
+                        }
                         return@withContext Result.success(outputData)
                     } else {
                         return@withContext Result.failure()
