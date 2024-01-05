@@ -1,6 +1,8 @@
 package com.example.luckyspinner.adapter
 
 
+import android.content.Context
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -9,8 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.RandomSpinnerListItemBinding
 import com.example.luckyspinner.models.Spinner
 import com.example.luckyspinner.util.Function.addMarginToLastItem
+import kotlin.math.roundToInt
 
 class RandomSpinnerListAdapter(private val listener: Listener, private val eventId : String) : RecyclerView.Adapter<RandomSpinnerListAdapter.SpinnerListViewHolder>() {
+
+    private lateinit var context: Context
 
     interface Listener {
         fun onItemClick(id: String)
@@ -42,6 +47,7 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
     override fun getItemCount() = spinners.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SpinnerListViewHolder {
+        context = parent.context
         return SpinnerListViewHolder(RandomSpinnerListItemBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
@@ -49,7 +55,18 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
         ))
     }
 
+    private fun dpToPx(dp: Int): Int {
+        val displayMetrics: DisplayMetrics = context.resources.displayMetrics
+        return (dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT)).roundToInt()
+    }
+
     override fun onBindViewHolder(holder: SpinnerListViewHolder, position: Int) {
+        if (position == itemCount - 1) {
+            val marginLayoutParams = holder.itemView.layoutParams as ViewGroup.MarginLayoutParams
+            val marginInDp = dpToPx(10)
+            marginLayoutParams.bottomMargin = marginInDp
+        }
+
         holder.binding.apply {
             val spinner = spinners[position]
             tvTitle.text = spinner.titleSpin
