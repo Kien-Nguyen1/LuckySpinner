@@ -16,7 +16,7 @@
         android:marqueeRepeatLimit="marquee_forever"
         android:scrollHorizontally="true"
         android:singleLine="true"
-        android:text="Spinner Title"
+        android:text="Day of week"
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -25,6 +25,6 @@
         android:id="@+id/check_box_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp" />
+        android:layout_marginStart="10dp" />
 
 </LinearLayout>
