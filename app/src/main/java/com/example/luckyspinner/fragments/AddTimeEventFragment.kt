@@ -47,6 +47,8 @@ import com.example.luckyspinner.util.Function.changeTheNumberOfDay
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.Duration
@@ -337,6 +339,22 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 }
             }
         }
+
+        TabLayoutMediator(binding.tabLayoutAddTimeEvent, binding.viewPagerList, object : TabLayoutMediator.TabConfigurationStrategy{
+            override fun onConfigureTab(tab: TabLayout.Tab, position: Int) {
+                 when(position) {
+                    0 -> {
+                        tab.text = "Spinner"
+                        tab.setIcon(R.drawable.ic_spinner_list)
+                    }
+                    1 -> {
+                        tab.text = "Member"
+                        tab.setIcon(R.drawable.ic_member_list)
+                    }
+                    else -> {}
+                }
+            }
+        }).attach()
     }
 
 
