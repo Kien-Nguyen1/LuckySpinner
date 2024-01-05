@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragments.AddTimeEventFragment">
+    android:layout_height="match_parent">
 
     <include
         android:id="@+id/app_bar_add_time_event"
@@ -15,75 +13,20 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/block_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/app_bar_add_time_event">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_choose_random_spinner"
-            style="?attr/materialIconButtonFilledTonalStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Spinner List"
-            android:layout_marginStart="15dp"
-            app:icon="@drawable/ic_spinner_list"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_member_list2"
-            style="?attr/materialIconButtonFilledTonalStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
-            android:text="Member List"
-            app:icon="@drawable/ic_member_list"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <TimePicker
-        android:id="@+id/time_picker_add_time_event"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:timePickerMode="spinner"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/block_list" />
-
-    <include
-        android:id="@+id/day_of_week"
-        layout="@layout/day_of_week_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/time_picker_add_time_event" />
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_field_event_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="15dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         android:gravity="center_horizontal"
+        android:hint="Event Name"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:hint="Event Name"
-        app:layout_constraintTop_toBottomOf="@+id/day_of_week">
+        app:layout_constraintTop_toBottomOf="@+id/app_bar_add_time_event">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_event_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -91,6 +34,89 @@
             android:textColor="@color/black" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_layout_picker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_field_event_name">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_field_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:hint="Time"
+            android:layout_weight="1"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_time">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:textColor="@color/black"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_field_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:hint="Day"
+            android:layout_weight="1"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_calendar">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:textColor="@color/black"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout_add_time_event"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/linear_layout_picker"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="15dp"
+        android:layout_marginHorizontal="15dp">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/ic_spinner_list"
+            android:text="Spinner"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/ic_member_list"
+            android:text="Member"/>
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager_list"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginHorizontal="15dp"
+        android:background="#D8D8D8"
+        app:layout_constraintTop_toBottomOf="@+id/tab_layout_add_time_event"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_spinner_now"
@@ -102,7 +128,7 @@
         android:text="Test Now"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_field_event_name" />
+        app:layout_constraintTop_toBottomOf="@+id/view_pager_list" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_done_add_time_event"
@@ -113,5 +139,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:contentDescription="Done" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import android.widget.TableLayout
 import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
@@ -19,6 +20,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewpager.widget.PagerAdapter
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
@@ -77,6 +81,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     ): View? {
         println("addtime HHere come oncreateview")
         binding = FragmentAddTimeEventBinding.inflate(inflater, container, false)
+
         progressDialog =  ProgressDialog(context)
 
         hasSetNameAndTime = false
@@ -111,14 +116,14 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 }
             }
         }
-        binding.timePickerAddTimeEvent.setOnTimeChangedListener { view, hourOfDay, minute ->
-            if (hasSetNameAndTime) {
-                 viewModel.event.value = viewModel.event.value?.apply {
-                     this.hour = hourOfDay
-                     this.minute = minute
-                 }
-            }
-        }
+//        binding.timePickerAddTimeEvent.setOnTimeChangedListener { view, hourOfDay, minute ->
+//            if (hasSetNameAndTime) {
+//                 viewModel.event.value = viewModel.event.value?.apply {
+//                     this.hour = hourOfDay
+//                     this.minute = minute
+//                 }
+//            }
+//        }
 
         lifecycleScope.launch(Dispatchers.IO) {
             if (isFirstLoad) {
@@ -146,7 +151,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         setupObservers()
 
 
-
         setUpDatePicker()
 
         setupChooseSpinnerDialog()
@@ -166,16 +170,16 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         binding.btnDoneAddTimeEvent.setOnClickListener {
             getTimeAndDatePicker()
         }
-        binding.btnChooseRandomSpinner.setOnClickListener {
-            chooseSpinnerDialog.show()
-        }
+//        binding.btnChooseRandomSpinner.setOnClickListener {
+//            chooseSpinnerDialog.show()
+//        }
         binding.btnSpinnerNow.setOnClickListener {
             handleTestNow()
         }
-        binding.btnMemberList2.setOnClickListener {
-            println("Let go member")
-            chooseMemberDialog.show()
-        }
+//        binding.btnMemberList2.setOnClickListener {
+//            println("Let go member")
+//            chooseMemberDialog.show()
+//        }
 
         binding.appBarAddTimeEvent.apply {
             btnBack.setOnClickListener {
@@ -191,8 +195,10 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
         progressDialog.show()
 
-        val selectedHour: Int = binding.timePickerAddTimeEvent.hour
-        val selectedMinutes: Int = binding.timePickerAddTimeEvent.minute
+//        val selectedHour: Int = binding.timePickerAddTimeEvent.hour
+//        val selectedMinutes: Int = binding.timePickerAddTimeEvent.minute
+        val selectedHour = 0
+        val selectedMinutes = 0
 
         val typeEvent = if (getListDay() == Event().listDay) Constants.ONCE else Constants.EVERY_WEEK
 
@@ -299,6 +305,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
     }
     private fun setUpRecycleView() {
+
+
         bindingRandomDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
         bindingRandomDialog.rvChooseRandomSpinnerList.apply {
             randomSpinnerAdapter = RandomSpinnerListAdapter(this@AddTimeEventFragment, eventId!!)
@@ -315,6 +323,19 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             adapter = memberInEventAdapter
             layoutManager = LinearLayoutManager(context)
             addMarginToLastItem(bindingMemberDialog.rvChooseRandomSpinnerList, 10)
+        }
+
+        binding.viewPagerList.adapter = object : FragmentStateAdapter(requireActivity()) {
+            override fun getItemCount(): Int {
+                return  2
+            }
+            override fun createFragment(position: Int): Fragment {
+                return when (position) {
+                    0 -> SpinnerViewpagerFragment(randomSpinnerAdapter)
+                    1 -> MemberViewpagerFragment(memberInEventAdapter)
+                    else -> SpinnerViewpagerFragment(randomSpinnerAdapter)
+                }
+            }
         }
     }
 
@@ -400,35 +421,35 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
 
     private fun dayOfWeekClickEvent() {
-        binding.dayOfWeek.apply {
-            btnMonday.setOnClickListener {
-                viewModel.handleClickDay(Constants.MONDAY_POSITION)
-            }
-
-            btnTuesday.setOnClickListener {
-                viewModel.handleClickDay(Constants.TUESDAY_POSITION)
-            }
-
-            btnWednesday.setOnClickListener {
-                viewModel.handleClickDay(Constants.WEDNESDAY_POSITION)
-            }
-
-            btnThursday.setOnClickListener {
-                viewModel.handleClickDay(Constants.THURSDAY_POSITION)
-            }
-
-            btnFriday.setOnClickListener {
-                viewModel.handleClickDay(Constants.FRIDAY_POSITION)
-            }
-
-            btnSaturday.setOnClickListener {
-                viewModel.handleClickDay(Constants.SATURDAY_POSITION)
-            }
-
-            btnSunday.setOnClickListener {
-                viewModel.handleClickDay(Constants.SUNDAY_POSITION)
-            }
-        }
+//        binding.dayOfWeek.apply {
+//            btnMonday.setOnClickListener {
+//                viewModel.handleClickDay(Constants.MONDAY_POSITION)
+//            }
+//
+//            btnTuesday.setOnClickListener {
+//                viewModel.handleClickDay(Constants.TUESDAY_POSITION)
+//            }
+//
+//            btnWednesday.setOnClickListener {
+//                viewModel.handleClickDay(Constants.WEDNESDAY_POSITION)
+//            }
+//
+//            btnThursday.setOnClickListener {
+//                viewModel.handleClickDay(Constants.THURSDAY_POSITION)
+//            }
+//
+//            btnFriday.setOnClickListener {
+//                viewModel.handleClickDay(Constants.FRIDAY_POSITION)
+//            }
+//
+//            btnSaturday.setOnClickListener {
+//                viewModel.handleClickDay(Constants.SATURDAY_POSITION)
+//            }
+//
+//            btnSunday.setOnClickListener {
+//                viewModel.handleClickDay(Constants.SUNDAY_POSITION)
+//            }
+//        }
     }
     fun handleDayOfWeek(event : Event) {
         fun customButton(button : MaterialButton, isActive : Boolean) {
@@ -439,18 +460,18 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             button.setBackgroundColor(getColorBackGround(isActive))
             button.setTextColor(getColorBackGround(!isActive))
         }
-        binding.dayOfWeek.apply {
-            event.listDay.apply {
-                customButton(btnMonday, contains(Calendar.MONDAY))
-                customButton(btnTuesday, contains(Calendar.TUESDAY))
-                customButton(btnWednesday, contains(Calendar.WEDNESDAY))
-                customButton(btnThursday, contains(Calendar.THURSDAY))
-                customButton(btnFriday, contains(Calendar.FRIDAY))
-                customButton(btnSaturday, contains(Calendar.SATURDAY))
-                customButton(btnSunday, contains(Calendar.SUNDAY))
-            }
-
-        }
+//        binding.dayOfWeek.apply {
+//            event.listDay.apply {
+//                customButton(btnMonday, contains(Calendar.MONDAY))
+//                customButton(btnTuesday, contains(Calendar.TUESDAY))
+//                customButton(btnWednesday, contains(Calendar.WEDNESDAY))
+//                customButton(btnThursday, contains(Calendar.THURSDAY))
+//                customButton(btnFriday, contains(Calendar.FRIDAY))
+//                customButton(btnSaturday, contains(Calendar.SATURDAY))
+//                customButton(btnSunday, contains(Calendar.SUNDAY))
+//            }
+//
+//        }
     }
 
     fun handleTestNow() {
@@ -552,12 +573,12 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
         viewModel.event.observe(viewLifecycleOwner) {
             if (!hasSetNameAndTime) {
-                it.hour?.let { eventHour ->
-                    binding.timePickerAddTimeEvent.apply {
-                        hour = eventHour
-                        minute = it.minute!!
-                    }
-                }
+//                it.hour?.let { eventHour ->
+//                    binding.timePickerAddTimeEvent.apply {
+//                        hour = eventHour
+//                        minute = it.minute!!
+//                    }
+//                }
                 binding.edtEventName.setText(it.nameEvent)
                 hasSetNameAndTime = true
             }
