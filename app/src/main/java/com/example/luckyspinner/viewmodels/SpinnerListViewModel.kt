@@ -98,6 +98,7 @@ class SpinnerListViewModel : ViewModel() {
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     isAddingSpinnerSuccess.value = true
+                    isShowProgressDialog.value = false
                 }
             }
             .addOnFailureListener { e ->
@@ -114,6 +115,7 @@ class SpinnerListViewModel : ViewModel() {
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     isEditingSuccess.value = true
+                    isShowProgressDialog.value = false
                 }
             }
             .addOnFailureListener { e ->
@@ -132,6 +134,7 @@ class SpinnerListViewModel : ViewModel() {
                     "DocumentSnapshot successfully deleted!"
                 )
                 isDeletingSuccess.value = true
+                isShowProgressDialog.value = false
             }
             .addOnFailureListener {
                 e ->
