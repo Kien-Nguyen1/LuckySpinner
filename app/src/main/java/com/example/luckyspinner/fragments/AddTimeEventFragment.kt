@@ -1,5 +1,6 @@
 package com.example.luckyspinner.fragments
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.app.ProgressDialog
 import android.graphics.Color
@@ -47,6 +48,9 @@ import com.example.luckyspinner.util.Function.changeTheNumberOfDay
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
+import com.google.android.material.timepicker.TimeFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.Duration
@@ -75,6 +79,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     private lateinit var dateAdapter : DateListAdapter
     private lateinit var progressDialog : ProgressDialog
 
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -98,6 +103,30 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             btnSpinnerList.visibility = View.GONE
             btnMemberList.visibility = View.GONE
         }
+
+        binding.cardViewTime.setOnClickListener {
+            val picker = MaterialTimePicker.Builder()
+                .setInputMode(INPUT_MODE_CLOCK)
+                .setTimeFormat(TimeFormat.CLOCK_12H)
+                .setHour(Calendar.HOUR)
+                .setMinute(Calendar.MINUTE)
+                .setTitleText("Select Time")
+                .build()
+
+            picker.show(parentFragmentManager, "timepicker")
+
+            picker.addOnPositiveButtonClickListener {
+                val hour = picker.hour
+                val minutes = picker.minute
+
+                binding.tvTime.text = "$hour : $minutes"
+            }
+
+            picker.addOnNegativeButtonClickListener {
+                picker.dismiss()
+            }
+        }
+
         workManager = WorkManager.getInstance(requireContext())
         if (eventId == null) {
             isAdd = true
