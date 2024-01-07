@@ -36,100 +36,48 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_view_time"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_field_time"
+        style="?attr/textInputOutlinedDenseStyle"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        app:cardCornerRadius="5dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="15dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/text_field_event_name"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_field_event_name">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_time"
-                android:layout_marginStart="15dp"
-                android:layout_gravity="center_vertical"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_gravity="center_vertical"
-                android:text="Time:"
-                android:textColor="@color/black" />
-
-            <TextView
-                android:id="@+id/tv_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="00:00"
-                android:layout_weight="1"
-                android:gravity="end"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="15dp"
-                android:layout_marginStart="10dp"
-                android:textColor="#673AB7" />
-
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_view_date"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginTop="15dp"
         android:layout_marginStart="15dp"
-        android:layout_weight="1"
-        app:cardCornerRadius="5dp"
-        app:layout_constraintTop_toBottomOf="@+id/card_view_time"
-        app:layout_constraintStart_toStartOf="parent">
+        android:layout_marginTop="15dp"
+        app:startIconDrawable="@drawable/ic_time">
 
-        <LinearLayout
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:orientation="horizontal">
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:textColorHint="#673AB7" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_calendar"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="15dp"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_gravity="center_vertical"
-                android:text="Date:"
-                android:textColor="@color/black" />
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_field_date"
+        style="?attr/textInputOutlinedDenseStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        app:layout_constraintTop_toBottomOf="@+id/text_field_event_name"
+        app:layout_constraintStart_toEndOf="@+id/text_field_time"
+        android:layout_marginTop="15dp"
+        app:layout_goneMarginStart="15dp"
+        app:startIconDrawable="@drawable/ic_calendar">
 
-            <TextView
-                android:id="@+id/tv_date"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="15dp"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:gravity="end"
-                android:text="Mon Tue Wed Thur Fri Sat"
-                android:textColor="#673AB7" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:textColorHint="#673AB7" />
 
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout_add_time_event"
@@ -139,7 +87,7 @@
         android:layout_marginTop="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/card_view_date">
+        app:layout_constraintTop_toBottomOf="@+id/text_field_time">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"

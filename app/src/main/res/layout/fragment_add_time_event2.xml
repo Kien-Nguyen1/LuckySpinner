@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/app_bar_add_time_event"
+            layout="@layout/custom_app_bar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_field_event_name"
+            style="?attr/textInputOutlinedDenseStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginTop="15dp"
+            android:gravity="center_horizontal"
+            android:hint="Event Name"
+            app:endIconMode="clear_text">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_event_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:textColor="@color/black" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginTop="15dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_field_time"
+                style="?attr/textInputOutlinedDenseStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:startIconDrawable="@drawable/ic_time">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edt_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:textColorHint="#673AB7" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_field_date"
+                style="?attr/textInputOutlinedDenseStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/text_field_time"
+                app:layout_constraintTop_toTopOf="parent"
+                app:startIconDrawable="@drawable/ic_calendar">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edt_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:textColorHint="#673AB7" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Spinner"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:layout_gravity="center_vertical"/>
+
+            <com.google.android.material.search.SearchBar
+                android:id="@+id/search_bar_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="?attr/materialSearchBarStyle"
+                android:hint="Search Spinner...">
+
+                <com.google.android.material.search.SearchView
+                    android:id="@+id/search_view_spinner"
+                    style="?attr/materialSearchViewStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </com.google.android.material.search.SearchBar>
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:id="@+id/rv_spinner_list"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginTop="10dp"
+            android:scrollbars="horizontal"
+            tools:listitem="@layout/random_spinner_list_item"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Member"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_gravity="center_vertical"/>
+
+            <com.google.android.material.search.SearchBar
+                android:id="@+id/search_bar_member"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="?attr/materialSearchBarStyle"
+                android:hint="Seach Member...">
+
+                <com.google.android.material.search.SearchView
+                    android:id="@+id/search_view_member"
+                    style="?attr/searchViewStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </com.google.android.material.search.SearchBar>
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginHorizontal="15dp"
+            android:scrollbars="horizontal"
+            tools:listitem="@layout/random_member_list_item"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_spinner_now"
+            style="?attr/materialIconButtonFilledTonalStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginTop="15dp"
+            android:text="Test Now" />
+
+        <com.google.android.material.button.MaterialButton
+            style="?attr/materialIconButtonStyle"
+            android:id="@+id/btn_done_add_time_event"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:padding="16dp"
+            android:text="Save"
+            android:textSize="15sp"
+            android:src="@drawable/ic_done"
+            android:layout_gravity="end" />
+
+    </LinearLayout>
+
+</ScrollView>

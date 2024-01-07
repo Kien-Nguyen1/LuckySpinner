@@ -106,26 +106,31 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             btnMemberList.visibility = View.GONE
         }
 
-        binding.cardViewTime.setOnClickListener {
-            val picker = MaterialTimePicker.Builder()
-                .setInputMode(INPUT_MODE_CLOCK)
-                .setTimeFormat(TimeFormat.CLOCK_12H)
-                .setHour(Calendar.HOUR)
-                .setMinute(Calendar.MINUTE)
-                .setTitleText("Select Time")
-                .build()
+        binding.edtTime.onFocusChangeListener = View.OnFocusChangeListener { view, hasForcus ->
+            if (hasForcus) {
+                val picker = MaterialTimePicker.Builder()
+                    .setInputMode(INPUT_MODE_CLOCK)
+                    .setTimeFormat(TimeFormat.CLOCK_24H)
+                    .setHour(Calendar.HOUR)
+                    .setMinute(Calendar.MINUTE)
+                    .setTitleText("Select Time")
+                    .build()
 
-            picker.show(parentFragmentManager, "timepicker")
+                picker.show(parentFragmentManager, "timepicker")
 
-            picker.addOnPositiveButtonClickListener {
-                val hour = picker.hour
-                val minutes = picker.minute
+                picker.addOnPositiveButtonClickListener {
+                    val hour = picker.hour
+                    val minutes = picker.minute
 
-                binding.tvTime.text = "$hour : $minutes"
-            }
+                    binding.edtTime.hint = "$hour : $minutes"
+                }
 
-            picker.addOnNegativeButtonClickListener {
-                picker.dismiss()
+                picker.addOnNegativeButtonClickListener {
+                    picker.dismiss()
+                }
+
+                binding.edtTime.isFocusable = false
+                binding.edtTime.isFocusableInTouchMode = true
             }
         }
 
