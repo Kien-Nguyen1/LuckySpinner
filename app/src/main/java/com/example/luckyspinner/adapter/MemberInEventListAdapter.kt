@@ -54,18 +54,7 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
         ))
     }
 
-    private fun dpToPx(dp: Int): Int {
-        val displayMetrics: DisplayMetrics = context.resources.displayMetrics
-        return (dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT)).roundToInt()
-    }
-
     override fun onBindViewHolder(holder: MemberListViewHolder, position: Int) {
-        if (position == itemCount - 1) {
-            val marginLayoutParams = holder.itemView.layoutParams as ViewGroup.MarginLayoutParams
-            val marginInDp = dpToPx(10)
-            marginLayoutParams.bottomMargin = marginInDp
-        }
-
         holder.binding.apply {
             val member = members[position]
             tvTitle.text = member.nameMember
