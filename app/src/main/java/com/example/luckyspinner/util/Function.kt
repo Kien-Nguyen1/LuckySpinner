@@ -118,4 +118,10 @@ object Function {
         val displayMetrics: DisplayMetrics = context.resources.displayMetrics
         return (dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT)).roundToInt()
     }
+
+    fun numberToMinuteForm(number : Int) : String {
+        return if (number < 10) {
+            "0$number"
+        } else number.toString()
+    }
 }
