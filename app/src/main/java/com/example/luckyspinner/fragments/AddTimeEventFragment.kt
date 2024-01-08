@@ -150,7 +150,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             if (hasSetNameAndTime) {
                 viewModel.event.value = viewModel.event.value?.apply {
                     nameEvent = it.toString()
-                    filterSpinner()
                 }
             }
         }
@@ -227,6 +226,26 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 findNavController().popBackStack()
             }
         }
+        binding.searchViewSpinner.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                filterSpinner(newText)
+                return false
+            }
+        })
+        binding.searchViewMember.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                filterMember(newText)
+                return false
+            }
+        })
     }
 
 
@@ -346,8 +365,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
     }
 
-    private fun filterSpinner() {
-        val text = binding.edtEventName.text.toString()
+    private fun filterSpinner(text : String) {
+        println("Here come text $text")
         if (text == "") {
             viewModel.spinnerList.value = viewModel.spinnerList.value
             return
@@ -361,8 +380,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
             randomSpinnerAdapter.spinners = list
     }
-    private fun filterMember() {
-        val text = binding.edtEventName.text.toString()
+    private fun filterMember(text: String) {
         if (text == "") {
             viewModel.memberList.value = viewModel.memberList.value
             return
