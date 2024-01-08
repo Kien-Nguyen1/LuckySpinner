@@ -26,7 +26,7 @@ class DateListAdapter(private val listener: Listener) : RecyclerView.Adapter<Dat
         }
 
         override fun areContentsTheSame(oldItem: Int, newItem: Int): Boolean {
-            return false
+            return oldItem == newItem
         }
     }
 

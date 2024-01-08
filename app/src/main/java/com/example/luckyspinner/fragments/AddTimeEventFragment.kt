@@ -585,11 +585,11 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         bindingDateDialog.checkBoxAll.isChecked = event.listDay == Constants.LIST_DAY_ALL_WEEK
         var title = ""
         event.listDay.apply {
-            if (contains(Constants.MONDAY)) title += "Mon "
-            if (contains(Constants.TUESDAY)) title += "Tue "
-            if (contains(Constants.WEDNESDAY)) title += "Wed "
-            if (contains(Constants.THURSDAY)) title += "Thu "
-            if (contains(Constants.FRIDAY)) title += "Fri "
+            if (contains(Constants.MONDAY)) title += "M "
+            if (contains(Constants.TUESDAY)) title += "T "
+            if (contains(Constants.WEDNESDAY)) title += "W "
+            if (contains(Constants.THURSDAY)) title += "Th "
+            if (contains(Constants.FRIDAY)) title += "F "
             if (contains(Constants.SATURDAY)) title += "Sat "
             if (contains(Constants.SUNDAY)) title += "Sun "
 
