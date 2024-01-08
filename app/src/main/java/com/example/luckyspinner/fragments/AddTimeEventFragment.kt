@@ -21,6 +21,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -344,51 +345,51 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
 
         bindingRandomDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
-        bindingRandomDialog.rvChooseRandomSpinnerList.apply {
+        binding.rvSpinnerList.apply {
             randomSpinnerAdapter = RandomSpinnerListAdapter(this@AddTimeEventFragment, eventId!!)
             adapter = randomSpinnerAdapter
-            layoutManager = LinearLayoutManager(context)
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             addMarginToLastItem(bindingRandomDialog.rvChooseRandomSpinnerList, 10)
         }
 
         bindingMemberDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
 
 
-        bindingMemberDialog.rvChooseRandomSpinnerList.apply {
+        binding.rvMemberList.apply {
             memberInEventAdapter = MemberInEventListAdapter(this@AddTimeEventFragment, eventId!!)
             adapter = memberInEventAdapter
-            layoutManager = LinearLayoutManager(context)
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             addMarginToLastItem(bindingMemberDialog.rvChooseRandomSpinnerList, 10)
         }
 
-        binding.viewPagerList.adapter = object : FragmentStateAdapter(requireActivity()) {
-            override fun getItemCount(): Int {
-                return  2
-            }
-            override fun createFragment(position: Int): Fragment {
-                return when (position) {
-                    0 -> SpinnerViewpagerFragment(randomSpinnerAdapter)
-                    1 -> MemberViewpagerFragment(memberInEventAdapter)
-                    else -> SpinnerViewpagerFragment(randomSpinnerAdapter)
-                }
-            }
-        }
-
-        TabLayoutMediator(binding.tabLayoutAddTimeEvent, binding.viewPagerList, object : TabLayoutMediator.TabConfigurationStrategy{
-            override fun onConfigureTab(tab: TabLayout.Tab, position: Int) {
-                 when(position) {
-                    0 -> {
-                        tab.text = "Spinner"
-                        tab.setIcon(R.drawable.ic_spinner_list)
-                    }
-                    1 -> {
-                        tab.text = "Member"
-                        tab.setIcon(R.drawable.ic_member_list)
-                    }
-                    else -> {}
-                }
-            }
-        }).attach()
+//        binding.viewPagerList.adapter = object : FragmentStateAdapter(requireActivity()) {
+//            override fun getItemCount(): Int {
+//                return  2
+//            }
+//            override fun createFragment(position: Int): Fragment {
+//                return when (position) {
+//                    0 -> SpinnerViewpagerFragment(randomSpinnerAdapter)
+//                    1 -> MemberViewpagerFragment(memberInEventAdapter)
+//                    else -> SpinnerViewpagerFragment(randomSpinnerAdapter)
+//                }
+//            }
+//        }
+//
+//        TabLayoutMediator(binding.tabLayoutAddTimeEvent, binding.viewPagerList, object : TabLayoutMediator.TabConfigurationStrategy{
+//            override fun onConfigureTab(tab: TabLayout.Tab, position: Int) {
+//                 when(position) {
+//                    0 -> {
+//                        tab.text = "Spinner"
+//                        tab.setIcon(R.drawable.ic_spinner_list)
+//                    }
+//                    1 -> {
+//                        tab.text = "Member"
+//                        tab.setIcon(R.drawable.ic_member_list)
+//                    }
+//                    else -> {}
+//                }
+//            }
+//        }).attach()
     }
 
 
