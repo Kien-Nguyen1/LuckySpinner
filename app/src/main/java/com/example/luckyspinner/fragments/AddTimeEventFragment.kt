@@ -226,8 +226,12 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         binding.btnSpinnerNow.setOnClickListener {
             handleTestNow()
         }
-        binding.edtDate.setOnClickListener {
-            dateDialog.show()
+        binding.edtDate.onFocusChangeListener = View.OnFocusChangeListener { view, hasForcus ->
+            if (hasForcus){
+                dateDialog.show()
+                binding.edtDate.isFocusable = false
+                binding.edtDate.isFocusableInTouchMode = true
+            }
         }
 //        binding.btnMemberList2.setOnClickListener {
 //            println("Let go member")
@@ -420,7 +424,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             memberInEventAdapter = MemberInEventListAdapter(this@AddTimeEventFragment, eventId!!)
             adapter = memberInEventAdapter
             layoutManager = LinearLayoutManager(context)
-            addMarginToLastItemHorizontal(binding.rvMemberList, 5)
+            addMarginToLastItem(binding.rvMemberList, 5)
         }
 
 //        binding.viewPagerList.adapter = object : FragmentStateAdapter(requireActivity()) {
@@ -457,6 +461,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     private fun setUpDatePicker() {
         bindingDateDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
         bindingDateDialog.tvTitleChooseRandomSpinnerList.visibility = View.GONE
+        bindingDateDialog.btnBack.visibility = View.GONE
         bindingDateDialog.rvChooseRandomSpinnerList.apply {
             dateAdapter = DateListAdapter(this@AddTimeEventFragment)
             adapter = dateAdapter

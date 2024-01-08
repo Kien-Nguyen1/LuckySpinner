@@ -39,7 +39,7 @@ class DateListAdapter(private val listener: Listener) : RecyclerView.Adapter<Dat
         }
 
     val dayOfWeek =
-        arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "SunDay")
+        arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
     override fun getItemCount() = dayOfWeek.size
 
