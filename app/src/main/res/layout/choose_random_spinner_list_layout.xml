@@ -8,7 +8,7 @@
     app:cardElevation="10dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="300dp"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:background="#DFD5EC"
         android:orientation="vertical">
@@ -16,6 +16,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_back"
             style="?attr/materialIconButtonStyle"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:icon="@drawable/ic_back"
@@ -28,6 +29,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="Random Spinner List"
+            android:visibility="gone"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -45,6 +47,7 @@
             android:text="Add Element"
             android:textColor="@color/black"
             app:icon="@drawable/ic_add"
+            android:visibility="gone"
             app:iconTint="@color/black"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_title_choose_random_spinner_list" />
@@ -53,23 +56,22 @@
             android:id="@+id/check_box_all"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
             android:text="All"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title_choose_random_spinner_list" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_choose_random_spinner_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_max="300dp"
-            app:layout_constraintHeight_min="80dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_add_element"
-            tools:listitem="@layout/random_spinner_list_item" />
+            app:layout_constraintTop_toBottomOf="@+id/check_box_all"
+            tools:listitem="@layout/date_list_item"
+            tools:itemCount="7"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
