@@ -578,6 +578,22 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     }
     fun handleDayOfWeek(event : Event) {
         bindingDateDialog.checkBoxAll.isChecked = event.listDay == Constants.LIST_DAY_ALL_WEEK
+        var title = ""
+        event.listDay.apply {
+            if (contains(Constants.MONDAY)) title += "Mon "
+            if (contains(Constants.TUESDAY)) title += "Tue "
+            if (contains(Constants.WEDNESDAY)) title += "Wed "
+            if (contains(Constants.THURSDAY)) title += "Thu "
+            if (contains(Constants.FRIDAY)) title += "Fri "
+            if (contains(Constants.SATURDAY)) title += "Sat "
+            if (contains(Constants.SUNDAY)) title += "Sun "
+
+            if (this.containsAll(arrayListOf(1, 2, 3, 4, 5, 6, 7))) {
+                title = "All week"
+            }
+        }
+        if (title == "") title = "Once time"
+        binding.edtDate.hint = title
     }
 
     fun handleTestNow() {
