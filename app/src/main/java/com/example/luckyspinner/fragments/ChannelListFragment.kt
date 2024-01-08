@@ -26,6 +26,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.ChannelListAdapter
 import com.example.luckyspinner.databinding.AddChannelLayoutBinding
 import com.example.luckyspinner.databinding.EditDialogBinding

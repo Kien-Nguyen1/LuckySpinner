@@ -121,7 +121,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="60dp"
             android:id="@+id/rv_spinner_list"
             android:layout_marginHorizontal="15dp"
             android:layout_marginTop="10dp"
@@ -163,10 +163,11 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="15dp"
             android:layout_marginHorizontal="15dp"
             android:scrollbars="horizontal"
-            tools:listitem="@layout/random_member_list_item"/>
+            tools:listitem="@layout/member_list_item_in_event"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_spinner_now"

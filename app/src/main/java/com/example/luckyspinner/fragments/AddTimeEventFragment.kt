@@ -43,9 +43,14 @@ import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.EMPTY_STRING
 import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.util.Function.addMarginToLastItem
+import com.example.luckyspinner.util.Function.addMarginToLastItemHorizontal
 import com.example.luckyspinner.util.Function.changeTheNumberOfDay
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.search.SearchView
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
 import com.google.android.material.timepicker.TimeFormat
@@ -372,14 +377,12 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         memberInEventAdapter.members = list
     }
     private fun setUpRecycleView() {
-
-
         bindingRandomDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
         binding.rvSpinnerList.apply {
             randomSpinnerAdapter = RandomSpinnerListAdapter(this@AddTimeEventFragment, eventId!!)
             adapter = randomSpinnerAdapter
-            layoutManager = GridLayoutManager(context, 2 , GridLayoutManager.HORIZONTAL, false)
-            addMarginToLastItem(bindingRandomDialog.rvChooseRandomSpinnerList, 10)
+            layoutManager = GridLayoutManager(context, 3 , GridLayoutManager.HORIZONTAL, false)
+            addMarginToLastItemHorizontal(binding.rvSpinnerList, 5)
         }
 
         bindingMemberDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
@@ -389,7 +392,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             memberInEventAdapter = MemberInEventListAdapter(this@AddTimeEventFragment, eventId!!)
             adapter = memberInEventAdapter
             layoutManager = LinearLayoutManager(context)
-            addMarginToLastItem(bindingMemberDialog.rvChooseRandomSpinnerList, 10)
+            addMarginToLastItemHorizontal(binding.rvMemberList, 5)
         }
 
 //        binding.viewPagerList.adapter = object : FragmentStateAdapter(requireActivity()) {

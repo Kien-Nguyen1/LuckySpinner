@@ -95,6 +95,25 @@ object Function {
         )
     }
 
+    fun addMarginToLastItemHorizontal(recyclerView: RecyclerView, marginInDp: Int) {
+        recyclerView.addItemDecoration(
+            object : RecyclerView.ItemDecoration() {
+                override fun getItemOffsets(
+                    outRect: Rect,
+                    view: android.view.View,
+                    parent: RecyclerView,
+                    state: RecyclerView.State
+                ) {
+                    val position = parent.getChildAdapterPosition(view)
+                    if (position == parent.adapter?.itemCount?.minus(1)) {
+                        val marginInPx = dpToPx(view.context, marginInDp)
+                        (view.layoutParams as ViewGroup.MarginLayoutParams).marginEnd = marginInPx
+                    }
+                }
+            }
+        )
+    }
+
     private fun dpToPx(context: Context, dp: Int): Int {
         val displayMetrics: DisplayMetrics = context.resources.displayMetrics
         return (dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT)).roundToInt()
