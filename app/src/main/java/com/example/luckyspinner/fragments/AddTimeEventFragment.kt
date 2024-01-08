@@ -45,6 +45,7 @@ import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.util.Function.addMarginToLastItem
 import com.example.luckyspinner.util.Function.addMarginToLastItemHorizontal
 import com.example.luckyspinner.util.Function.changeTheNumberOfDay
+import com.example.luckyspinner.util.Function.numberToMinuteForm
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
 import com.google.android.material.button.MaterialButton
@@ -109,11 +110,18 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
         binding.edtTime.onFocusChangeListener = View.OnFocusChangeListener { view, hasForcus ->
             if (hasForcus) {
+                val timeNow = Calendar.getInstance()
+                var hour = timeNow.get(Calendar.HOUR)
+                var minute = timeNow.get(Calendar.MINUTE)
+                viewModel.event.value?.hour?.let {
+                    hour = it
+                    minute = viewModel.event.value?.minute!!
+                }
                 val picker = MaterialTimePicker.Builder()
                     .setInputMode(INPUT_MODE_CLOCK)
                     .setTimeFormat(TimeFormat.CLOCK_24H)
-                    .setHour(Calendar.HOUR)
-                    .setMinute(Calendar.MINUTE)
+                    .setHour(hour)
+                    .setMinute(minute)
                     .setTitleText("Select Time")
                     .build()
 
@@ -123,7 +131,12 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                     val hour = picker.hour
                     val minutes = picker.minute
 
-                    binding.edtTime.hint = "$hour : $minutes"
+                    println("Here come $hour : $minutes")
+
+                    viewModel.event.value = viewModel.event.value?.apply {
+                        this.hour = hour
+                        this.minute = minutes
+                    }
                 }
 
                 picker.addOnNegativeButtonClickListener {
@@ -255,24 +268,22 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
         progressDialog.show()
 
-//        val selectedHour: Int = binding.timePickerAddTimeEvent.hour
-//        val selectedMinutes: Int = binding.timePickerAddTimeEvent.minute
         val selectedHour = 0
         val selectedMinutes = 0
 
         val typeEvent = if (getListDay() == Event().listDay) Constants.ONCE else Constants.EVERY_WEEK
 
-
         viewModel.saveEvent(
             channelId,
-            Event(
-                eventId!!,
-                typeEvent,
-                selectedHour,
-                selectedMinutes,
-                getListDay(),
-                binding.edtEventName.text.toString()
-            )
+            viewModel.event.value ?: return
+//            Event(
+//                eventId!!,
+//                typeEvent,
+//                selectedHour,
+//                selectedMinutes,
+//                getListDay(),
+//                binding.edtEventName.text.toString()
+//            )
         )
         eventId?.let {
             viewModel.saveListSpinner(channelId, it)
@@ -366,7 +377,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     }
 
     private fun filterSpinner(text : String) {
-        println("Here come text $text")
         if (text == "") {
             viewModel.spinnerList.value = viewModel.spinnerList.value
             return
@@ -584,8 +594,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             Event(
                 testId,
                 typeEvent = null,
-                0,
-                0,
+                null,
+                null,
                 getListDay()
             ),
             true
@@ -669,16 +679,12 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
         viewModel.event.observe(viewLifecycleOwner) {
             if (!hasSetNameAndTime) {
-//                it.hour?.let { eventHour ->
-//                    binding.timePickerAddTimeEvent.apply {
-//                        hour = eventHour
-//                        minute = it.minute!!
-//                    }
-//                }
                 binding.edtEventName.setText(it.nameEvent)
                 hasSetNameAndTime = true
             }
-
+            it.hour?.let { eventHour ->
+                binding.edtTime.hint = "${numberToMinuteForm(eventHour)} : ${numberToMinuteForm(it.minute!!)}"
+            }
             handleDayOfWeek(it)
             dateAdapter.dayList = it.listDay
         }
@@ -711,12 +717,15 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 isValidated = false
             }
         }
+        viewModel.event.value?.hour ?: {
+            isValidated = false
+            Toast.makeText(context, "You must choose a time!", Toast.LENGTH_LONG).show()
+        }
 
         return isValidated
     }
 
     fun getListDay() : MutableList<Int> {
-
         return viewModel.event.value?.listDay ?: ArrayList()
     }
 
