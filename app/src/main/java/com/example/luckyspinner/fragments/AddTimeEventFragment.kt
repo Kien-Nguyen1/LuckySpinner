@@ -13,18 +13,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
-import android.widget.TableLayout
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.PagerAdapter
-import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.widget.ViewPager2
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
@@ -41,6 +38,7 @@ import com.example.luckyspinner.adapter.RandomSpinnerListAdapter
 import com.example.luckyspinner.databinding.ChooseRandomSpinnerListLayoutBinding
 import com.example.luckyspinner.databinding.FragmentAddTimeEventBinding
 import com.example.luckyspinner.models.Event
+import com.example.luckyspinner.models.Member
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.EMPTY_STRING
 import com.example.luckyspinner.util.Function
@@ -48,9 +46,6 @@ import com.example.luckyspinner.util.Function.addMarginToLastItem
 import com.example.luckyspinner.util.Function.changeTheNumberOfDay
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
 import com.google.android.material.timepicker.TimeFormat
@@ -150,6 +145,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             if (hasSetNameAndTime) {
                 viewModel.event.value = viewModel.event.value?.apply {
                     nameEvent = it.toString()
+                    filterSpinner()
                 }
             }
         }
@@ -212,6 +208,9 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 //        }
         binding.btnSpinnerNow.setOnClickListener {
             handleTestNow()
+        }
+        binding.edtDate.setOnClickListener {
+            dateDialog.show()
         }
 //        binding.btnMemberList2.setOnClickListener {
 //            println("Let go member")
@@ -341,6 +340,37 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
         }
     }
+
+    private fun filterSpinner() {
+        val text = binding.edtEventName.text.toString()
+        if (text == "") {
+            viewModel.spinnerList.value = viewModel.spinnerList.value
+            return
+        }
+        val list : MutableList<com.example.luckyspinner.models.Spinner> = ArrayList()
+
+        viewModel.spinnerList.value?.forEach {
+            if (it.titleSpin.contains(text, true)) {
+                list.add(it)
+            }
+        }
+            randomSpinnerAdapter.spinners = list
+    }
+    private fun filterMember() {
+        val text = binding.edtEventName.text.toString()
+        if (text == "") {
+            viewModel.memberList.value = viewModel.memberList.value
+            return
+        }
+        val list : MutableList<Member> = ArrayList()
+
+        viewModel.memberList.value?.forEach {
+            if (it.nameMember.contains(text, true)) {
+                list.add(it)
+            }
+        }
+        memberInEventAdapter.members = list
+    }
     private fun setUpRecycleView() {
 
 
@@ -348,7 +378,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         binding.rvSpinnerList.apply {
             randomSpinnerAdapter = RandomSpinnerListAdapter(this@AddTimeEventFragment, eventId!!)
             adapter = randomSpinnerAdapter
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            layoutManager = GridLayoutManager(context, 2 , GridLayoutManager.HORIZONTAL, false)
             addMarginToLastItem(bindingRandomDialog.rvChooseRandomSpinnerList, 10)
         }
 
@@ -358,7 +388,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         binding.rvMemberList.apply {
             memberInEventAdapter = MemberInEventListAdapter(this@AddTimeEventFragment, eventId!!)
             adapter = memberInEventAdapter
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            layoutManager = LinearLayoutManager(context)
             addMarginToLastItem(bindingMemberDialog.rvChooseRandomSpinnerList, 10)
         }
 
@@ -401,6 +431,17 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             adapter = dateAdapter
             layoutManager = LinearLayoutManager(context)
         }
+        bindingDateDialog.btnBack.setOnClickListener {
+            dateDialog.dismiss()
+        }
+
+        bindingDateDialog.checkBoxAll.setOnClickListener {
+            viewModel.event.value = viewModel.event.value?.apply {
+                listDay = if (bindingDateDialog.checkBoxAll.isChecked) Constants.LIST_DAY_ALL_WEEK else Constants.LIST_DAY_EMPTY
+                println("Here come listday $listDay")
+            }
+        }
+        bindingDateDialog.btnAddElement.isVisible = false
 
         setupDatePickerDialog()
     }
@@ -505,26 +546,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 //        }
     }
     fun handleDayOfWeek(event : Event) {
-        fun customButton(button : MaterialButton, isActive : Boolean) {
-            fun getColorBackGround(isActive : Boolean) : Int{
-                return if (isActive)  Color.parseColor("#6750A4") else Color.WHITE
-            }
-
-            button.setBackgroundColor(getColorBackGround(isActive))
-            button.setTextColor(getColorBackGround(!isActive))
-        }
-//        binding.dayOfWeek.apply {
-//            event.listDay.apply {
-//                customButton(btnMonday, contains(Calendar.MONDAY))
-//                customButton(btnTuesday, contains(Calendar.TUESDAY))
-//                customButton(btnWednesday, contains(Calendar.WEDNESDAY))
-//                customButton(btnThursday, contains(Calendar.THURSDAY))
-//                customButton(btnFriday, contains(Calendar.FRIDAY))
-//                customButton(btnSaturday, contains(Calendar.SATURDAY))
-//                customButton(btnSunday, contains(Calendar.SUNDAY))
-//            }
-//
-//        }
+        bindingDateDialog.checkBoxAll.isChecked = event.listDay == Constants.LIST_DAY_ALL_WEEK
     }
 
     fun handleTestNow() {
@@ -673,6 +695,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     }
 
     fun getListDay() : MutableList<Int> {
+
         return viewModel.event.value?.listDay ?: ArrayList()
     }
 
@@ -694,6 +717,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
     override fun onDateClick(position: Int, isChecked : Boolean) {
         val dayNumber = if (isChecked) changeTheNumberOfDay(position) else 0
+        println("Here come daynumber $dayNumber")
         viewModel.event.value = viewModel.event.value?.apply {
             val tempList = listDay.toMutableList()
             tempList[position] = dayNumber

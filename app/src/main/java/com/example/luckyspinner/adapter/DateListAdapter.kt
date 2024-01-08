@@ -26,7 +26,7 @@ class DateListAdapter(private val listener: Listener) : RecyclerView.Adapter<Dat
         }
 
         override fun areContentsTheSame(oldItem: Int, newItem: Int): Boolean {
-            return true
+            return false
         }
     }
 
@@ -35,6 +35,7 @@ class DateListAdapter(private val listener: Listener) : RecyclerView.Adapter<Dat
         get() = differ.currentList
         set(value) {
             differ.submitList(value)
+            notifyDataSetChanged()
         }
 
     val dayOfWeek =
@@ -58,9 +59,9 @@ class DateListAdapter(private val listener: Listener) : RecyclerView.Adapter<Dat
             tvTitle.text = dayOfWeek[position]
             tvTitle.isSelected = true
             checkBoxSpinner.isChecked = dayList.contains(changeTheNumberOfDay(position))
-            println("Here come daylisy $dayList")
             checkBoxSpinner.setOnClickListener {
                 listener.onDateClick(position, checkBoxSpinner.isChecked)
+                println("Here come ischeck ${checkBoxSpinner.isChecked}")
             }
         }
     }

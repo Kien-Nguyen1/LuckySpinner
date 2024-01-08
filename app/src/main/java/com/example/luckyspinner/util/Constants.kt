@@ -65,4 +65,7 @@ object Constants {
 
     const val DELAY_TIME_MILLIS: Long = 3000
     lateinit var DEVICE_ID : String
+
+    val LIST_DAY_ALL_WEEK = mutableListOf(2,3,4,5,6,7,1)
+    val LIST_DAY_EMPTY = mutableListOf(0,0,0,0,0,0,0)
 }

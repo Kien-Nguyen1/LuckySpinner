@@ -17,6 +17,7 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
 
     private lateinit var context: Context
 
+
     interface Listener {
         fun onItemClick(id: String)
         fun onDeleteItem(id: String)
@@ -28,11 +29,11 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
 
     private val diffCallback = object : DiffUtil.ItemCallback<Spinner>() {
         override fun areItemsTheSame(oldItem: Spinner, newItem: Spinner): Boolean {
-            return false
+            return oldItem.idSpin == newItem.idSpin
         }
 
         override fun areContentsTheSame(oldItem: Spinner, newItem: Spinner): Boolean {
-            return false
+            return oldItem == newItem
         }
     }
 
@@ -41,7 +42,6 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
         get() = differ.currentList
         set(value) {
             differ.submitList(value)
-            notifyDataSetChanged()
         }
 
     override fun getItemCount() = spinners.size
