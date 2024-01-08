@@ -392,7 +392,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             memberInEventAdapter = MemberInEventListAdapter(this@AddTimeEventFragment, eventId!!)
             adapter = memberInEventAdapter
             layoutManager = LinearLayoutManager(context)
-            addMarginToLastItemHorizontal(binding.rvMemberList, 5)
+            addMarginToLastItem(binding.rvMemberList, 5)
         }
 
 //        binding.viewPagerList.adapter = object : FragmentStateAdapter(requireActivity()) {

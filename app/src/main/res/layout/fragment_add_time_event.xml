@@ -121,11 +121,12 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_spinner_list"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
                 android:layout_marginHorizontal="15dp"
                 android:layout_marginTop="10dp"
                 android:scrollbars="horizontal"
-                tools:listitem="@layout/random_spinner_list_item" />
+                tools:listitem="@layout/random_spinner_list_item"
+                tools:itemCount="2"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -158,10 +159,11 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_member_list"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
                 android:layout_marginHorizontal="15dp"
                 android:layout_marginTop="15dp"
                 android:scrollbars="horizontal"
+                tools:itemCount="2"
                 tools:listitem="@layout/member_list_item_in_event" />
 
             <com.google.android.material.button.MaterialButton
