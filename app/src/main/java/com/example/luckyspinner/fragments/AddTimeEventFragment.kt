@@ -390,10 +390,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         if (list.isEmpty()) {
             list.add(Spinner(titleSpin = "No elements"))
         }
-            randomSpinnerAdapter.updateList(list, true)
-//        = list.also {
-////                randomSpinnerAdapter.notifyDataSetChanged()
-//            }
+            randomSpinnerAdapter.spinners = list
     }
     private fun filterMember(text: String) {
         if (text == "") {

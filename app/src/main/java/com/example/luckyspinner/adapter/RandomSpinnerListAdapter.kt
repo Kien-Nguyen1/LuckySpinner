@@ -19,8 +19,6 @@ import com.example.luckyspinner.util.Constants.EMPTY_STRING
 class RandomSpinnerListAdapter(private val listener: Listener, private val eventId : String) : RecyclerView.Adapter<RandomSpinnerListAdapter.SpinnerListViewHolder>() {
 
     private lateinit var context: Context
-    var isSearch = false
-    var oldList : List<Spinner> = ArrayList()
 
     interface Listener {
         fun onSpinnerClick(spinner: Spinner)
@@ -52,23 +50,6 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
 //            notifyDataSetChanged()
         }
 
-    fun updateList(newList: List<Spinner>, isSearch : Boolean) {
-        // Use DiffUtil to calculate the difference
-        // Update the data list
-        val diffResult = DiffUtil.calculateDiff(MyDiffCallback(spinners, newList))
-
-        // Update the data list
-
-        // Update the data list
-        spinners = newList
-
-        // Apply the diff result to the adapter
-
-        // Apply the diff result to the adapter
-//        diffResult.dispatchUpdatesTo(this)
-        // Apply the diff result to the adapter
-    }
-
     override fun getItemCount() = spinners.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SpinnerListViewHolder {
@@ -84,7 +65,7 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
         holder.binding.apply {
             val spinner = spinners[position]
 
-            if (spinner.idSpin == Constants.ID_ADD_MORE && spinner.titleSpin == EMPTY_STRING && !isSearch) {
+            if (spinner.idSpin == Constants.ID_ADD_MORE) {
                 checkBoxSpinner.isVisible = false
                 tvTitle.text = "+ Add More"
                 linearRandomSpinnerListItem.background = ColorDrawable(Color.parseColor("#DFD5EC"))
@@ -116,34 +97,5 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
 
             }
 
-    }
-}
-
-class MyDiffCallback(oldList: List<Spinner>, newList: List<Spinner>) :
-    DiffUtil.Callback() {
-    private val oldList: List<Spinner>
-    private val newList: List<Spinner>
-
-    init {
-        this.oldList = oldList
-        this.newList = newList
-    }
-
-    override fun getOldListSize(): Int {
-        return oldList.size
-    }
-
-    override fun getNewListSize(): Int {
-        return newList.size
-    }
-
-    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        // Implement logic to check if items are the same (e.g., based on ID)
-        return oldList[oldItemPosition].idSpin === newList[newItemPosition].idSpin
-    }
-
-    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        // Implement logic to check if item contents are the same
-        return oldList[oldItemPosition] == newList[newItemPosition]
     }
 }
