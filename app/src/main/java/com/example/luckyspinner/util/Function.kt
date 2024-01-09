@@ -10,6 +10,7 @@ import android.widget.EditText
 import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.core.View
@@ -95,24 +96,24 @@ object Function {
         )
     }
 
-    fun addMarginToLastItemHorizontal(recyclerView: RecyclerView, marginInDp: Int) {
-        recyclerView.addItemDecoration(
-            object : RecyclerView.ItemDecoration() {
-                override fun getItemOffsets(
-                    outRect: Rect,
-                    view: android.view.View,
-                    parent: RecyclerView,
-                    state: RecyclerView.State
-                ) {
-                    val position = parent.getChildAdapterPosition(view)
-                    if (position == parent.adapter?.itemCount?.minus(1)) {
-                        val marginInPx = dpToPx(view.context, marginInDp)
-                        (view.layoutParams as ViewGroup.MarginLayoutParams).marginEnd = marginInPx
-                    }
-                }
-            }
-        )
-    }
+//    fun addMarginToLastItemHorizontal(recyclerView: RecyclerView, marginInDp: Int) {
+//        recyclerView.addItemDecoration(
+//            object : RecyclerView.ItemDecoration() {
+//                override fun getItemOffsets(
+//                    outRect: Rect,
+//                    view: android.view.View,
+//                    parent: RecyclerView,
+//                    state: RecyclerView.State
+//                ) {
+//                    val position = parent.getChildAdapterPosition(view)
+//                    if (position == parent.adapter?.itemCount?.minus(1)) {
+//                        val marginInPx = dpToPx(view.context, marginInDp)
+//                        (view.layoutParams as ViewGroup.MarginLayoutParams).marginEnd = marginInPx
+//                    }
+//                }
+//            }
+//        )
+//    }
 
     private fun dpToPx(context: Context, dp: Int): Int {
         val displayMetrics: DisplayMetrics = context.resources.displayMetrics

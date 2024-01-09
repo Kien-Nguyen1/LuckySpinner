@@ -43,15 +43,10 @@ import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.EMPTY_STRING
 import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.util.Function.addMarginToLastItem
-import com.example.luckyspinner.util.Function.addMarginToLastItemHorizontal
 import com.example.luckyspinner.util.Function.changeTheNumberOfDay
 import com.example.luckyspinner.util.Function.numberToMinuteForm
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.search.SearchView
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
 import com.google.android.material.timepicker.TimeFormat
@@ -413,8 +408,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         binding.rvSpinnerList.apply {
             randomSpinnerAdapter = RandomSpinnerListAdapter(this@AddTimeEventFragment, eventId!!)
             adapter = randomSpinnerAdapter
-            layoutManager = GridLayoutManager(context, 3 , GridLayoutManager.HORIZONTAL, false)
-            addMarginToLastItemHorizontal(binding.rvSpinnerList, 5)
+            layoutManager = LinearLayoutManager(context)
         }
 
         bindingMemberDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
@@ -424,7 +418,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             memberInEventAdapter = MemberInEventListAdapter(this@AddTimeEventFragment, eventId!!)
             adapter = memberInEventAdapter
             layoutManager = LinearLayoutManager(context)
-            addMarginToLastItem(binding.rvMemberList, 5)
         }
 
 //        binding.viewPagerList.adapter = object : FragmentStateAdapter(requireActivity()) {
@@ -585,11 +578,11 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         bindingDateDialog.checkBoxAll.isChecked = event.listDay == Constants.LIST_DAY_ALL_WEEK
         var title = ""
         event.listDay.apply {
-            if (contains(Constants.MONDAY)) title += "M "
-            if (contains(Constants.TUESDAY)) title += "T "
-            if (contains(Constants.WEDNESDAY)) title += "W "
-            if (contains(Constants.THURSDAY)) title += "Th "
-            if (contains(Constants.FRIDAY)) title += "F "
+            if (contains(Constants.MONDAY)) title += "Mon "
+            if (contains(Constants.TUESDAY)) title += "Tue "
+            if (contains(Constants.WEDNESDAY)) title += "Wed "
+            if (contains(Constants.THURSDAY)) title += "Thu "
+            if (contains(Constants.FRIDAY)) title += "Fri "
             if (contains(Constants.SATURDAY)) title += "Sat "
             if (contains(Constants.SUNDAY)) title += "Sun "
 
@@ -667,6 +660,9 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     fun setupObservers() {
         viewModel.spinnerList.observe(viewLifecycleOwner) {
             randomSpinnerAdapter.spinners = it
+            if (it.size > 3) {
+                binding.rvSpinnerList.layoutManager = GridLayoutManager(context, 3 , GridLayoutManager.HORIZONTAL, false)
+            }
             var isAllSelected = true
             run breaking@{
                 it.forEach { spinner ->
@@ -683,6 +679,9 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
         viewModel.memberList.observe(viewLifecycleOwner) {
             memberInEventAdapter.members = it
+            if (it.size > 3) {
+                binding.rvMemberList.layoutManager = GridLayoutManager(context, 3 , GridLayoutManager.HORIZONTAL, false)
+            }
             var isAllSelected = true
             run breaking@{
                 it.forEach { member ->
