@@ -242,10 +242,12 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
+                println("Here come newText $newText  ${newText.isBlank()}")
                 filterSpinner(newText)
                 return false
             }
         })
+//        binding.searchViewSpinner.on
         binding.searchViewMember.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
@@ -375,6 +377,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     private fun filterSpinner(text : String) {
         if (text == "") {
             viewModel.spinnerList.value = viewModel.spinnerList.value
+            println("Let go")
             return
         }
         val list : MutableList<com.example.luckyspinner.models.Spinner> = ArrayList()
@@ -384,9 +387,13 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 list.add(it)
             }
         }
-            randomSpinnerAdapter.spinners = list.also {
-                randomSpinnerAdapter.notifyDataSetChanged()
-            }
+        if (list.isEmpty()) {
+            list.add(Spinner(titleSpin = "No elements"))
+        }
+            randomSpinnerAdapter.updateList(list, true)
+//        = list.also {
+////                randomSpinnerAdapter.notifyDataSetChanged()
+//            }
     }
     private fun filterMember(text: String) {
         if (text == "") {
