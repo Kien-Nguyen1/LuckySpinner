@@ -19,7 +19,7 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
 
 
     interface Listener {
-        fun onSpinnerClick(id: String)
+        fun onSpinnerClick(spinner: Spinner)
         fun onDeleteItem(id: String)
         fun onCheckboxClickSpinner(id : String, position: Int, hasSelected : Boolean)
 
@@ -29,11 +29,11 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
 
     private val diffCallback = object : DiffUtil.ItemCallback<Spinner>() {
         override fun areItemsTheSame(oldItem: Spinner, newItem: Spinner): Boolean {
-            return oldItem.idSpin == newItem.idSpin
+            return false
         }
 
         override fun areContentsTheSame(oldItem: Spinner, newItem: Spinner): Boolean {
-            return oldItem == newItem
+            return false
         }
     }
 
@@ -41,6 +41,7 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
     var spinners: List<Spinner>
         get() = differ.currentList
         set(value) {
+
             differ.submitList(value)
         }
 
@@ -62,7 +63,7 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
                 checkBoxSpinner.isVisible = false
                 tvTitle.text = " + Add More"
                 root.setOnClickListener {
-                    listener.onSpinnerClick(spinner.idSpin)
+                    listener.onSpinnerClick(spinner)
                 }
                 root.setBackgroundColor(Color.YELLOW)
             } else {
@@ -80,7 +81,7 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
                     listener.onCheckboxClickSpinner(spinner.idSpin, position, spinner.hasSelected)
                 }
                 root.setOnClickListener {
-                    listener.onSpinnerClick(spinner.idSpin)
+                    listener.onSpinnerClick(spinner)
                 }
             }
         }

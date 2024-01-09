@@ -30,6 +30,7 @@ class AddTimeEventViewModel : ViewModel() {
     val isGettingEventSuccess = MutableLiveData<Boolean?>()
     val isSaveListSpinnerSuccess = MutableLiveData<Boolean>()
     val isSaveEventSuccess = MutableLiveData<Boolean?>()
+    val isAddingSpinnerSuccess = MutableLiveData<Boolean?>()
     val isDeleteEventSuccess = MutableLiveData<Boolean>()
 
 
@@ -200,6 +201,26 @@ class AddTimeEventViewModel : ViewModel() {
                     isGettingEventSuccess.value = false
                 }
         }
+    }
+
+    fun editSpinner(idChannel: String, spinner: Spinner) {
+
+    }
+
+    fun addSpinner(idChannel: String, spinner: Spinner) {
+        isShowProgressDialog.value = true
+        DataController.saveSpinner(db, idChannel, spinner)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    isAddingSpinnerSuccess.value = true
+                    isShowProgressDialog.value = false
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("error", e.message.toString())
+                isAddingSpinnerSuccess.value = false
+                isShowProgressDialog.value = false
+            }
     }
     fun handleClickDay(position: Int) {
         val event = event.value ?: return

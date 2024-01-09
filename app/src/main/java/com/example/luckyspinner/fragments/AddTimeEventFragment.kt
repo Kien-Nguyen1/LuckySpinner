@@ -35,7 +35,9 @@ import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.DateListAdapter
 import com.example.luckyspinner.adapter.MemberInEventListAdapter
 import com.example.luckyspinner.adapter.RandomSpinnerListAdapter
+import com.example.luckyspinner.databinding.AddChannelLayoutBinding
 import com.example.luckyspinner.databinding.ChooseRandomSpinnerListLayoutBinding
+import com.example.luckyspinner.databinding.EditDialogBinding
 import com.example.luckyspinner.databinding.FragmentAddTimeEventBinding
 import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Member
@@ -52,6 +54,7 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
 import com.google.android.material.timepicker.TimeFormat
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.util.Calendar
@@ -73,6 +76,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     private var isAdd = false
     private lateinit var chooseSpinnerDialog : Dialog
     private lateinit var chooseMemberDialog : Dialog
+    private lateinit var editSpinnerDiaLog: Dialog
+    private lateinit var addSpinnerDiaLog: Dialog
     private lateinit var dateDialog : Dialog
     private lateinit var randomSpinnerAdapter : RandomSpinnerListAdapter
     private lateinit var memberInEventAdapter : MemberInEventListAdapter
@@ -379,7 +384,9 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 list.add(it)
             }
         }
-            randomSpinnerAdapter.spinners = list
+            randomSpinnerAdapter.spinners = list.also {
+                randomSpinnerAdapter.notifyDataSetChanged()
+            }
     }
     private fun filterMember(text: String) {
         if (text == "") {
@@ -401,6 +408,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             randomSpinnerAdapter = RandomSpinnerListAdapter(this@AddTimeEventFragment, eventId!!)
             adapter = randomSpinnerAdapter
             layoutManager = LinearLayoutManager(context)
+            setHasFixedSize(true)
         }
 
         bindingMemberDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
@@ -748,9 +756,85 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     override fun onMemberItemClick(id: String) {
     }
 
-    override fun onSpinnerClick(id: String) {
-        if (id == Constants.ID_ADD_MORE) {
+    override fun onSpinnerClick(spinner: Spinner) {
+        if (spinner.idSpin == Constants.ID_ADD_MORE) {
+            val binding : AddChannelLayoutBinding = AddChannelLayoutBinding.inflate(layoutInflater)
+            addSpinnerDiaLog = Dialog(requireContext())
+            addSpinnerDiaLog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            addSpinnerDiaLog.setContentView(binding.root)
 
+            binding.tvAddChannel.text = "Spinner Name"
+            binding.edtEnterChannelId.visibility = View.GONE
+
+            val window : Window = addSpinnerDiaLog.window!!
+            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+            window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+            val windowAttribute : WindowManager.LayoutParams = window.attributes
+            windowAttribute.gravity = Gravity.CENTER
+            window.attributes = windowAttribute
+
+            addSpinnerDiaLog.show()
+
+
+            binding.btnDoneAddChannel.setOnClickListener {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    val nameSpinner = binding.edtEnterChannelName.text.toString().trim()
+                    if (nameSpinner == EMPTY_STRING) {
+                        binding.edtEnterChannelName.error = "Please fill this field"
+                        return@launch
+                    }
+                    val idSpinner = Calendar.getInstance().timeInMillis.toString()
+                    viewModel.addSpinner(channelId, Spinner(idSpinner, nameSpinner))
+                }
+            }
+            binding.btnCancelAddChannel.setOnClickListener {
+                addSpinnerDiaLog.dismiss()
+            }
+
+            lifecycleScope.launch {
+                delay(1)
+                Function.showKeyBoard(context, binding.edtEnterChannelName)
+            }
+        } else{
+            val binding : EditDialogBinding = EditDialogBinding.inflate(layoutInflater)
+            editSpinnerDiaLog = Dialog(requireContext())
+            editSpinnerDiaLog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            editSpinnerDiaLog.setContentView(binding.root)
+
+            binding.tvNameTitleAddElement.text = "Edit Spinner"
+
+            binding.edtEnterElement.setText(spinner.titleSpin)
+            binding.edtId.isVisible = false
+
+            binding.edtEnterElement.setSelection(binding.edtEnterElement.text.length)
+
+            binding.btnDoneAddElement.setOnClickListener {
+                if (binding.edtEnterElement.text.toString().trim().isEmpty()) {
+                    binding.edtEnterElement.error = "Please fill this field!"
+                    return@setOnClickListener
+                }
+                spinner.titleSpin = binding.edtEnterElement.text.toString()
+                viewModel.editSpinner(channelId, spinner)
+            }
+
+            binding.btnCancelElement.setOnClickListener {
+                editSpinnerDiaLog.dismiss()
+            }
+
+            val window : Window = editSpinnerDiaLog.window!!
+            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+            window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+            val windowAttribute : WindowManager.LayoutParams = window.attributes
+            windowAttribute.gravity = Gravity.CENTER
+            window.attributes = windowAttribute
+
+            editSpinnerDiaLog.show()
+            lifecycleScope.launch {
+                delay(1)
+                Function.showKeyBoard(context, binding.edtEnterElement)
+            }
         }
     }
 
