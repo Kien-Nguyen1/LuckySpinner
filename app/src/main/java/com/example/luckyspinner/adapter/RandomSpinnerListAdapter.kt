@@ -3,12 +3,16 @@ package com.example.luckyspinner.adapter
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.luckyspinner.R
 import com.example.luckyspinner.databinding.RandomSpinnerListItemBinding
 import com.example.luckyspinner.models.Spinner
 import com.example.luckyspinner.util.Constants
@@ -61,11 +65,11 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
             val spinner = spinners[position]
             if (spinner.idSpin == Constants.ID_ADD_MORE) {
                 checkBoxSpinner.isVisible = false
-                tvTitle.text = " + Add More"
+                tvTitle.text = "+ Add More"
+                linearRandomSpinnerListItem.background = ColorDrawable(Color.parseColor("#DFD5EC"))
                 root.setOnClickListener {
                     listener.onSpinnerClick(spinner)
                 }
-                root.setBackgroundColor(Color.YELLOW)
             } else {
                 tvTitle.text = spinner.titleSpin
                 tvTitle.isSelected = true
