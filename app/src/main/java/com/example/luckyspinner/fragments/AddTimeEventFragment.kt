@@ -376,6 +376,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
     private fun filterSpinner(text : String) {
         if (text == "") {
+            binding.rvSpinnerList.isVisible = true
+            binding.tvTitleStatusSpinner.isVisible = false
             viewModel.spinnerList.value = viewModel.spinnerList.value
             println("Let go")
             return
@@ -388,9 +390,14 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             }
         }
         if (list.isEmpty()) {
-            list.add(Spinner(titleSpin = "No elements"))
-        }
+            binding.rvSpinnerList.isVisible = false
+            binding.tvTitleStatusSpinner.isVisible = true
+            binding.tvTitleStatusSpinner.text = "No item matching!"
+        } else {
+            binding.rvSpinnerList.isVisible = true
+            binding.tvTitleStatusSpinner.isVisible = false
             randomSpinnerAdapter.spinners = list
+        }
     }
     private fun filterMember(text: String) {
         if (text == "") {
