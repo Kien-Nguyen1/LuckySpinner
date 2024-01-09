@@ -39,6 +39,7 @@ import com.example.luckyspinner.databinding.ChooseRandomSpinnerListLayoutBinding
 import com.example.luckyspinner.databinding.FragmentAddTimeEventBinding
 import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Member
+import com.example.luckyspinner.models.Spinner
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.EMPTY_STRING
 import com.example.luckyspinner.util.Function
@@ -78,7 +79,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     private lateinit var dateAdapter : DateListAdapter
     private lateinit var progressDialog : ProgressDialog
 
-    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -201,7 +201,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         setupChooseSpinnerDialog()
         setupMemberDialog()
 
-        dayOfWeekClickEvent()
+//        dayOfWeekClickEvent()
 
 
 
@@ -215,9 +215,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         binding.btnDoneAddTimeEvent.setOnClickListener {
             getTimeAndDatePicker()
         }
-//        binding.btnChooseRandomSpinner.setOnClickListener {
-//            chooseSpinnerDialog.show()
-//        }
         binding.btnSpinnerNow.setOnClickListener {
             handleTestNow()
         }
@@ -228,10 +225,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 binding.edtDate.isFocusableInTouchMode = true
             }
         }
-//        binding.btnMemberList2.setOnClickListener {
-//            println("Let go member")
-//            chooseMemberDialog.show()
-//        }
 
         binding.appBarAddTimeEvent.apply {
             btnBack.setOnClickListener {
@@ -267,22 +260,21 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
         progressDialog.show()
 
-        val selectedHour = 0
-        val selectedMinutes = 0
+        val selectedHour = viewModel.event.value?.hour!!
+        val selectedMinute = viewModel.event.value?.minute!!
 
-        val typeEvent = if (getListDay() == Event().listDay) Constants.ONCE else Constants.EVERY_WEEK
+        val typeEvent = if (getListDay() == Constants.LIST_DAY_EMPTY) Constants.ONCE else Constants.EVERY_WEEK
 
         viewModel.saveEvent(
             channelId,
-            viewModel.event.value ?: return
-//            Event(
-//                eventId!!,
-//                typeEvent,
-//                selectedHour,
-//                selectedMinutes,
-//                getListDay(),
-//                binding.edtEventName.text.toString()
-//            )
+            Event(
+                eventId!!,
+                typeEvent,
+                selectedHour,
+                selectedMinute,
+                getListDay(),
+                binding.edtEventName.text.toString()
+            )
         )
         eventId?.let {
             viewModel.saveListSpinner(channelId, it)
@@ -294,7 +286,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
         val calendar = Calendar.getInstance()
         calendar.set(Calendar.HOUR_OF_DAY, selectedHour)
-        calendar.set(Calendar.MINUTE, selectedMinutes)
+        calendar.set(Calendar.MINUTE, selectedMinute)
 
 
         val durationDiff = if (calendar.get(Calendar.HOUR_OF_DAY) == timeNow.get(Calendar.HOUR_OF_DAY) && timeNow.get(Calendar.MINUTE) == calendar.get(Calendar.MINUTE))
@@ -578,6 +570,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         bindingDateDialog.checkBoxAll.isChecked = event.listDay == Constants.LIST_DAY_ALL_WEEK
         var title = ""
         event.listDay.apply {
+            dateAdapter.dayList = this
             if (contains(Constants.MONDAY)) title += "Mon "
             if (contains(Constants.TUESDAY)) title += "Tue "
             if (contains(Constants.WEDNESDAY)) title += "Wed "
@@ -659,7 +652,10 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     }
     fun setupObservers() {
         viewModel.spinnerList.observe(viewLifecycleOwner) {
-            randomSpinnerAdapter.spinners = it
+            val list =  it.toMutableList().apply {
+                add(Spinner(idSpin = Constants.ID_ADD_MORE))
+            }
+            randomSpinnerAdapter.spinners = list
             if (it.size > 3) {
                 binding.rvSpinnerList.layoutManager = GridLayoutManager(context, 3 , GridLayoutManager.HORIZONTAL, false)
             }
@@ -702,11 +698,10 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 binding.edtEventName.setText(it.nameEvent)
                 hasSetNameAndTime = true
             }
+            handleDayOfWeek(it)
             it.hour?.let { eventHour ->
                 binding.edtTime.hint = "${numberToMinuteForm(eventHour)} : ${numberToMinuteForm(it.minute!!)}"
             }
-            handleDayOfWeek(it)
-            dateAdapter.dayList = it.listDay
         }
         viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
             if (it) progressDialog.show()
@@ -750,7 +745,13 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     }
 
 
-    override fun onItemClick(id: String) {
+    override fun onMemberItemClick(id: String) {
+    }
+
+    override fun onSpinnerClick(id: String) {
+        if (id == Constants.ID_ADD_MORE) {
+
+        }
     }
 
     override fun onDeleteItem(id: String) {

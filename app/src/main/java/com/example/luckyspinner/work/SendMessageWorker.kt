@@ -80,11 +80,13 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                         }
                         outputData = workDataOf(CHAT_ID to telegramChannelId, MESSAGE to message)
                         makeStatusNotification("Send message successfully!", applicationContext)
-                        DataController.saveEvent(db, channelId!!, event!!.apply {
-                            isTurnOn = false
-                        })
-                        event!!.typeEvent?.let {
-                            DataController.deleteEvent(db, channelId, eventId!!)
+                        if (event!!.typeEvent == null) {
+                            DataController.deleteEvent(db, channelId!!, eventId!!)
+                        }
+                        if (event!!.typeEvent == Constants.ONCE) {
+                            DataController.saveEvent(db, channelId!!, event!!.apply {
+                                isTurnOn = false
+                            })
                         }
                         return@withContext Result.success(outputData)
                     } else {

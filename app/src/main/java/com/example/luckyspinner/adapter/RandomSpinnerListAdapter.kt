@@ -2,16 +2,16 @@ package com.example.luckyspinner.adapter
 
 
 import android.content.Context
-import android.util.DisplayMetrics
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.RandomSpinnerListItemBinding
 import com.example.luckyspinner.models.Spinner
-import com.example.luckyspinner.util.Function.addMarginToLastItem
-import kotlin.math.roundToInt
+import com.example.luckyspinner.util.Constants
 
 class RandomSpinnerListAdapter(private val listener: Listener, private val eventId : String) : RecyclerView.Adapter<RandomSpinnerListAdapter.SpinnerListViewHolder>() {
 
@@ -19,7 +19,7 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
 
 
     interface Listener {
-        fun onItemClick(id: String)
+        fun onSpinnerClick(id: String)
         fun onDeleteItem(id: String)
         fun onCheckboxClickSpinner(id : String, position: Int, hasSelected : Boolean)
 
@@ -58,21 +58,30 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
     override fun onBindViewHolder(holder: SpinnerListViewHolder, position: Int) {
         holder.binding.apply {
             val spinner = spinners[position]
-            tvTitle.text = spinner.titleSpin
-            tvTitle.isSelected = true
+            if (spinner.idSpin == Constants.ID_ADD_MORE) {
+                checkBoxSpinner.isVisible = false
+                tvTitle.text = " + Add More"
+                root.setOnClickListener {
+                    listener.onSpinnerClick(spinner.idSpin)
+                }
+                root.setBackgroundColor(Color.YELLOW)
+            } else {
+                tvTitle.text = spinner.titleSpin
+                tvTitle.isSelected = true
 
 //            var isCheck = false
 //            spinner.listEvent.forEach {
 //                if (it == eventId) isCheck = true
 //            }
 
-            checkBoxSpinner.isChecked = spinner.listEvent.contains(eventId)
+                checkBoxSpinner.isChecked = spinner.listEvent.contains(eventId)
 
-            checkBoxSpinner.setOnClickListener {
-                listener.onCheckboxClickSpinner(spinner.idSpin, position, spinner.hasSelected)
-            }
-            root.setOnClickListener {
-                listener.onItemClick(spinner.idSpin)
+                checkBoxSpinner.setOnClickListener {
+                    listener.onCheckboxClickSpinner(spinner.idSpin, position, spinner.hasSelected)
+                }
+                root.setOnClickListener {
+                    listener.onSpinnerClick(spinner.idSpin)
+                }
             }
         }
     }

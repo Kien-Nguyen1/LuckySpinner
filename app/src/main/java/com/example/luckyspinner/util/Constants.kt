@@ -68,4 +68,5 @@ object Constants {
 
     val LIST_DAY_ALL_WEEK = mutableListOf(2,3,4,5,6,7,1)
     val LIST_DAY_EMPTY = mutableListOf(0,0,0,0,0,0,0)
+    const val ID_ADD_MORE = "Add more"
 }

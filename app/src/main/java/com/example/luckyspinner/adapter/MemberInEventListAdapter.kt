@@ -2,7 +2,6 @@ package com.example.luckyspinner.adapter
 
 
 import android.content.Context
-import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -10,14 +9,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.MemberListItemInEventBinding
 import com.example.luckyspinner.models.Member
-import kotlin.math.roundToInt
 
 class MemberInEventListAdapter(private val listener: Listener, private val eventId : String) : RecyclerView.Adapter<MemberInEventListAdapter.MemberListViewHolder>() {
 
     private lateinit var context : Context
 
     interface Listener {
-        fun onItemClick(id: String)
+        fun onMemberItemClick(id: String)
         fun onDeleteItem(id: String)
         fun onCheckboxClickMember(id : String, position: Int, hasSelected : Boolean)
 
@@ -66,7 +64,7 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
                 listener.onCheckboxClickMember(member.idMember, position, member.hasSelected)
             }
             root.setOnClickListener {
-                listener.onItemClick(member.idMember)
+                listener.onMemberItemClick(member.idMember)
             }
         }
     }
