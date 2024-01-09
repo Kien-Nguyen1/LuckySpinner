@@ -74,18 +74,18 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/text_field_time"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:startIconDrawable="@drawable/ic_calendar">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:ellipsize="end"
                         android:focusable="true"
                         android:focusableInTouchMode="true"
-                        android:ellipsize="end"
                         android:maxLines="1"
                         android:textColorHint="#673AB7" />
 
@@ -114,10 +114,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    app:queryHint="Search Spinner..."
-                    app:iconifiedByDefault="false"
                     android:background="@drawable/background_search_view"
-                    app:queryBackground="@android:color/transparent" />
+                    app:iconifiedByDefault="false"
+                    app:queryBackground="@android:color/transparent"
+                    app:queryHint="Search Spinner..." />
 
             </LinearLayout>
 
@@ -128,8 +128,21 @@
                 android:layout_marginHorizontal="15dp"
                 android:layout_marginTop="10dp"
                 android:scrollbars="horizontal"
-                tools:listitem="@layout/random_spinner_list_item"
-                tools:itemCount="1"/>
+                tools:itemCount="1"
+                tools:listitem="@layout/random_spinner_list_item" />
+
+            <TextView
+                android:id="@+id/tv_title_status_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="15dp"
+                android:layout_marginTop="15dp"
+                android:gravity="center_horizontal"
+                android:text="Title Status"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -152,10 +165,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    app:queryHint="Search Member..."
-                    app:iconifiedByDefault="false"
                     android:background="@drawable/background_search_view"
-                    app:queryBackground="@android:color/transparent" />
+                    app:iconifiedByDefault="false"
+                    app:queryBackground="@android:color/transparent"
+                    app:queryHint="Search Member..." />
 
             </LinearLayout>
 
@@ -165,10 +178,23 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="15dp"
                 android:layout_marginTop="15dp"
-                android:scrollbars="horizontal"
                 android:minHeight="60dp"
-                tools:itemCount="2"
+                android:scrollbars="horizontal"
+                tools:itemCount="1"
                 tools:listitem="@layout/member_list_item_in_event" />
+
+            <TextView
+                android:id="@+id/tv_title_status_member"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="15dp"
+                android:layout_marginTop="15dp"
+                android:gravity="center_horizontal"
+                android:text="Title Status"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_spinner_now"
