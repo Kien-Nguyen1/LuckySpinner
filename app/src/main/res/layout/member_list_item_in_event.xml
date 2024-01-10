@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:orientation="horizontal"
+        android:id="@+id/linear_member_in_event"
         android:padding="5dp">
 
         <TextView

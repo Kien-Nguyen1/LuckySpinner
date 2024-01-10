@@ -2,20 +2,24 @@ package com.example.luckyspinner.adapter
 
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.MemberListItemInEventBinding
 import com.example.luckyspinner.models.Member
+import com.example.luckyspinner.util.Constants
 
 class MemberInEventListAdapter(private val listener: Listener, private val eventId : String) : RecyclerView.Adapter<MemberInEventListAdapter.MemberListViewHolder>() {
 
     private lateinit var context : Context
 
     interface Listener {
-        fun onMemberItemClick(id: String)
+        fun onMemberItemClick(member: Member)
         fun onDeleteItem(id: String)
         fun onCheckboxClickMember(id : String, position: Int, hasSelected : Boolean)
 
@@ -25,11 +29,11 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
 
     private val diffCallback = object : DiffUtil.ItemCallback<Member>() {
         override fun areItemsTheSame(oldItem: Member, newItem: Member): Boolean {
-            return false
+            return oldItem.idMember == newItem.idMember
         }
 
         override fun areContentsTheSame(oldItem: Member, newItem: Member): Boolean {
-            return false
+            return oldItem == newItem
         }
     }
 
@@ -38,7 +42,6 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
         get() = differ.currentList
         set(value) {
             differ.submitList(value)
-            notifyDataSetChanged()
         }
 
     override fun getItemCount() = members.size
@@ -55,17 +58,30 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
     override fun onBindViewHolder(holder: MemberListViewHolder, position: Int) {
         holder.binding.apply {
             val member = members[position]
-            tvTitle.text = member.nameMember
-            tvTitle.isSelected = true
+            if (member.idMember == Constants.ID_ADD_MORE) {
+                checkBoxSpinner.isVisible = false
+                tvTitle.text = "+ Add More"
+                linearMemberInEvent.background = ColorDrawable(Color.parseColor("#DFD5EC"))
+                root.setOnClickListener {
+                    listener.onMemberItemClick(member)
+                }
+            } else {
+                tvTitle.text = member.nameMember
+                tvTitle.isSelected = true
+                checkBoxSpinner.isVisible = true
 
-            checkBoxSpinner.isChecked = member.listEvent.contains(eventId)
+                checkBoxSpinner.isChecked = member.listEvent.contains(eventId)
+                linearMemberInEvent.background = ColorDrawable(Color.WHITE)
 
-            checkBoxSpinner.setOnClickListener {
-                listener.onCheckboxClickMember(member.idMember, position, member.hasSelected)
+                checkBoxSpinner.setOnClickListener {
+                    listener.onCheckboxClickMember(member.idMember, position, member.hasSelected)
+                }
+                root.setOnClickListener {
+                    checkBoxSpinner.isChecked = !checkBoxSpinner.isChecked
+                    listener.onCheckboxClickMember(member.idMember, position, member.hasSelected)
+                }
             }
-            root.setOnClickListener {
-                listener.onMemberItemClick(member.idMember)
-            }
+
         }
     }
 

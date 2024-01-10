@@ -26,6 +26,9 @@ class AddTimeEventViewModel : ViewModel() {
     var event = MutableLiveData<Event>()
     val isShowProgressDialog = MutableLiveData<Boolean>()
 
+    val isSearchingSpinner = MutableLiveData<Boolean?>()
+    val isSearchingMember = MutableLiveData<Boolean?>()
+
     val isGettingSpinnerSuccess = MutableLiveData<Boolean?>()
     val isGettingEventSuccess = MutableLiveData<Boolean?>()
     val isSaveListSpinnerSuccess = MutableLiveData<Boolean>()

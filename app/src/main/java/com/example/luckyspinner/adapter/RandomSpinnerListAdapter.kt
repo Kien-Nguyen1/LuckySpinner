@@ -39,7 +39,6 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
         override fun areContentsTheSame(oldItem: Spinner, newItem: Spinner): Boolean {
             return oldItem == newItem
         }
-
     }
 
     private val differ = AsyncListDiffer(this, diffCallback)
@@ -75,15 +74,10 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
             } else {
                 println("Here come spinner ${spinner.idSpin}")
                 checkBoxSpinner.isVisible = true
-
                 tvTitle.text = spinner.titleSpin
                 tvTitle.isSelected = true
                 linearRandomSpinnerListItem.background = ColorDrawable(Color.WHITE)
 
-//            var isCheck = false
-//            spinner.listEvent.forEach {
-//                if (it == eventId) isCheck = true
-//            }
 
                 checkBoxSpinner.isChecked = spinner.listEvent.contains(eventId)
 
@@ -91,10 +85,10 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
                     listener.onCheckboxClickSpinner(spinner.idSpin, position, spinner.hasSelected)
                 }
                 root.setOnClickListener {
-                    listener.onSpinnerClick(spinner)
+                    checkBoxSpinner.isChecked = !checkBoxSpinner.isChecked
+                    listener.onCheckboxClickSpinner(spinner.idSpin, position, spinner.hasSelected)
                 }
             }
-
             }
 
     }

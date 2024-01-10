@@ -50,6 +50,7 @@ import com.example.luckyspinner.util.Function.changeTheNumberOfDay
 import com.example.luckyspinner.util.Function.numberToMinuteForm
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
 import com.google.android.material.timepicker.TimeFormat
@@ -107,47 +108,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             btnSpinnerList.visibility = View.GONE
             btnMemberList.visibility = View.GONE
         }
-//
-//        binding.edtTime.onFocusChangeListener = View.OnFocusChangeListener { view, hasForcus ->
-//            if (hasForcus) {
-//                val timeNow = Calendar.getInstance()
-//                var hour = timeNow.get(Calendar.HOUR)
-//                var minute = timeNow.get(Calendar.MINUTE)
-//                viewModel.event.value?.hour?.let {
-//                    hour = it
-//                    minute = viewModel.event.value?.minute!!
-//                }
-//                val picker = MaterialTimePicker.Builder()
-//                    .setInputMode(INPUT_MODE_CLOCK)
-//                    .setTimeFormat(TimeFormat.CLOCK_24H)
-//                    .setHour(hour)
-//                    .setMinute(minute)
-//                    .setTitleText("Select Time")
-//                    .build()
-//
-//                picker.show(parentFragmentManager, "timepicker")
-//
-//                picker.addOnPositiveButtonClickListener {
-//                    val hour = picker.hour
-//                    val minutes = picker.minute
-//
-//                    println("Here come $hour : $minutes")
-//
-//                    viewModel.event.value = viewModel.event.value?.apply {
-//                        this.hour = hour
-//                        this.minute = minutes
-//                    }
-//                }
-//
-//                picker.addOnNegativeButtonClickListener {
-//                    picker.dismiss()
-//                }
-//
-//                binding.edtTime.isFocusable = false
-//                binding.edtTime.isFocusableInTouchMode = true
-//            }
-//        }
-
         workManager = WorkManager.getInstance(requireContext())
         if (eventId == null) {
             isAdd = true
@@ -206,7 +166,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         setupChooseSpinnerDialog()
         setupMemberDialog()
 
-//        dayOfWeekClickEvent()
+        dayOfWeekClickEvent()
 
 
 
@@ -223,13 +183,13 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         binding.btnSpinnerNow.setOnClickListener {
             handleTestNow()
         }
-        binding.edtDate.onFocusChangeListener = View.OnFocusChangeListener { view, hasForcus ->
-            if (hasForcus){
-                dateDialog.show()
-                binding.edtDate.isFocusable = false
-                binding.edtDate.isFocusableInTouchMode = true
-            }
-        }
+//        binding.edtDate.onFocusChangeListener = View.OnFocusChangeListener { view, hasForcus ->
+//            if (hasForcus){
+//                dateDialog.show()
+//                binding.edtDate.isFocusable = false
+//                binding.edtDate.isFocusableInTouchMode = true
+//            }
+//        }
 
         binding.appBarAddTimeEvent.apply {
             btnBack.setOnClickListener {
@@ -267,8 +227,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
         progressDialog.show()
 
-        val selectedHour = viewModel.event.value?.hour!!
-        val selectedMinute = viewModel.event.value?.minute!!
+        val selectedHour: Int = binding.timePicker.hour
+        val selectedMinute: Int = binding.timePicker.minute
 
         val typeEvent = if (getListDay() == Constants.LIST_DAY_EMPTY) Constants.ONCE else Constants.EVERY_WEEK
 
@@ -376,12 +336,14 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
     private fun filterSpinner(text : String) {
         if (text == "") {
+            viewModel.isSearchingSpinner.value = false
             binding.rvSpinnerList.isVisible = true
             binding.tvTitleStatusSpinner.isVisible = false
             viewModel.spinnerList.value = viewModel.spinnerList.value
             println("Let go")
             return
         }
+        viewModel.isSearchingSpinner.value = true
         val list : MutableList<com.example.luckyspinner.models.Spinner> = ArrayList()
 
         viewModel.spinnerList.value?.forEach {
@@ -401,9 +363,14 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     }
     private fun filterMember(text: String) {
         if (text == "") {
+            viewModel.isSearchingMember.value = false
+            binding.rvMemberList.isVisible = true
+            binding.tvTitleStatusMember.isVisible = false
             viewModel.memberList.value = viewModel.memberList.value
             return
         }
+        viewModel.isSearchingMember.value = true
+
         val list : MutableList<Member> = ArrayList()
 
         viewModel.memberList.value?.forEach {
@@ -411,7 +378,15 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 list.add(it)
             }
         }
-        memberInEventAdapter.members = list
+        if (list.isEmpty()) {
+            binding.rvMemberList.isVisible = false
+            binding.tvTitleStatusMember.isVisible = true
+            binding.tvTitleStatusMember.text = "No item matching!"
+        } else {
+            binding.rvMemberList.isVisible = true
+            binding.tvTitleStatusMember.isVisible = false
+            memberInEventAdapter.members = list
+        }
     }
     private fun setUpRecycleView() {
         bindingRandomDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
@@ -431,34 +406,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             layoutManager = LinearLayoutManager(context)
         }
 
-//        binding.viewPagerList.adapter = object : FragmentStateAdapter(requireActivity()) {
-//            override fun getItemCount(): Int {
-//                return  2
-//            }
-//            override fun createFragment(position: Int): Fragment {
-//                return when (position) {
-//                    0 -> SpinnerViewpagerFragment(randomSpinnerAdapter)
-//                    1 -> MemberViewpagerFragment(memberInEventAdapter)
-//                    else -> SpinnerViewpagerFragment(randomSpinnerAdapter)
-//                }
-//            }
-//        }
-//
-//        TabLayoutMediator(binding.tabLayoutAddTimeEvent, binding.viewPagerList, object : TabLayoutMediator.TabConfigurationStrategy{
-//            override fun onConfigureTab(tab: TabLayout.Tab, position: Int) {
-//                 when(position) {
-//                    0 -> {
-//                        tab.text = "Spinner"
-//                        tab.setIcon(R.drawable.ic_spinner_list)
-//                    }
-//                    1 -> {
-//                        tab.text = "Member"
-//                        tab.setIcon(R.drawable.ic_member_list)
-//                    }
-//                    else -> {}
-//                }
-//            }
-//        }).attach()
     }
 
 
@@ -555,55 +502,57 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
 
     private fun dayOfWeekClickEvent() {
-//        binding.dayOfWeek.apply {
-//            btnMonday.setOnClickListener {
-//                viewModel.handleClickDay(Constants.MONDAY_POSITION)
-//            }
-//
-//            btnTuesday.setOnClickListener {
-//                viewModel.handleClickDay(Constants.TUESDAY_POSITION)
-//            }
-//
-//            btnWednesday.setOnClickListener {
-//                viewModel.handleClickDay(Constants.WEDNESDAY_POSITION)
-//            }
-//
-//            btnThursday.setOnClickListener {
-//                viewModel.handleClickDay(Constants.THURSDAY_POSITION)
-//            }
-//
-//            btnFriday.setOnClickListener {
-//                viewModel.handleClickDay(Constants.FRIDAY_POSITION)
-//            }
-//
-//            btnSaturday.setOnClickListener {
-//                viewModel.handleClickDay(Constants.SATURDAY_POSITION)
-//            }
-//
-//            btnSunday.setOnClickListener {
-//                viewModel.handleClickDay(Constants.SUNDAY_POSITION)
-//            }
-//        }
-    }
-    fun handleDayOfWeek(event : Event) {
-        bindingDateDialog.checkBoxAll.isChecked = event.listDay == Constants.LIST_DAY_ALL_WEEK
-        var title = ""
-        event.listDay.apply {
-            dateAdapter.dayList = this
-            if (contains(Constants.MONDAY)) title += "Mon "
-            if (contains(Constants.TUESDAY)) title += "Tue "
-            if (contains(Constants.WEDNESDAY)) title += "Wed "
-            if (contains(Constants.THURSDAY)) title += "Thu "
-            if (contains(Constants.FRIDAY)) title += "Fri "
-            if (contains(Constants.SATURDAY)) title += "Sat "
-            if (contains(Constants.SUNDAY)) title += "Sun "
+        binding.datePicker.apply {
+            btnMonday.setOnClickListener {
+                viewModel.handleClickDay(Constants.MONDAY_POSITION)
+            }
 
-            if (this.containsAll(arrayListOf(1, 2, 3, 4, 5, 6, 7))) {
-                title = "All week"
+            btnTuesday.setOnClickListener {
+                viewModel.handleClickDay(Constants.TUESDAY_POSITION)
+            }
+
+            btnWednesday.setOnClickListener {
+                viewModel.handleClickDay(Constants.WEDNESDAY_POSITION)
+            }
+
+            btnThursday.setOnClickListener {
+                viewModel.handleClickDay(Constants.THURSDAY_POSITION)
+            }
+
+            btnFriday.setOnClickListener {
+                viewModel.handleClickDay(Constants.FRIDAY_POSITION)
+            }
+
+            btnSaturday.setOnClickListener {
+                viewModel.handleClickDay(Constants.SATURDAY_POSITION)
+            }
+
+            btnSunday.setOnClickListener {
+                viewModel.handleClickDay(Constants.SUNDAY_POSITION)
             }
         }
-        if (title == "") title = "Once time"
-        binding.edtDate.hint = title
+    }
+    fun handleDayOfWeek(event : Event) {
+        fun customButton(button : MaterialButton, isActive : Boolean) {
+            fun getColorBackGround(isActive : Boolean) : Int{
+                return if (isActive)  Color.parseColor("#6750A4") else Color.WHITE
+            }
+
+            button.setBackgroundColor(getColorBackGround(isActive))
+            button.setTextColor(getColorBackGround(!isActive))
+        }
+        binding.datePicker.apply {
+            event.listDay.apply {
+                customButton(btnMonday, contains(Calendar.MONDAY))
+                customButton(btnTuesday, contains(Calendar.TUESDAY))
+                customButton(btnWednesday, contains(Calendar.WEDNESDAY))
+                customButton(btnThursday, contains(Calendar.THURSDAY))
+                customButton(btnFriday, contains(Calendar.FRIDAY))
+                customButton(btnSaturday, contains(Calendar.SATURDAY))
+                customButton(btnSunday, contains(Calendar.SUNDAY))
+            }
+
+        }
     }
 
     fun handleTestNow() {
@@ -671,11 +620,13 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     }
     fun setupObservers() {
         viewModel.spinnerList.observe(viewLifecycleOwner) {
-            val list =  it.toMutableList().apply {
+            if (viewModel.isSearchingSpinner.value == true) {
+                return@observe
+            }
+            randomSpinnerAdapter.spinners = it.toMutableList().apply {
                 add(Spinner(idSpin = Constants.ID_ADD_MORE))
             }
-            randomSpinnerAdapter.spinners = list
-            if (it.size > 3) {
+            if (it.size > 2 && binding.rvSpinnerList.layoutManager !is GridLayoutManager) {
                 binding.rvSpinnerList.layoutManager = GridLayoutManager(context, 3 , GridLayoutManager.HORIZONTAL, false)
             }
             var isAllSelected = true
@@ -693,8 +644,13 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             }
         }
         viewModel.memberList.observe(viewLifecycleOwner) {
-            memberInEventAdapter.members = it
-            if (it.size > 3) {
+            if (viewModel.isSearchingMember.value == true) {
+                return@observe
+            }
+            memberInEventAdapter.members = it.toMutableList().apply {
+                add(Member(idMember = Constants.ID_ADD_MORE))
+            }
+            if (it.size > 2 && binding.rvMemberList.layoutManager !is GridLayoutManager) {
                 binding.rvMemberList.layoutManager = GridLayoutManager(context, 3 , GridLayoutManager.HORIZONTAL, false)
             }
             var isAllSelected = true
@@ -716,11 +672,14 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             if (!hasSetNameAndTime) {
                 binding.edtEventName.setText(it.nameEvent)
                 hasSetNameAndTime = true
+                it.hour?.let { eventHour ->
+                    binding.timePicker.apply {
+                        hour = eventHour
+                        minute = it.minute!!
+                    }
+                }
             }
             handleDayOfWeek(it)
-            it.hour?.let { eventHour ->
-                binding.edtTime.hint = "${numberToMinuteForm(eventHour)} : ${numberToMinuteForm(it.minute!!)}"
-            }
         }
         viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
             if (it) progressDialog.show()
@@ -764,88 +723,19 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     }
 
 
-    override fun onMemberItemClick(id: String) {
+    override fun onMemberItemClick(member: Member) {
+        if (member.idMember == Constants.ID_ADD_MORE) {
+            findNavController().navigate(R.id.memberListFragment, Bundle().apply {
+                putString(Constants.ID_CHANNEL_KEY, channelId)
+            })
+        }
     }
 
     override fun onSpinnerClick(spinner: Spinner) {
         if (spinner.idSpin == Constants.ID_ADD_MORE) {
-            val binding : AddChannelLayoutBinding = AddChannelLayoutBinding.inflate(layoutInflater)
-            addSpinnerDiaLog = Dialog(requireContext())
-            addSpinnerDiaLog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            addSpinnerDiaLog.setContentView(binding.root)
-
-            binding.tvAddChannel.text = "Spinner Name"
-            binding.edtEnterChannelId.visibility = View.GONE
-
-            val window : Window = addSpinnerDiaLog.window!!
-            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
-            window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-            val windowAttribute : WindowManager.LayoutParams = window.attributes
-            windowAttribute.gravity = Gravity.CENTER
-            window.attributes = windowAttribute
-
-            addSpinnerDiaLog.show()
-
-
-            binding.btnDoneAddChannel.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    val nameSpinner = binding.edtEnterChannelName.text.toString().trim()
-                    if (nameSpinner == EMPTY_STRING) {
-                        binding.edtEnterChannelName.error = "Please fill this field"
-                        return@launch
-                    }
-                    val idSpinner = Calendar.getInstance().timeInMillis.toString()
-                    viewModel.addSpinner(channelId, Spinner(idSpinner, nameSpinner))
-                }
-            }
-            binding.btnCancelAddChannel.setOnClickListener {
-                addSpinnerDiaLog.dismiss()
-            }
-
-            lifecycleScope.launch {
-                delay(1)
-                Function.showKeyBoard(context, binding.edtEnterChannelName)
-            }
-        } else{
-            val binding : EditDialogBinding = EditDialogBinding.inflate(layoutInflater)
-            editSpinnerDiaLog = Dialog(requireContext())
-            editSpinnerDiaLog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            editSpinnerDiaLog.setContentView(binding.root)
-
-            binding.tvNameTitleAddElement.text = "Edit Spinner"
-
-            binding.edtEnterElement.setText(spinner.titleSpin)
-            binding.edtId.isVisible = false
-
-            binding.edtEnterElement.setSelection(binding.edtEnterElement.text.length)
-
-            binding.btnDoneAddElement.setOnClickListener {
-                if (binding.edtEnterElement.text.toString().trim().isEmpty()) {
-                    binding.edtEnterElement.error = "Please fill this field!"
-                    return@setOnClickListener
-                }
-                spinner.titleSpin = binding.edtEnterElement.text.toString()
-                viewModel.editSpinner(channelId, spinner)
-            }
-
-            binding.btnCancelElement.setOnClickListener {
-                editSpinnerDiaLog.dismiss()
-            }
-
-            val window : Window = editSpinnerDiaLog.window!!
-            window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
-            window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-            val windowAttribute : WindowManager.LayoutParams = window.attributes
-            windowAttribute.gravity = Gravity.CENTER
-            window.attributes = windowAttribute
-
-            editSpinnerDiaLog.show()
-            lifecycleScope.launch {
-                delay(1)
-                Function.showKeyBoard(context, binding.edtEnterElement)
-            }
+            findNavController().navigate(R.id.spinnerListFragment, Bundle().apply {
+                putString(Constants.ID_CHANNEL_KEY, channelId)
+            })
         }
     }
 
