@@ -107,46 +107,46 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             btnSpinnerList.visibility = View.GONE
             btnMemberList.visibility = View.GONE
         }
-
-        binding.edtTime.onFocusChangeListener = View.OnFocusChangeListener { view, hasForcus ->
-            if (hasForcus) {
-                val timeNow = Calendar.getInstance()
-                var hour = timeNow.get(Calendar.HOUR)
-                var minute = timeNow.get(Calendar.MINUTE)
-                viewModel.event.value?.hour?.let {
-                    hour = it
-                    minute = viewModel.event.value?.minute!!
-                }
-                val picker = MaterialTimePicker.Builder()
-                    .setInputMode(INPUT_MODE_CLOCK)
-                    .setTimeFormat(TimeFormat.CLOCK_24H)
-                    .setHour(hour)
-                    .setMinute(minute)
-                    .setTitleText("Select Time")
-                    .build()
-
-                picker.show(parentFragmentManager, "timepicker")
-
-                picker.addOnPositiveButtonClickListener {
-                    val hour = picker.hour
-                    val minutes = picker.minute
-
-                    println("Here come $hour : $minutes")
-
-                    viewModel.event.value = viewModel.event.value?.apply {
-                        this.hour = hour
-                        this.minute = minutes
-                    }
-                }
-
-                picker.addOnNegativeButtonClickListener {
-                    picker.dismiss()
-                }
-
-                binding.edtTime.isFocusable = false
-                binding.edtTime.isFocusableInTouchMode = true
-            }
-        }
+//
+//        binding.edtTime.onFocusChangeListener = View.OnFocusChangeListener { view, hasForcus ->
+//            if (hasForcus) {
+//                val timeNow = Calendar.getInstance()
+//                var hour = timeNow.get(Calendar.HOUR)
+//                var minute = timeNow.get(Calendar.MINUTE)
+//                viewModel.event.value?.hour?.let {
+//                    hour = it
+//                    minute = viewModel.event.value?.minute!!
+//                }
+//                val picker = MaterialTimePicker.Builder()
+//                    .setInputMode(INPUT_MODE_CLOCK)
+//                    .setTimeFormat(TimeFormat.CLOCK_24H)
+//                    .setHour(hour)
+//                    .setMinute(minute)
+//                    .setTitleText("Select Time")
+//                    .build()
+//
+//                picker.show(parentFragmentManager, "timepicker")
+//
+//                picker.addOnPositiveButtonClickListener {
+//                    val hour = picker.hour
+//                    val minutes = picker.minute
+//
+//                    println("Here come $hour : $minutes")
+//
+//                    viewModel.event.value = viewModel.event.value?.apply {
+//                        this.hour = hour
+//                        this.minute = minutes
+//                    }
+//                }
+//
+//                picker.addOnNegativeButtonClickListener {
+//                    picker.dismiss()
+//                }
+//
+//                binding.edtTime.isFocusable = false
+//                binding.edtTime.isFocusableInTouchMode = true
+//            }
+//        }
 
         workManager = WorkManager.getInstance(requireContext())
         if (eventId == null) {
