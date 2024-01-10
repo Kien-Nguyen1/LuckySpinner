@@ -18,6 +18,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.ContextCompat.getSystemServiceName
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
@@ -149,7 +151,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
 
                 lifecycleScope.launch {
                     delay(1)
-                    Function.showKeyBoard(context, binding.edtId)
+                    Function.showKeyBoard(requireActivity(), binding.edtId)
                 }
             }
         }
@@ -204,7 +206,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         }
         lifecycleScope.launch {
             delay(1)
-            Function.showKeyBoard(context, binding.edtEnterChannelId)
+            Function.showKeyBoard(requireActivity(), binding.edtEnterChannelId)
         }
     }
 

@@ -7,6 +7,9 @@ import android.util.DisplayMetrics
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
@@ -36,12 +39,10 @@ object Function {
         return day - 2
     }
 
-    fun showKeyBoard(context: Context?, editText : EditText) {
+    fun showKeyBoard(activity : FragmentActivity, editText : EditText) {
         editText.requestFocus()
 
-        val inputMethodManager = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-
-        inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
+        WindowCompat.getInsetsController(activity.window, editText).show(WindowInsetsCompat.Type.ime())
     }
 
     fun hideKeyBoard(context: Context?, view : android.view.View ) {

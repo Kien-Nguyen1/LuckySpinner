@@ -117,7 +117,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
                 editElementDialog.show()
                 lifecycleScope.launch {
                     delay(1)
-                    Function.showKeyBoard(context, binding.edtEnterElement)
+                    Function.showKeyBoard(requireActivity(), binding.edtEnterElement)
                 }
             }
         }
@@ -177,7 +177,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         }
         lifecycleScope.launch {
             delay(1)
-            Function.showKeyBoard(context, binding.edtEnterChannelId)
+            Function.showKeyBoard(requireActivity(), binding.edtEnterChannelId)
         }
     }
 

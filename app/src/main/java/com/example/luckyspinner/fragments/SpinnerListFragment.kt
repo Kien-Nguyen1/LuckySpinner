@@ -138,7 +138,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
                 editSpinnerDiaLog.show()
                 lifecycleScope.launch {
                     delay(1)
-                    Function.showKeyBoard(context, binding.edtEnterElement)
+                    Function.showKeyBoard(requireActivity(), binding.edtEnterElement)
                 }
             }
         }
@@ -181,7 +181,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
 
         lifecycleScope.launch {
             delay(1)
-            Function.showKeyBoard(context, binding.edtEnterChannelName)
+            Function.showKeyBoard(requireActivity(), binding.edtEnterChannelName)
         }
     }
 

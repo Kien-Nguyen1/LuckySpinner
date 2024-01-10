@@ -143,7 +143,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
                 editMemberDiaLog.show()
                 lifecycleScope.launch {
                     delay(1)
-                    Function.showKeyBoard(context, binding.edtEnterElement)
+                    Function.showKeyBoard(requireActivity(), binding.edtEnterElement)
                 }
             }
         }
@@ -182,7 +182,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         }
         lifecycleScope.launch {
             delay(1)
-            Function.showKeyBoard(context, binding.edtEnterChannelName)
+            Function.showKeyBoard(requireActivity(), binding.edtEnterChannelName)
         }
     }
     private fun handleChooseAllMember() {
