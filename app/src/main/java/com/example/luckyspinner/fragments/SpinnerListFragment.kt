@@ -191,7 +191,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
             createEditListener()
             adapter = spinnerAdapter
             layoutManager = LinearLayoutManager(context)
-            Function.addMarginToLastItem(binding.rvSpinnerList, 16)
+            Function.addMarginToLastItem(binding.rvSpinnerList, 10)
         }
         viewModel.eventList.observe(viewLifecycleOwner) {
             binding.rvSpinnerList.apply {

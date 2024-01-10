@@ -4,6 +4,7 @@ package com.example.luckyspinner.adapter
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -67,7 +68,9 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
             if (spinner.idSpin == Constants.ID_ADD_MORE) {
                 checkBoxSpinner.isVisible = false
                 tvTitle.text = "+ Add More"
-                linearRandomSpinnerListItem.background = ColorDrawable(Color.parseColor("#DFD5EC"))
+                tvTitle.gravity = Gravity.CENTER
+                tvTitle.textSize = 15F
+                linearRandomSpinnerListItem.background = ColorDrawable(Color.TRANSPARENT)
                 root.setOnClickListener {
                     listener.onSpinnerClick(spinner)
                 }

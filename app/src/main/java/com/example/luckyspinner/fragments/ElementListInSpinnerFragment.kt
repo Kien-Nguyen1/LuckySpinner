@@ -186,7 +186,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
             elementAdapter = ElementListInSpinnerAdapter(this@ElementListInSpinnerFragment)
             adapter = elementAdapter
             layoutManager = LinearLayoutManager(context)
-            Function.addMarginToLastItem(binding.rvElementListInSpinner, 16)
+            Function.addMarginToLastItem(binding.rvElementListInSpinner, 10)
         }
     }
 

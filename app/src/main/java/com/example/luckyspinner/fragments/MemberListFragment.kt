@@ -208,7 +208,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             createEditListener()
             adapter = memberAdapter
             layoutManager = LinearLayoutManager(context)
-            Function.addMarginToLastItem(binding.rvMemberList, 16)
+            Function.addMarginToLastItem(binding.rvMemberList, 10)
         }
         viewModel.eventList.observe(viewLifecycleOwner) {
             binding.rvMemberList.apply {
