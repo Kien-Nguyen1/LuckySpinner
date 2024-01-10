@@ -7,13 +7,10 @@ import android.util.DisplayMetrics
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.firestore.core.View
 import java.util.Calendar
 import kotlin.math.roundToInt
 
@@ -45,6 +42,11 @@ object Function {
         val inputMethodManager = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
+    }
+
+    fun hideKeyBoard(context: Context?, view : android.view.View ) {
+        val inputMethodManager = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     fun RecyclerView.addFabScrollListener(fab : FloatingActionButton) {

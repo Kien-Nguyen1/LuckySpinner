@@ -126,14 +126,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 }
             }
         }
-//        binding.timePickerAddTimeEvent.setOnTimeChangedListener { view, hourOfDay, minute ->
-//            if (hasSetNameAndTime) {
-//                 viewModel.event.value = viewModel.event.value?.apply {
-//                     this.hour = hourOfDay
-//                     this.minute = minute
-//                 }
-//            }
-//        }
 
         lifecycleScope.launch(Dispatchers.IO) {
             if (isFirstLoad) {
@@ -153,7 +145,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 viewModel.getMembers(channelId, isAdd)
                 viewModel.getSpinnerFromChannel(channelId, isAdd)
             }
-
         }
 
         setUpRecycleView()
@@ -183,13 +174,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         binding.btnSpinnerNow.setOnClickListener {
             handleTestNow()
         }
-//        binding.edtDate.onFocusChangeListener = View.OnFocusChangeListener { view, hasForcus ->
-//            if (hasForcus){
-//                dateDialog.show()
-//                binding.edtDate.isFocusable = false
-//                binding.edtDate.isFocusableInTouchMode = true
-//            }
-//        }
 
         binding.appBarAddTimeEvent.apply {
             btnBack.setOnClickListener {
@@ -198,7 +182,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
         binding.searchViewSpinner.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
+                Function.hideKeyBoard(context, binding.searchViewSpinner)
+                return true
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
@@ -207,10 +192,10 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 return false
             }
         })
-//        binding.searchViewSpinner.on
         binding.searchViewMember.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
+                Function.hideKeyBoard(context, binding.searchViewMember)
+                return true
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
@@ -611,7 +596,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 } else {
                     println("WorkInfo is null")
                 }
-
             }
     }
 
@@ -676,6 +660,14 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                     binding.timePicker.apply {
                         hour = eventHour
                         minute = it.minute!!
+                    }
+                }
+                binding.timePicker.setOnTimeChangedListener { view, hourOfDay, minute ->
+                    if (hasSetNameAndTime) {
+                        viewModel.event.value = viewModel.event.value?.apply {
+                            this.hour = hourOfDay
+                            this.minute = minute
+                        }
                     }
                 }
             }
