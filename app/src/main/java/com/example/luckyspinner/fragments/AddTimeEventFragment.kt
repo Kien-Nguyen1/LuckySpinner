@@ -6,10 +6,12 @@ import android.app.ProgressDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnScrollChangeListener
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
@@ -44,6 +46,7 @@ import com.example.luckyspinner.models.Member
 import com.example.luckyspinner.models.Spinner
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.Constants.EMPTY_STRING
+import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
 import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.util.Function.addMarginToLastItem
 import com.example.luckyspinner.util.Function.changeTheNumberOfDay
@@ -174,6 +177,29 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         binding.btnSpinnerNow.setOnClickListener {
             handleTestNow()
         }
+
+        binding.scrollViewAddTime.setOnScrollChangeListener(object : OnScrollChangeListener{
+            val countDownTimer = object : CountDownTimer(2000, 1000) {
+                override fun onTick(p0: Long) {
+                    //
+                }
+
+                override fun onFinish() {
+                    if (!binding.btnDoneAddTimeEvent.isShown)
+                        binding.btnDoneAddTimeEvent.show()
+                }
+            }
+
+            override fun onScrollChange(view: View?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int) {
+                if (scrollY != oldScrollY && binding.btnDoneAddTimeEvent.isShown){
+                    binding.btnDoneAddTimeEvent.hide()
+                    countDownTimer.cancel()
+                    countDownTimer.start()
+                }
+                else
+                    binding.btnDoneAddTimeEvent.show()
+            }
+        })
 
         binding.appBarAddTimeEvent.apply {
             btnBack.setOnClickListener {
@@ -438,9 +464,16 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
         bindingRandomDialog.btnAddElement.setOnClickListener {
             chooseSpinnerDialog.dismiss()
-            findNavController().navigate(R.id.spinnerListFragment, Bundle().apply {
-                putString(Constants.ID_CHANNEL_KEY, channelId)
-            })
+
+            val direction = AddTimeEventFragmentDirections
+                .actionAddTimeEventFragmentToSpinnerListFragment()
+                .actionId
+
+            val bundle = Bundle().apply {
+                putString(ID_CHANNEL_KEY, channelId)
+            }
+
+            findNavController().navigate(direction, bundle)
         }
 
         bindingRandomDialog.btnBack.setOnClickListener {
@@ -463,9 +496,16 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
         bindingMemberDialog.btnAddElement.setOnClickListener {
             chooseMemberDialog.dismiss()
-            findNavController().navigate(R.id.memberListFragment, Bundle().apply {
-                putString(Constants.ID_CHANNEL_KEY, channelId)
-            })
+
+            val direction = AddTimeEventFragmentDirections
+                .actionAddTimeEventFragmentToMemberListFragment()
+                .actionId
+
+            val bundle = Bundle().apply {
+                putString(ID_CHANNEL_KEY, channelId)
+            }
+
+            findNavController().navigate(direction, bundle)
         }
 
         addMarginToLastItem(bindingMemberDialog.rvChooseRandomSpinnerList, 10)
@@ -607,12 +647,15 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             if (viewModel.isSearchingSpinner.value == true) {
                 return@observe
             }
+
             randomSpinnerAdapter.spinners = it.toMutableList().apply {
                 add(Spinner(idSpin = Constants.ID_ADD_MORE))
             }
+
             if (it.size > 2 && binding.rvSpinnerList.layoutManager !is GridLayoutManager) {
-                binding.rvSpinnerList.layoutManager = GridLayoutManager(context, 3 , GridLayoutManager.HORIZONTAL, false)
+                binding.rvSpinnerList.layoutManager = GridLayoutManager(context, 2 , GridLayoutManager.HORIZONTAL, false)
             }
+
             var isAllSelected = true
             run breaking@{
                 it.forEach { spinner ->
@@ -622,21 +665,26 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                     }
                 }
             }
+
             bindingRandomDialog.checkBoxAll.isChecked = isAllSelected
             bindingRandomDialog.checkBoxAll.setOnClickListener {
                 viewModel.allCheckboxSpinner(!bindingRandomDialog.checkBoxAll.isChecked)
             }
         }
+
         viewModel.memberList.observe(viewLifecycleOwner) {
             if (viewModel.isSearchingMember.value == true) {
                 return@observe
             }
+
             memberInEventAdapter.members = it.toMutableList().apply {
                 add(Member(idMember = Constants.ID_ADD_MORE))
             }
+
             if (it.size > 2 && binding.rvMemberList.layoutManager !is GridLayoutManager) {
-                binding.rvMemberList.layoutManager = GridLayoutManager(context, 3 , GridLayoutManager.HORIZONTAL, false)
+                binding.rvMemberList.layoutManager = GridLayoutManager(context, 2 , GridLayoutManager.HORIZONTAL, false)
             }
+
             var isAllSelected = true
             run breaking@{
                 it.forEach { member ->
@@ -646,12 +694,15 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                     }
                 }
             }
+
             bindingMemberDialog.checkBoxAll.isChecked = isAllSelected
             println("Here come is $isAllSelected")
+
             bindingMemberDialog.checkBoxAll.setOnClickListener {
                 viewModel.allCheckboxMember(!bindingMemberDialog.checkBoxAll.isChecked)
             }
         }
+
         viewModel.event.observe(viewLifecycleOwner) {
             if (!hasSetNameAndTime) {
                 binding.edtEventName.setText(it.nameEvent)
@@ -717,17 +768,29 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
     override fun onMemberItemClick(member: Member) {
         if (member.idMember == Constants.ID_ADD_MORE) {
-            findNavController().navigate(R.id.memberListFragment, Bundle().apply {
-                putString(Constants.ID_CHANNEL_KEY, channelId)
-            })
+            val direction = AddTimeEventFragmentDirections
+                .actionAddTimeEventFragmentToMemberListFragment()
+                .actionId
+
+            val bundle = Bundle().apply {
+                putString(ID_CHANNEL_KEY, channelId)
+            }
+
+            findNavController().navigate(direction, bundle)
         }
     }
 
     override fun onSpinnerClick(spinner: Spinner) {
         if (spinner.idSpin == Constants.ID_ADD_MORE) {
-            findNavController().navigate(R.id.spinnerListFragment, Bundle().apply {
-                putString(Constants.ID_CHANNEL_KEY, channelId)
-            })
+            val direction = AddTimeEventFragmentDirections
+                .actionAddTimeEventFragmentToSpinnerListFragment()
+                .actionId
+
+            val bundle = Bundle().apply {
+                putString(ID_CHANNEL_KEY, channelId)
+            }
+
+            findNavController().navigate(direction, bundle)
         }
     }
 

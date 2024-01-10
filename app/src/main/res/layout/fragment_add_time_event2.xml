@@ -21,7 +21,7 @@
         app:layout_constraintTop_toBottomOf="@+id/app_bar_add_time_event"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/linear_fab_time_event">
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -92,8 +92,7 @@
                 android:id="@+id/rv_spinner_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="15dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 tools:itemCount="1"
                 tools:listitem="@layout/random_spinner_list_item" />
 
@@ -142,8 +141,7 @@
                 android:id="@+id/rv_member_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="15dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:minHeight="60dp"
                 tools:itemCount="1"
                 tools:listitem="@layout/member_list_item_in_event" />
@@ -161,39 +159,27 @@
                 android:textStyle="bold"
                 android:visibility="gone" />
 
-        </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                style="?attr/materialIconButtonFilledTonalStyle"
+                android:id="@+id/btn_spinner_now"
+                android:layout_width="match_parent"
+                android:layout_marginHorizontal="15dp"
+                android:layout_marginTop="30dp"
+                android:layout_height="wrap_content"
+                android:text="Test Now" />
 
+        </LinearLayout>
     </ScrollView>
 
-    <LinearLayout
-        android:id="@+id/linear_fab_time_event"
-        android:layout_width="match_parent"
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/btn_done_add_time_event"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:src="@drawable/ic_done"
+        android:text="Save"
+        android:layout_margin="16dp"
+        app:icon="@drawable/ic_save"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/btn_spinner_now"
-            android:layout_weight="2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="15dp"
-            android:backgroundTint="#E3E3E3"
-            android:text="Test Now" />
-
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/btn_done_add_time_event"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_done"
-            android:text="Save"
-            android:layout_marginHorizontal="15dp"
-            app:icon="@drawable/ic_save"
-            android:textSize="15sp" />
-
-    </LinearLayout>
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

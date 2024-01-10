@@ -7,7 +7,6 @@ import android.graphics.drawable.ColorDrawable
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -68,27 +67,12 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
             if (spinner.idSpin == Constants.ID_ADD_MORE) {
                 checkBoxSpinner.isVisible = false
                 tvTitle.text = "+ Add More"
-                linearRandomSpinnerListItem.background = ColorDrawable(Color.parseColor("#DFD5EC"))
+                tvTitle.gravity = Gravity.CENTER
+                tvTitle.textSize = 15F
+                linearRandomSpinnerListItem.background = ColorDrawable(Color.TRANSPARENT)
                 root.setOnClickListener {
                     listener.onSpinnerClick(spinner)
                 }
-//                val layoutParams = LinearLayout.LayoutParams(
-//                    LinearLayout.LayoutParams.WRAP_CONTENT,  // width
-//                    LinearLayout.LayoutParams.WRAP_CONTENT // height
-//                )
-//
-//// Set the layout gravity for the TextView
-//
-//// Set the layout gravity for the TextView
-//                layoutParams.gravity =
-//                    Gravity.CENTER_VERTICAL  // You can replace 'Gravity.CENTER' with the desired gravity value
-//
-//
-//// Apply the LayoutParams to the TextView
-//
-//// Apply the LayoutParams to the TextView
-//                tvTitle.layoutParams = layoutParams
-
             } else {
                 println("Here come spinner ${spinner.idSpin}")
                 checkBoxSpinner.isVisible = true

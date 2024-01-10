@@ -4,9 +4,14 @@ package com.example.luckyspinner.adapter
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
+import android.view.WindowManager.LayoutParams
 import androidx.core.view.isVisible
+import androidx.core.view.marginTop
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -60,12 +65,16 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
             val member = members[position]
             if (member.idMember == Constants.ID_ADD_MORE) {
                 checkBoxSpinner.isVisible = false
+                imgMember.isVisible = false
                 tvTitle.text = "+ Add More"
-                linearMemberInEvent.background = ColorDrawable(Color.parseColor("#DFD5EC"))
+                tvTitle.gravity = Gravity.CENTER
+                tvTitle.textSize = 15F
+                linearMemberInEvent.background = ColorDrawable(Color.TRANSPARENT)
                 root.setOnClickListener {
                     listener.onMemberItemClick(member)
                 }
             } else {
+                imgMember.isVisible = true
                 tvTitle.text = member.nameMember
                 tvTitle.isSelected = true
                 checkBoxSpinner.isVisible = true
@@ -81,7 +90,6 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
                     listener.onCheckboxClickMember(member.idMember, position, member.hasSelected)
                 }
             }
-
         }
     }
 
