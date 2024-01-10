@@ -68,7 +68,6 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
                 imgMember.isVisible = false
                 tvTitle.text = "+ Add More"
                 tvTitle.gravity = Gravity.CENTER
-                tvTitle.textSize = 15F
                 linearMemberInEvent.background = ColorDrawable(Color.TRANSPARENT)
                 root.setOnClickListener {
                     listener.onMemberItemClick(member)
@@ -77,6 +76,7 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
                 imgMember.isVisible = true
                 tvTitle.text = member.nameMember
                 tvTitle.isSelected = true
+                tvTitle.gravity = Gravity.NO_GRAVITY
                 checkBoxSpinner.isVisible = true
 
                 checkBoxSpinner.isChecked = member.listEvent.contains(eventId)

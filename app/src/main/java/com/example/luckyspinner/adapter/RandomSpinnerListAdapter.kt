@@ -68,7 +68,6 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
                 checkBoxSpinner.isVisible = false
                 tvTitle.text = "+ Add More"
                 tvTitle.gravity = Gravity.CENTER
-                tvTitle.textSize = 15F
                 linearRandomSpinnerListItem.background = ColorDrawable(Color.TRANSPARENT)
                 root.setOnClickListener {
                     listener.onSpinnerClick(spinner)
@@ -77,6 +76,7 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
                 println("Here come spinner ${spinner.idSpin}")
                 checkBoxSpinner.isVisible = true
                 tvTitle.text = spinner.titleSpin
+                tvTitle.gravity = Gravity.NO_GRAVITY
                 tvTitle.isSelected = true
                 linearRandomSpinnerListItem.background = ColorDrawable(Color.WHITE)
 
