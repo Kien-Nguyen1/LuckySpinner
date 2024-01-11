@@ -15,7 +15,9 @@ import android.view.View.OnScrollChangeListener
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import android.widget.TimePicker
 import android.widget.Toast
+import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
@@ -206,6 +208,14 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 findNavController().popBackStack()
             }
         }
+        val picker =
+            MaterialTimePicker.Builder()
+                .setTimeFormat(TimeFormat.CLOCK_12H)
+                .setHour(12)
+                .setMinute(10)
+                .setTitleText("Select Appointment time")
+                .build()
+        picker.show(requireFragmentManager(), "tag")
         binding.searchViewSpinner.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 Function.hideKeyBoard(context, binding.searchViewSpinner)
