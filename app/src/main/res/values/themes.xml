@@ -18,7 +18,7 @@
     </style>
 
     <style name="TextAppearance" parent="TextAppearance.AppCompat.Medium">
-        <item name="android:textColor">@color/red</item>
+        <item name="android:textColor">@color/purple</item>
     </style>
 
 </resources>

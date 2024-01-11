@@ -60,28 +60,29 @@ import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 
-class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, DateListAdapter.Listener, MemberInEventListAdapter.Listener {
+class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
+    DateListAdapter.Listener, MemberInEventListAdapter.Listener {
     private val viewModel by viewModels<AddTimeEventViewModel>()
-    private lateinit var binding : FragmentAddTimeEventBinding
-    private lateinit var bindingRandomDialog : ChooseRandomSpinnerListLayoutBinding
-    private lateinit var bindingMemberDialog : ChooseRandomSpinnerListLayoutBinding
+    private lateinit var binding: FragmentAddTimeEventBinding
+    private lateinit var bindingRandomDialog: ChooseRandomSpinnerListLayoutBinding
+    private lateinit var bindingMemberDialog: ChooseRandomSpinnerListLayoutBinding
     private lateinit var bindingDateDialog: ChooseRandomSpinnerListLayoutBinding
     private lateinit var workManager: WorkManager
-    private var channelId : String = EMPTY_STRING
-    private var eventId : String? = null
-    private lateinit var telegramChannelId : String
+    private var channelId: String = EMPTY_STRING
+    private var eventId: String? = null
+    private lateinit var telegramChannelId: String
     private var isFirstLoad = true
     private var hasSetNameAndTime = false
     private var isAdd = false
-    private lateinit var chooseSpinnerDialog : Dialog
-    private lateinit var chooseMemberDialog : Dialog
+    private lateinit var chooseSpinnerDialog: Dialog
+    private lateinit var chooseMemberDialog: Dialog
     private lateinit var editSpinnerDiaLog: Dialog
     private lateinit var addSpinnerDiaLog: Dialog
-    private lateinit var dateDialog : Dialog
-    private lateinit var randomSpinnerAdapter : RandomSpinnerListAdapter
-    private lateinit var memberInEventAdapter : MemberInEventListAdapter
-    private lateinit var dateAdapter : DateListAdapter
-    private lateinit var progressDialog : ProgressDialog
+    private lateinit var dateDialog: Dialog
+    private lateinit var randomSpinnerAdapter: RandomSpinnerListAdapter
+    private lateinit var memberInEventAdapter: MemberInEventListAdapter
+    private lateinit var dateAdapter: DateListAdapter
+    private lateinit var progressDialog: ProgressDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -90,7 +91,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         println("addtime HHere come oncreateview")
         binding = FragmentAddTimeEventBinding.inflate(inflater, container, false)
 
-        progressDialog =  ProgressDialog(context)
+        progressDialog = ProgressDialog(context)
 
         hasSetNameAndTime = false
 
@@ -112,9 +113,9 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
 
         if (isAdd) {
-            binding.appBarAddTimeEvent.tvTitleAppBar.text = "Add Time Event"
+            binding.appBarAddTimeEvent.tvTitleAppBar.text = "Time Event"
         } else {
-            binding.appBarAddTimeEvent.tvTitleAppBar.text = "Edit Time Event"
+            binding.appBarAddTimeEvent.tvTitleAppBar.text = "Time Event"
         }
 
         binding.edtEventName.doAfterTextChanged {
@@ -239,7 +240,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         val selectedHour: Int = binding.timePicker.hour
         val selectedMinute: Int = binding.timePicker.minute
 
-        val typeEvent = if (getListDay() == Constants.LIST_DAY_EMPTY) Constants.ONCE else Constants.EVERY_WEEK
+        val typeEvent =
+            if (getListDay() == Constants.LIST_DAY_EMPTY) Constants.ONCE else Constants.EVERY_WEEK
 
         viewModel.saveEvent(
             channelId,
@@ -265,18 +267,21 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         calendar.set(Calendar.MINUTE, selectedMinute)
 
 
-        val durationDiff = if (calendar.get(Calendar.HOUR_OF_DAY) == timeNow.get(Calendar.HOUR_OF_DAY) && timeNow.get(Calendar.MINUTE) == calendar.get(Calendar.MINUTE))
-        {
-            Duration.ZERO
-        }
-                else if (calendar > timeNow) {
-            Duration.between(timeNow.toInstant(), calendar.toInstant())
-        } else {
-            calendar.add(Calendar.DAY_OF_MONTH, 1)
-            Duration.between(timeNow.toInstant(), calendar.toInstant())
-        }
+        val durationDiff =
+            if (calendar.get(Calendar.HOUR_OF_DAY) == timeNow.get(Calendar.HOUR_OF_DAY) && timeNow.get(
+                    Calendar.MINUTE
+                ) == calendar.get(Calendar.MINUTE)
+            ) {
+                Duration.ZERO
+            } else if (calendar > timeNow) {
+                Duration.between(timeNow.toInstant(), calendar.toInstant())
+            } else {
+                calendar.add(Calendar.DAY_OF_MONTH, 1)
+                Duration.between(timeNow.toInstant(), calendar.toInstant())
+            }
 
-        val constraints = Constraints(requiredNetworkType = NetworkType.CONNECTED, requiresBatteryNotLow = true)
+        val constraints =
+            Constraints(requiredNetworkType = NetworkType.CONNECTED, requiresBatteryNotLow = true)
 
         workManager.apply {
             val data = workDataOf(
@@ -286,7 +291,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 Constants.DEVICE_ID_KEY to Constants.DEVICE_ID
             )
             if (typeEvent == Constants.EVERY_WEEK) {
-                val workRequest  = PeriodicWorkRequestBuilder<SendMessageWorker>(1, TimeUnit.DAYS)
+                val workRequest = PeriodicWorkRequestBuilder<SendMessageWorker>(1, TimeUnit.DAYS)
                     .setInitialDelay(durationDiff)
                     .setInputData(data)
                     .setConstraints(constraints)
@@ -314,36 +319,39 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             }
         }
         viewModel.isSaveEventSuccess.observe(viewLifecycleOwner) {
-            it?.let {
-                isSave ->
-            if (isSave) {
-                fun navigate() {
-                    println("Here come navigate")
-                    progressDialog.dismiss()
-                    Toast.makeText(context, "Saving successful" , Toast.LENGTH_LONG).show()
-                    findNavController().popBackStack()
-                }
-                viewModel.isSaveListSpinnerSuccess.apply {
-                    if (value == true) {
-                        navigate()
-                        println("navigate 1")
-                    } else {
-                        observe(viewLifecycleOwner) {
-                            if (it) {
-                                navigate()
-                                println("navigate 2")
-                            } else {
-                                Toast.makeText(context, "Something wrong. Try again!" , Toast.LENGTH_LONG).show()
+            it?.let { isSave ->
+                if (isSave) {
+                    fun navigate() {
+                        println("Here come navigate")
+                        progressDialog.dismiss()
+                        Toast.makeText(context, "Saving successful", Toast.LENGTH_LONG).show()
+                        findNavController().popBackStack()
+                    }
+                    viewModel.isSaveListSpinnerSuccess.apply {
+                        if (value == true) {
+                            navigate()
+                            println("navigate 1")
+                        } else {
+                            observe(viewLifecycleOwner) {
+                                if (it) {
+                                    navigate()
+                                    println("navigate 2")
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Something wrong. Try again!",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
                             }
                         }
                     }
                 }
             }
         }
-        }
     }
 
-    private fun filterSpinner(text : String) {
+    private fun filterSpinner(text: String) {
         if (text == "") {
             viewModel.isSearchingSpinner.value = false
             binding.rvSpinnerList.isVisible = true
@@ -353,7 +361,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             return
         }
         viewModel.isSearchingSpinner.value = true
-        val list : MutableList<com.example.luckyspinner.models.Spinner> = ArrayList()
+        val list: MutableList<com.example.luckyspinner.models.Spinner> = ArrayList()
 
         viewModel.spinnerList.value?.forEach {
             if (it.titleSpin.contains(text, true)) {
@@ -370,6 +378,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             randomSpinnerAdapter.spinners = list
         }
     }
+
     private fun filterMember(text: String) {
         if (text == "") {
             viewModel.isSearchingMember.value = false
@@ -380,7 +389,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
         viewModel.isSearchingMember.value = true
 
-        val list : MutableList<Member> = ArrayList()
+        val list: MutableList<Member> = ArrayList()
 
         viewModel.memberList.value?.forEach {
             if (it.nameMember.contains(text, true)) {
@@ -397,6 +406,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             memberInEventAdapter.members = list
         }
     }
+
     private fun setUpRecycleView() {
         bindingRandomDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
         binding.rvSpinnerList.apply {
@@ -433,7 +443,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
         bindingDateDialog.checkBoxAll.setOnClickListener {
             viewModel.event.value = viewModel.event.value?.apply {
-                listDay = if (bindingDateDialog.checkBoxAll.isChecked) Constants.LIST_DAY_ALL_WEEK else Constants.LIST_DAY_EMPTY
+                listDay =
+                    if (bindingDateDialog.checkBoxAll.isChecked) Constants.LIST_DAY_ALL_WEEK else Constants.LIST_DAY_EMPTY
                 println("Here come listday $listDay")
             }
         }
@@ -447,14 +458,18 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         dateDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dateDialog.setContentView(bindingDateDialog.root)
 
-        val window : Window = dateDialog.window!!
-        window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+        val window: Window = dateDialog.window!!
+        window.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        val windowAttribute : WindowManager.LayoutParams = window.attributes
+        val windowAttribute: WindowManager.LayoutParams = window.attributes
         windowAttribute.gravity = Gravity.CENTER
         window.attributes = windowAttribute
     }
+
     private fun setupChooseSpinnerDialog() {
         chooseSpinnerDialog = Dialog(requireContext())
         chooseSpinnerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -478,11 +493,14 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             chooseSpinnerDialog.dismiss()
         }
 
-        val window : Window = chooseSpinnerDialog.window!!
-        window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+        val window: Window = chooseSpinnerDialog.window!!
+        window.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        val windowAttribute : WindowManager.LayoutParams = window.attributes
+        val windowAttribute: WindowManager.LayoutParams = window.attributes
         windowAttribute.gravity = Gravity.CENTER
         window.attributes = windowAttribute
     }
@@ -514,11 +532,14 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             chooseMemberDialog.dismiss()
         }
 
-        val window : Window = chooseMemberDialog.window!!
-        window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+        val window: Window = chooseMemberDialog.window!!
+        window.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        val windowAttribute : WindowManager.LayoutParams = window.attributes
+        val windowAttribute: WindowManager.LayoutParams = window.attributes
         windowAttribute.gravity = Gravity.CENTER
         window.attributes = windowAttribute
     }
@@ -555,10 +576,11 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             }
         }
     }
-    fun handleDayOfWeek(event : Event) {
-        fun customButton(button : MaterialButton, isActive : Boolean) {
-            fun getColorBackGround(isActive : Boolean) : Int{
-                return if (isActive)  Color.parseColor("#6750A4") else Color.WHITE
+
+    fun handleDayOfWeek(event: Event) {
+        fun customButton(button: MaterialButton, isActive: Boolean) {
+            fun getColorBackGround(isActive: Boolean): Int {
+                return if (isActive) Color.parseColor("#6750A4") else Color.WHITE
             }
 
             button.setBackgroundColor(getColorBackGround(isActive))
@@ -584,7 +606,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
         progressDialog.show()
         val testId = Calendar.getInstance().timeInMillis.toString()
-        val constraints = Constraints(requiredNetworkType = NetworkType.CONNECTED, requiresBatteryNotLow = true)
+        val constraints =
+            Constraints(requiredNetworkType = NetworkType.CONNECTED, requiresBatteryNotLow = true)
 
 
         viewModel.saveEvent(
@@ -640,6 +663,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     fun handleMemberList() {
 
     }
+
     fun setupObservers() {
         viewModel.spinnerList.observe(viewLifecycleOwner) {
             if (viewModel.isSearchingSpinner.value == true) {
@@ -651,7 +675,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             }
 
             if (it.size > 2 && binding.rvSpinnerList.layoutManager !is GridLayoutManager) {
-                binding.rvSpinnerList.layoutManager = GridLayoutManager(context, 2 , GridLayoutManager.HORIZONTAL, false)
+                binding.rvSpinnerList.layoutManager =
+                    GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
             }
 
             var isAllSelected = true
@@ -680,7 +705,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             }
 
             if (it.size > 2 && binding.rvMemberList.layoutManager !is GridLayoutManager) {
-                binding.rvMemberList.layoutManager = GridLayoutManager(context, 2 , GridLayoutManager.HORIZONTAL, false)
+                binding.rvMemberList.layoutManager =
+                    GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
             }
 
             var isAllSelected = true
@@ -727,7 +753,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             else progressDialog.dismiss()
         }
     }
-    fun isEventValidate() : Boolean {
+
+    fun isEventValidate(): Boolean {
         var isValidated = true
         var memberCount = 0
         var spinnerCount = 0
@@ -736,14 +763,14 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         }
         if (memberCount < 2) {
             isValidated = false
-            Toast.makeText(context, "You must select at least 2 members",Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "You must select at least 2 members", Toast.LENGTH_LONG).show()
         }
         viewModel.spinnerList.value?.forEach {
             if (it.listEvent.contains(eventId)) ++spinnerCount
         }
         if (spinnerCount < 1) {
             isValidated = false
-            Toast.makeText(context, "You must select at least 1 spinner",Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "You must select at least 1 spinner", Toast.LENGTH_LONG).show()
         }
         binding.edtEventName.apply {
             if (text.toString().trim() == "") {
@@ -759,7 +786,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         return isValidated
     }
 
-    fun getListDay() : MutableList<Int> {
+    fun getListDay(): MutableList<Int> {
         return viewModel.event.value?.listDay ?: ArrayList()
     }
 
@@ -795,16 +822,16 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
     override fun onDeleteItem(id: String) {
     }
 
-    override fun onCheckboxClickSpinner(id: String, position : Int, hasSelected : Boolean) {
+    override fun onCheckboxClickSpinner(id: String, position: Int, hasSelected: Boolean) {
         viewModel.checkBoxSpinner(position, hasSelected)
     }
 
-    override fun onCheckboxClickMember(id : String, position : Int, hasSelected : Boolean) {
+    override fun onCheckboxClickMember(id: String, position: Int, hasSelected: Boolean) {
         viewModel.checkBoxMember(position, hasSelected)
     }
 
 
-    override fun onDateClick(position: Int, isChecked : Boolean) {
+    override fun onDateClick(position: Int, isChecked: Boolean) {
         val dayNumber = if (isChecked) changeTheNumberOfDay(position) else 0
         println("Here come daynumber $dayNumber")
         viewModel.event.value = viewModel.event.value?.apply {
@@ -816,7 +843,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
     override fun onDestroyView() {
         super.onDestroyView()
-        val list : MutableList<MutableLiveData<*>> = ArrayList()
+        val list: MutableList<MutableLiveData<*>> = ArrayList()
         list.add(viewModel.isGettingSpinnerSuccess)
         list.add(viewModel.isGettingEventSuccess)
         list.add(viewModel.isSaveEventSuccess)

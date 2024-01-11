@@ -5,14 +5,13 @@
     android:layout_height="58dp"
     android:layout_marginStart="5dp"
     android:layout_marginTop="5dp"
-    app:cardCornerRadius="10dp"
-    app:cardElevation="8dp">
+    app:cardCornerRadius="10dp">
 
     <LinearLayout
         android:id="@+id/linear_member_in_event"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@color/purple_light"
         android:orientation="horizontal"
         android:padding="5dp">
 
