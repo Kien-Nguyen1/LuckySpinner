@@ -3,17 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
+    android:layout_marginHorizontal="10dp"
     android:layout_marginTop="10dp"
-    app:cardCornerRadius="10dp"
-    app:cardElevation="8dp">
+    app:cardCornerRadius="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@color/purple_light"
         android:orientation="horizontal"
         android:padding="10dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/ic_member" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -61,8 +67,8 @@
             android:layout_gravity="center_vertical"
             android:layout_marginStart="10dp"
             android:contentDescription="Edit"
-            app:icon="@drawable/ic_edit"
             android:visibility="gone"
+            app:icon="@drawable/ic_edit"
             app:iconTint="@color/black" />
 
         <com.google.android.material.button.MaterialButton
