@@ -5,17 +5,20 @@ import android.app.ProgressDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnScrollChangeListener
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
+import android.widget.TextView.OnEditorActionListener
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
@@ -49,6 +52,7 @@ import com.example.luckyspinner.util.Function.changeTheNumberOfDay
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.search.SearchView.TransitionState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.Duration
@@ -173,6 +177,12 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         binding.timePicker.setIs24HourView(true)
 
         binding.searchViewSpinner.setupWithSearchBar(binding.searchBarSpinner)
+        binding.searchViewMember.setupWithSearchBar(binding.searchBarMember)
+
+//        binding.searchViewSpinner.toolbar.setNavigationOnClickListener {
+//
+//        }
+        
 
 
         binding.appBarAddTimeEvent.apply {
@@ -188,34 +198,35 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 //                searchView.hide()
 //                false
 //            }
+
+        binding.searchViewSpinner.addTransitionListener { searchView, previousState, newState ->
+            println("Here come $previousState , $newState")
+            if (newState == TransitionState.HIDDEN) {
+                binding.searchViewSpinner.editText.setText("")
+                binding.checkBoxAllSpinner.isVisible = true
+            }
+            if (newState == TransitionState.SHOWING) {
+                binding.checkBoxAllSpinner.isVisible = false
+            }
+        }
+        binding.searchViewMember.addTransitionListener { searchView, previousState, newState ->
+            if (newState == TransitionState.HIDDEN) {
+                binding.searchViewMember.editText.setText("")
+                binding.checkBoxAllMember.isVisible = true
+            }
+            if (newState == TransitionState.SHOWING) {
+                binding.checkBoxAllMember.isVisible = false
+            }
+        }
         binding.searchViewSpinner.editText.setOnEditorActionListener { v, actionId, event ->
-            filterSpinner(binding.searchViewSpinner.text.toString())
             false
         }
-//        binding.searchViewSpinner.set(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
-//            override fun onQueryTextSubmit(query: String?): Boolean {
-//                Function.hideKeyBoard(context, binding.searchViewSpinner)
-//                return true
-//            }
-//
-//            override fun onQueryTextChange(newText: String): Boolean {
-//                println("Here come newText $newText  ${newText.isBlank()}")
-//                filterSpinner(newText)
-//                return false
-//            }
-//        })
-//        binding.searchViewMember.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
-//            override fun onQueryTextSubmit(query: String?): Boolean {
-//                Function.hideKeyBoard(context, binding.searchViewMember)
-//                return true
-//            }
-//
-//            override fun onQueryTextChange(newText: String): Boolean {
-//                filterMember(newText)
-//                return false
-//            }
-//        })
-
+        binding.searchViewSpinner.editText.doOnTextChanged { text, start, before, count ->
+            filterSpinner(text.toString())
+        }
+        binding.searchViewMember.editText.doOnTextChanged { text, start, before, count ->
+            filterMember(text.toString())
+        }
     }
 
 
