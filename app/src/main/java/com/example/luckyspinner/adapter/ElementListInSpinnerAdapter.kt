@@ -66,7 +66,7 @@ class ElementListInSpinnerAdapter(private val listener: Listener) : RecyclerView
             }
             btnDeleteElementTitle.isVisible = false
 
-            btnEditElementTitle.setOnClickListener {
+            root.setOnClickListener {
                 onEditClickListener.onEditClick(position)
             }
             btnDeleteElementTitle.setOnClickListener {

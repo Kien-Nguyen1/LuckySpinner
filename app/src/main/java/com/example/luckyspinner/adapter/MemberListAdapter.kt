@@ -97,7 +97,7 @@ class MemberListAdapter(
 
 
             btnDeleteMemberName.isVisible = false
-            btnEditMemberName.setOnClickListener {
+            root.setOnClickListener {
                 onEditClickListener.onEditClick(position)
             }
             btnDeleteMemberName.setOnClickListener {

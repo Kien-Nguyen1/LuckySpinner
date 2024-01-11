@@ -689,9 +689,9 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
                 }
             }
 
-            bindingRandomDialog.checkBoxAll.isChecked = isAllSelected
-            bindingRandomDialog.checkBoxAll.setOnClickListener {
-                viewModel.allCheckboxSpinner(!bindingRandomDialog.checkBoxAll.isChecked)
+            binding.checkBoxAllSpinner.isChecked = isAllSelected
+            binding.checkBoxAllSpinner.setOnClickListener {
+                viewModel.allCheckboxSpinner(!binding.checkBoxAllSpinner.isChecked)
             }
         }
 
@@ -719,11 +719,11 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
                 }
             }
 
-            bindingMemberDialog.checkBoxAll.isChecked = isAllSelected
+            binding.checkBoxAllMember.isChecked = isAllSelected
             println("Here come is $isAllSelected")
 
-            bindingMemberDialog.checkBoxAll.setOnClickListener {
-                viewModel.allCheckboxMember(!bindingMemberDialog.checkBoxAll.isChecked)
+            binding.checkBoxAllMember.setOnClickListener {
+                viewModel.allCheckboxMember(!binding.checkBoxAllMember.isChecked)
             }
         }
 
