@@ -67,7 +67,7 @@ object Function {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (dy != 0 && !fab.isShown) {
                     fab.show()
-                } else if (dy != 0 && fab.isShown) {
+                } else if (dy > 0 && fab.isShown) {
                     fab.hide()
                     countDownTimer.cancel()
                     countDownTimer.start()
