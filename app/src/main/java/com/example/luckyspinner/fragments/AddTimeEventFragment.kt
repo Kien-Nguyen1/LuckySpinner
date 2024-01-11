@@ -193,7 +193,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             }
 
             override fun onScrollChange(view: View?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int) {
-                if (scrollY != oldScrollY && binding.btnDoneAddTimeEvent.isShown){
+                if (scrollY > oldScrollY && binding.btnDoneAddTimeEvent.isShown){
                     binding.btnDoneAddTimeEvent.hide()
                     countDownTimer.cancel()
                     countDownTimer.start()
@@ -239,6 +239,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
                 return false
             }
         })
+
+        binding.timePicker.setIs24HourView(true)
     }
 
 

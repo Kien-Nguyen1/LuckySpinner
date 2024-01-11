@@ -52,7 +52,9 @@
                 android:id="@+id/time_picker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:timePickerMode="spinner" />
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="5dp"
+                android:timePickerMode="clock" />
 
             <include
                 android:id="@+id/date_picker"
