@@ -4,7 +4,7 @@
 
         <item name="android:statusBarColor">#DFD5EC</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:timePickerStyle">@style/TimePicker</item>
+<!--        <item name="android:timePickerStyle">@style/TimePicker</item>-->
     </style>
 
     <style name="TimePicker"  parent="Widget.MaterialComponents.TimePicker">

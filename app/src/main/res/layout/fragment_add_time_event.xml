@@ -18,7 +18,7 @@
         android:id="@+id/scroll_view_add_time"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/linear_layout_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/app_bar_add_time_event">
@@ -65,7 +65,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
+                android:layout_marginHorizontal="10dp"
                 android:layout_marginTop="50dp"
                 android:orientation="horizontal">
 
@@ -78,15 +78,28 @@
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
-                <androidx.appcompat.widget.SearchView
+                <com.google.android.material.search.SearchBar
+                    android:id="@+id/search_bar_spinner"
+                    style="?attr/materialSearchBarStyle"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="20dp" />
+
+                <com.google.android.material.search.SearchView
                     android:id="@+id/search_view_spinner"
-                    android:layout_width="match_parent"
+                    style="?attr/materialSearchViewStyle"
+                    android:layout_width="170dp"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical" />
+
+                <CheckBox
+                    android:id="@+id/check_box_all_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginStart="10dp"
-                    android:background="@drawable/background_search_view"
-                    app:iconifiedByDefault="false"
-                    app:queryBackground="@android:color/transparent"
-                    app:queryHint="Search Spinner..." />
+                    android:text="All" />
 
             </LinearLayout>
 
@@ -127,15 +140,29 @@
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
-                <androidx.appcompat.widget.SearchView
+                <com.google.android.material.search.SearchBar
+                    android:id="@+id/search_bar_member"
+                    style="?attr/materialSearchBarStyle"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="10dp" />
+
+                <com.google.android.material.search.SearchView
                     android:id="@+id/search_view_member"
-                    android:layout_width="match_parent"
+                    style="?attr/materialSearchViewStyle"
+                    android:layout_width="170dp"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:visibility="gone" />
+
+                <CheckBox
+                    android:id="@+id/check_box_all_member"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginStart="10dp"
-                    android:background="@drawable/background_search_view"
-                    app:iconifiedByDefault="false"
-                    app:queryBackground="@android:color/transparent"
-                    app:queryHint="Search Member..." />
+                    android:text="All" />
 
             </LinearLayout>
 
@@ -161,28 +188,40 @@
                 android:textStyle="bold"
                 android:visibility="gone" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_spinner_now"
-                style="?attr/materialIconButtonOutlinedStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="50dp"
-                android:layout_marginBottom="25dp"
-                android:text="Test Now" />
-
         </LinearLayout>
     </ScrollView>
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/btn_done_add_time_event"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linear_layout_button"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_done"
-        android:text="Save"
-        app:icon="@drawable/ic_save"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:paddingVertical="10dp"
+        android:gravity="center_horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_spinner_now"
+            style="?attr/materialIconButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="10dp"
+            android:text="Test Now" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_done_add_time_event"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_done"
+            android:layout_weight="1"
+            android:backgroundTint="@color/purple_light"
+            android:textColor="@color/purple"
+            android:layout_marginHorizontal="10dp"
+            android:text="Save" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

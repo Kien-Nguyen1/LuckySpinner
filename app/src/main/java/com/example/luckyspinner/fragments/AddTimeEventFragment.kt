@@ -1,6 +1,5 @@
 package com.example.luckyspinner.fragments
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.app.ProgressDialog
 import android.graphics.Color
@@ -8,18 +7,16 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.Gravity
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnScrollChangeListener
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
-import android.widget.TimePicker
 import android.widget.Toast
-import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
@@ -35,13 +32,10 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.DateListAdapter
 import com.example.luckyspinner.adapter.MemberInEventListAdapter
 import com.example.luckyspinner.adapter.RandomSpinnerListAdapter
-import com.example.luckyspinner.databinding.AddChannelLayoutBinding
 import com.example.luckyspinner.databinding.ChooseRandomSpinnerListLayoutBinding
-import com.example.luckyspinner.databinding.EditDialogBinding
 import com.example.luckyspinner.databinding.FragmentAddTimeEventBinding
 import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Member
@@ -52,15 +46,10 @@ import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
 import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.util.Function.addMarginToLastItem
 import com.example.luckyspinner.util.Function.changeTheNumberOfDay
-import com.example.luckyspinner.util.Function.numberToMinuteForm
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.timepicker.MaterialTimePicker
-import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
-import com.google.android.material.timepicker.TimeFormat
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.util.Calendar
@@ -101,7 +90,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
 
         hasSetNameAndTime = false
 
-        channelId = arguments?.getString(Constants.ID_CHANNEL_KEY)!!
+        channelId = arguments?.getString(ID_CHANNEL_KEY)!!
 
         if (isFirstLoad) {
             eventId = arguments?.getString(Constants.ID_EVENT_KEY)
@@ -180,67 +169,53 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
             handleTestNow()
         }
 
-        binding.scrollViewAddTime.setOnScrollChangeListener(object : OnScrollChangeListener{
-            val countDownTimer = object : CountDownTimer(2000, 1000) {
-                override fun onTick(p0: Long) {
-                    //
-                }
 
-                override fun onFinish() {
-                    if (!binding.btnDoneAddTimeEvent.isShown)
-                        binding.btnDoneAddTimeEvent.show()
-                }
-            }
+        binding.timePicker.setIs24HourView(true)
 
-            override fun onScrollChange(view: View?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int) {
-                if (scrollY > oldScrollY && binding.btnDoneAddTimeEvent.isShown){
-                    binding.btnDoneAddTimeEvent.hide()
-                    countDownTimer.cancel()
-                    countDownTimer.start()
-                }
-                else
-                    binding.btnDoneAddTimeEvent.show()
-            }
-        })
+        binding.searchViewSpinner.setupWithSearchBar(binding.searchBarSpinner)
+
 
         binding.appBarAddTimeEvent.apply {
             btnBack.setOnClickListener {
                 findNavController().popBackStack()
             }
         }
-        val picker =
-            MaterialTimePicker.Builder()
-                .setTimeFormat(TimeFormat.CLOCK_12H)
-                .setHour(12)
-                .setMinute(10)
-                .setTitleText("Select Appointment time")
-                .build()
-        picker.show(requireFragmentManager(), "tag")
-        binding.searchViewSpinner.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                Function.hideKeyBoard(context, binding.searchViewSpinner)
-                return true
-            }
 
-            override fun onQueryTextChange(newText: String): Boolean {
-                println("Here come newText $newText  ${newText.isBlank()}")
-                filterSpinner(newText)
-                return false
-            }
-        })
-        binding.searchViewMember.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                Function.hideKeyBoard(context, binding.searchViewMember)
-                return true
-            }
+//        searchView
+//            .getEditText()
+//            .setOnEditorActionListener { v, actionId, event ->
+//                searchBar.setText(searchView.getText())
+//                searchView.hide()
+//                false
+//            }
+        binding.searchViewSpinner.editText.setOnEditorActionListener { v, actionId, event ->
+            filterSpinner(binding.searchViewSpinner.text.toString())
+            false
+        }
+//        binding.searchViewSpinner.set(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+//            override fun onQueryTextSubmit(query: String?): Boolean {
+//                Function.hideKeyBoard(context, binding.searchViewSpinner)
+//                return true
+//            }
+//
+//            override fun onQueryTextChange(newText: String): Boolean {
+//                println("Here come newText $newText  ${newText.isBlank()}")
+//                filterSpinner(newText)
+//                return false
+//            }
+//        })
+//        binding.searchViewMember.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+//            override fun onQueryTextSubmit(query: String?): Boolean {
+//                Function.hideKeyBoard(context, binding.searchViewMember)
+//                return true
+//            }
+//
+//            override fun onQueryTextChange(newText: String): Boolean {
+//                filterMember(newText)
+//                return false
+//            }
+//        })
 
-            override fun onQueryTextChange(newText: String): Boolean {
-                filterMember(newText)
-                return false
-            }
-        })
-
-        binding.timePicker.setIs24HourView(true)
     }
 
 
@@ -295,7 +270,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         workManager.apply {
             val data = workDataOf(
                 Constants.ID_TELEGRAM_CHANNEL_KEY to telegramChannelId,
-                Constants.ID_CHANNEL_KEY to channelId,
+                ID_CHANNEL_KEY to channelId,
                 Constants.ID_EVENT_KEY to eventId,
                 Constants.DEVICE_ID_KEY to Constants.DEVICE_ID
             )
@@ -616,7 +591,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener, Date
         workManager.apply {
             val data = workDataOf(
                 Constants.ID_TELEGRAM_CHANNEL_KEY to telegramChannelId,
-                Constants.ID_CHANNEL_KEY to channelId,
+                ID_CHANNEL_KEY to channelId,
                 Constants.ID_EVENT_KEY to testId,
                 Constants.DEVICE_ID_KEY to Constants.DEVICE_ID
             )
