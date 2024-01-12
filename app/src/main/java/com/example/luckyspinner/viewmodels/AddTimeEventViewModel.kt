@@ -236,12 +236,21 @@ class AddTimeEventViewModel : ViewModel() {
 
      fun allCheckboxSpinner(hasSelected: Boolean) {
         spinnerList.value!!.forEachIndexed { index, spinner ->
-            checkBoxSpinner(index, hasSelected)
+            val spinners = spinnerList.value!!
+            spinners[index].hasSelected = !hasSelected
+            if (hasSelected) {
+                spinners[index].listEvent = spinners[index].listEvent.filter {
+                    it != event.value!!.idEvent
+                }.toMutableList()
+            } else {
+                spinners[index].listEvent.add(event.value!!.idEvent)
+            }
+            if (index == spinners.size - 1)     spinnerList.value = spinners
         }
     }
      fun allCheckboxMember(hasSelected: Boolean) {
-        memberList.value!!.forEachIndexed { index, member ->
-            val members = memberList.value!!
+         val members = memberList.value!!
+         memberList.value!!.forEachIndexed { index, member ->
             members[index].hasSelected = !hasSelected
             if (hasSelected) {
                 members[index].listEvent = members[index].listEvent.filter {

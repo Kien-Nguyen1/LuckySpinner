@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.ContextCompat.getSystemServiceName
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
@@ -157,6 +158,13 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         }
 
         binding.rvChannelList.addFabScrollListener(binding.btnAddChannel)
+    }
+
+    fun filterChannel(text : String) {
+        val  list = viewModel.channelList.value!!.filter {
+            it.nameChannel.contains(text)
+        }
+        channelListAdapter.channels = list
     }
 
     private fun openAddChannelDialog(gravity: Int) {

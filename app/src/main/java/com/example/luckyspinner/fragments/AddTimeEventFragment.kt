@@ -180,9 +180,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
         binding.searchViewSpinner.setupWithSearchBar(binding.searchBarSpinner)
         binding.searchViewMember.setupWithSearchBar(binding.searchBarMember)
 
-//        binding.searchViewSpinner.toolbar.setNavigationOnClickListener {
-//
-//        }
         
 
 
@@ -361,7 +358,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
             return
         }
         viewModel.isSearchingSpinner.value = true
-        val list: MutableList<com.example.luckyspinner.models.Spinner> = ArrayList()
+        val list: MutableList<Spinner> = ArrayList()
 
         viewModel.spinnerList.value?.forEach {
             if (it.titleSpin.contains(text, true)) {
@@ -673,12 +670,13 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
             randomSpinnerAdapter.spinners = it.toMutableList().apply {
                 add(Spinner(idSpin = Constants.ID_ADD_MORE))
             }
+            randomSpinnerAdapter.notifyDataSetChanged()
 
             if (it.size > 2 && binding.rvSpinnerList.layoutManager !is GridLayoutManager) {
                 binding.rvSpinnerList.layoutManager =
                     GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
             }
-
+            println("Here come ${it.size}")
             var isAllSelected = true
             run breaking@{
                 it.forEach { spinner ->
@@ -691,7 +689,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
 
             binding.checkBoxAllSpinner.isChecked = isAllSelected
             binding.checkBoxAllSpinner.setOnClickListener {
-                viewModel.allCheckboxSpinner(!binding.checkBoxAllSpinner.isChecked)
+                viewModel.allCheckboxSpinner(isAllSelected)
             }
         }
 
@@ -703,6 +701,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
             memberInEventAdapter.members = it.toMutableList().apply {
                 add(Member(idMember = Constants.ID_ADD_MORE))
             }
+            memberInEventAdapter.notifyDataSetChanged()
 
             if (it.size > 2 && binding.rvMemberList.layoutManager !is GridLayoutManager) {
                 binding.rvMemberList.layoutManager =
@@ -723,7 +722,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
             println("Here come is $isAllSelected")
 
             binding.checkBoxAllMember.setOnClickListener {
-                viewModel.allCheckboxMember(!binding.checkBoxAllMember.isChecked)
+                viewModel.allCheckboxMember(isAllSelected)
             }
         }
 
