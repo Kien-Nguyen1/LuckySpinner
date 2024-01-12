@@ -24,6 +24,8 @@ import androidx.core.content.ContextCompat.getSystemServiceName
 import androidx.core.view.MenuItemCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.get
+import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -168,11 +170,27 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         }
 
         binding.rvChannelList.addFabScrollListener(binding.btnAddChannel)
+        val searchView = binding.searchViewCustom
+
+        searchView.isVisible = false
+        binding.close.isVisible = false
+
+        binding.close.setOnClickListener {
+            println("Here come")
+            binding.toolBarChannelList.menu.findItem(R.id.search).isVisible = true
+            searchView.isVisible = false
+            searchView.setQuery("", false)
+            it.isVisible = false
+        }
 
         binding.toolBarChannelList.setOnMenuItemClickListener { menuItem ->
+
             when(menuItem.itemId) {
                 R.id.search -> {
-                    val searchView : androidx.appcompat.widget.SearchView = menuItem.actionView as androidx.appcompat.widget.SearchView
+//                    val searchView : androidx.appcompat.widget.SearchView = menuItem.actionView as androidx.appcompat.widget.SearchView
+
+                    searchView.isVisible = true
+                    binding.close.isVisible = true
                     searchView.queryHint = "Search Channel..."
                     searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
                         override fun onQueryTextSubmit(query: String?): Boolean {
