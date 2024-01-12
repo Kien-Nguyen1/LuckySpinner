@@ -44,13 +44,13 @@ import java.util.Calendar
 
 class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Listener {
     private val viewModel by viewModels<ElementListInSpinnerViewModel>()
-    private lateinit var binding : FragmentElementListInSpinnerBinding
-    private lateinit var elementAdapter : ElementListInSpinnerAdapter
-    private lateinit var idSpinner : String
-    private var titleSpinner : String? = null
-    private lateinit var idChannel : String
-    private lateinit var addElementInSpinnerDiaLog : Dialog
-    private lateinit var editElementDialog : Dialog
+    private lateinit var binding: FragmentElementListInSpinnerBinding
+    private lateinit var elementAdapter: ElementListInSpinnerAdapter
+    private lateinit var idSpinner: String
+    private var titleSpinner: String? = null
+    private lateinit var idChannel: String
+    private lateinit var addElementInSpinnerDiaLog: Dialog
+    private lateinit var editElementDialog: Dialog
     var isFirstLoad = true
 
     override fun onCreateView(
@@ -63,10 +63,12 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         idSpinner = arguments?.getString(ID_SPINNER_KEY)!!
         titleSpinner = arguments?.getString(SPINNER_TITLE)
 
-        binding.appBarElementListSpinner.apply {
-            tvTitleAppBar.text = titleSpinner
-            btnSpinnerList.visibility = View.GONE
-            btnMemberList.visibility = View.GONE
+        binding.appBarElementListSpinner.toolBar.apply {
+            title = titleSpinner
+            menu.apply {
+                findItem(R.id.spinnerListFragment).isVisible = false
+                findItem(R.id.memberListFragment).isVisible = false
+            }
         }
 
         return binding.root
@@ -79,7 +81,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
 
         elementAdapter.onEditClickListener = object : OnEditClickListener {
             override fun onEditClick(position: Int) {
-                val binding : EditDialogBinding = EditDialogBinding.inflate(layoutInflater)
+                val binding: EditDialogBinding = EditDialogBinding.inflate(layoutInflater)
 
                 editElementDialog = Dialog(requireContext())
                 editElementDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -106,11 +108,14 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
                     editElementDialog.dismiss()
                 }
 
-                val window : Window = editElementDialog.window!!
-                window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+                val window: Window = editElementDialog.window!!
+                window.setLayout(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
                 window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-                val windowAttribute : WindowManager.LayoutParams = window.attributes
+                val windowAttribute: WindowManager.LayoutParams = window.attributes
                 windowAttribute.gravity = Gravity.CENTER
                 window.attributes = windowAttribute
 
@@ -129,21 +134,40 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
             }
         }
 
-        binding.appBarElementListSpinner.apply {
-            btnBack.setOnClickListener {
-                findNavController().popBackStack()
-            }
+        binding.appBarElementListSpinner.toolBar.setNavigationOnClickListener {
+            findNavController().popBackStack()
         }
 
         binding.btnAddElementListInSpinner.setOnClickListener {
             openAddElementInSpinnerDiaLog(Gravity.CENTER)
         }
 
+        binding.appBarElementListSpinner.toolBar.setOnMenuItemClickListener { menuItem ->
+            val searchView : androidx.appcompat.widget.SearchView = menuItem.actionView as androidx.appcompat.widget.SearchView
+            searchView.queryHint = "Search Element..."
+            when(menuItem.itemId) {
+                R.id.search -> {
+                    searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
+                        override fun onQueryTextSubmit(query: String?): Boolean {
+                            return false
+                        }
+
+                        override fun onQueryTextChange(newText: String?): Boolean {
+                            return false
+                        }
+                    })
+                    true
+                }
+
+                else -> false
+            }
+        }
+
         binding.rvElementListInSpinner.addFabScrollListener(binding.btnAddElementListInSpinner)
     }
 
     private fun openAddElementInSpinnerDiaLog(gravity: Int) {
-        val binding : AddChannelLayoutBinding = AddChannelLayoutBinding.inflate(layoutInflater)
+        val binding: AddChannelLayoutBinding = AddChannelLayoutBinding.inflate(layoutInflater)
         addElementInSpinnerDiaLog = Dialog(requireContext())
         addElementInSpinnerDiaLog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         addElementInSpinnerDiaLog.setContentView(binding.root)
@@ -151,11 +175,14 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         binding.tvAddChannel.text = "Tên phần tử"
         binding.edtEnterChannelId.isVisible = false
 
-        val window : Window = addElementInSpinnerDiaLog.window!!
-        window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+        val window: Window = addElementInSpinnerDiaLog.window!!
+        window.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        val windowAttribute : WindowManager.LayoutParams = window.attributes
+        val windowAttribute: WindowManager.LayoutParams = window.attributes
         windowAttribute.gravity = gravity
         window.attributes = windowAttribute
 
@@ -165,12 +192,14 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
                 binding.edtEnterChannelName.error = "Please fill this field"
                 return@setOnClickListener
             }
-            viewModel.addElement(idChannel,
+            viewModel.addElement(
+                idChannel,
                 idSpinner,
                 ElementSpinner(
-                Calendar.getInstance().timeInMillis.toString(),
-                binding.edtEnterChannelName.text.toString()
-            ))
+                    Calendar.getInstance().timeInMillis.toString(),
+                    binding.edtEnterChannelName.text.toString()
+                )
+            )
         }
         binding.btnCancelAddChannel.setOnClickListener {
             addElementInSpinnerDiaLog.dismiss()
@@ -205,8 +234,9 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         viewModel.isDeleteSuccess.observe(viewLifecycleOwner) {
             println("Here the observer delete come")
             it?.let {
-                if(it) {
-                    Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT).show()
+                if (it) {
+                    Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT)
+                        .show()
                 } else {
                     Toast.makeText(context, "Delete Channel Fail!!", Toast.LENGTH_SHORT).show()
                 }
@@ -252,7 +282,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
 
     override fun onDestroyView() {
         super.onDestroyView()
-        val list : MutableList<MutableLiveData<*>> = ArrayList<MutableLiveData<*>>().apply {
+        val list: MutableList<MutableLiveData<*>> = ArrayList<MutableLiveData<*>>().apply {
             add(viewModel.isAddingSuccess)
             add(viewModel.isEditingSuccess)
             add(viewModel.isDeleteSuccess)
@@ -260,5 +290,5 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         Function.toNull(list)
         list.add(viewModel.elementList)
         Function.removeObservers(list, viewLifecycleOwner)
-        }
+    }
 }

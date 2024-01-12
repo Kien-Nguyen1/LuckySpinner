@@ -62,10 +62,12 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
 
         idChannel = arguments?.getString(ID_CHANNEL_KEY).toString()
 
-        binding.appBarSpinnerList.apply {
-            tvTitleAppBar.text = "Spinner List"
-            btnSpinnerList.visibility = View.GONE
-            btnMemberList.visibility = View.GONE
+        binding.appBarSpinnerList.toolBar.apply {
+            title = "Spinner List"
+            menu.apply {
+                findItem(R.id.spinnerListFragment).isVisible = false
+                findItem(R.id.memberListFragment).isVisible = false
+            }
         }
 
         return binding.root
@@ -88,9 +90,30 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
             openAddSpinnerDiaLog(Gravity.CENTER)
         }
 
-        binding.appBarSpinnerList.apply {
-            btnBack.setOnClickListener {
+        binding.appBarSpinnerList.toolBar.apply {
+            setNavigationOnClickListener {
                 findNavController().popBackStack()
+            }
+        }
+
+        binding.appBarSpinnerList.toolBar.setOnMenuItemClickListener { menuItem ->
+            val searchView : androidx.appcompat.widget.SearchView = menuItem.actionView as androidx.appcompat.widget.SearchView
+            searchView.queryHint = "Search Spinner..."
+            when(menuItem.itemId) {
+                R.id.search -> {
+                    searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
+                        override fun onQueryTextSubmit(query: String?): Boolean {
+                            return false
+                        }
+
+                        override fun onQueryTextChange(newText: String?): Boolean {
+                            return false
+                        }
+                    })
+                    true
+                }
+
+                else -> false
             }
         }
 

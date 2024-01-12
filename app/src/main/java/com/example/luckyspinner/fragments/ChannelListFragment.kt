@@ -1,6 +1,7 @@
 package com.example.luckyspinner.fragments
 
 import android.app.Dialog
+import android.app.Notification.Action
 import android.app.ProgressDialog
 import android.content.Context
 import android.graphics.Color
@@ -14,10 +15,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import android.view.WindowManager.LayoutParams
 import android.view.inputmethod.InputMethodManager
+import android.widget.SearchView.OnQueryTextListener
 import android.widget.Toast
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.ContextCompat.getSystemServiceName
+import androidx.core.view.MenuItemCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -43,6 +47,7 @@ import com.example.luckyspinner.util.DialogUtil
 import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.util.Function.addFabScrollListener
 import com.example.luckyspinner.viewmodels.ChannelListViewModel
+import com.google.android.material.search.SearchView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -78,6 +83,11 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             viewModel.getChannels()
             isFirstLoad = false
             println("listchannel Here come get channels")
+        }
+
+        binding.toolBarChannelList.menu.apply {
+            findItem(R.id.spinnerListFragment).isVisible = false
+            findItem(R.id.memberListFragment).isVisible = false
         }
 
         // Inflate the layout for this fragment
@@ -157,6 +167,27 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         }
 
         binding.rvChannelList.addFabScrollListener(binding.btnAddChannel)
+
+        binding.toolBarChannelList.setOnMenuItemClickListener { menuItem ->
+            val searchView : androidx.appcompat.widget.SearchView = menuItem.actionView as androidx.appcompat.widget.SearchView
+            searchView.queryHint = "Search Channel..."
+            when(menuItem.itemId) {
+                R.id.search -> {
+                    searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
+                        override fun onQueryTextSubmit(query: String?): Boolean {
+                            return false
+                        }
+
+                        override fun onQueryTextChange(newText: String?): Boolean {
+                            return false
+                        }
+                    })
+                    true
+                }
+
+                else -> false
+            }
+        }
     }
 
     private fun openAddChannelDialog(gravity: Int) {
