@@ -7,7 +7,7 @@
 
     <include
         android:id="@+id/app_bar_add_time_event"
-        layout="@layout/custom_app_bar_layout"
+        layout="@layout/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,8 +33,8 @@
                 style="?attr/textInputOutlinedDenseStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
                 android:gravity="center_horizontal"
                 android:hint="Event Name"
                 app:endIconMode="clear_text">
@@ -52,9 +52,14 @@
                 android:id="@+id/time_picker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
+                android:layout_marginHorizontal="10dp"
                 android:layout_marginTop="5dp"
-                android:timePickerMode="clock" />
+                android:timePickerMode="clock"
+                android:numbersTextColor="@color/black"
+                android:numbersBackgroundColor="#ECE6F0"
+                android:numbersSelectorColor="#6750A4"
+                android:headerBackground="@android:color/transparent"
+                android:headerTimeTextAppearance="@style/TextAppearance" />
 
             <include
                 android:id="@+id/date_picker"
@@ -78,28 +83,20 @@
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
-                <com.google.android.material.search.SearchBar
-                    android:id="@+id/search_bar_spinner"
-                    style="?attr/materialSearchBarStyle"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="20dp" />
-
-                <com.google.android.material.search.SearchView
+                <androidx.appcompat.widget.SearchView
                     android:id="@+id/search_view_spinner"
-                    style="?attr/materialSearchViewStyle"
-                    android:layout_width="170dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="250dp"
+                    android:layout_height="40dp"
+                    android:layout_marginHorizontal="10dp"
                     android:layout_gravity="center_vertical"
-                    android:visibility="gone" />
+                    app:queryHint="Search Spinner..."
+                    style="@style/BackGroundSearchView"/>
 
                 <CheckBox
                     android:id="@+id/check_box_all_spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginStart="10dp"
                     android:text="All" />
 
             </LinearLayout>
@@ -108,7 +105,6 @@
                 android:id="@+id/rv_spinner_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 tools:itemCount="1"
                 tools:listitem="@layout/random_spinner_list_item" />
 
@@ -128,7 +124,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
+                android:layout_marginHorizontal="10dp"
                 android:layout_marginTop="50dp"
                 android:orientation="horizontal">
 
@@ -141,28 +137,20 @@
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
-                <com.google.android.material.search.SearchBar
-                    android:id="@+id/search_bar_member"
-                    style="?attr/materialSearchBarStyle"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="10dp" />
-
-                <com.google.android.material.search.SearchView
+                <androidx.appcompat.widget.SearchView
                     android:id="@+id/search_view_member"
-                    style="?attr/materialSearchViewStyle"
-                    android:layout_width="170dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="250dp"
+                    android:layout_height="40dp"
+                    android:layout_marginHorizontal="10dp"
                     android:layout_gravity="center_vertical"
-                    android:visibility="gone" />
+                    app:queryHint="Search Spinner..."
+                    style="@style/BackGroundSearchView"/>
 
                 <CheckBox
                     android:id="@+id/check_box_all_member"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginStart="10dp"
                     android:text="All" />
 
             </LinearLayout>
@@ -171,7 +159,6 @@
                 android:id="@+id/rv_member_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:minHeight="60dp"
                 tools:itemCount="1"
                 tools:listitem="@layout/member_list_item_in_event" />
@@ -196,31 +183,29 @@
         android:id="@+id/linear_layout_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:orientation="horizontal"
+        android:paddingVertical="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:paddingVertical="10dp"
-        android:gravity="center_horizontal">
+        app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_spinner_now"
             style="?attr/materialIconButtonOutlinedStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginHorizontal="10dp"
+            android:layout_weight="1"
             android:text="Test Now" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_done_add_time_event"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_done"
-            android:layout_weight="1"
-            android:backgroundTint="@color/purple_light"
-            android:textColor="@color/purple"
             android:layout_marginHorizontal="10dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_done"
             android:text="Save" />
 
     </LinearLayout>
