@@ -37,7 +37,7 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
         }
 
         override fun areContentsTheSame(oldItem: Spinner, newItem: Spinner): Boolean {
-            return oldItem == newItem
+            return false
         }
     }
 
@@ -46,7 +46,6 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
         get() = differ.currentList
         set(value) {
             differ.submitList(value)
-//            notifyDataSetChanged()
         }
 
     override fun getItemCount() = spinners.size

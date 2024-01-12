@@ -38,7 +38,7 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
         }
 
         override fun areContentsTheSame(oldItem: Member, newItem: Member): Boolean {
-            return oldItem == newItem
+            return false
         }
     }
 

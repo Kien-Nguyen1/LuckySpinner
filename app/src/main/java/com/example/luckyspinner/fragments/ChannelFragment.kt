@@ -111,6 +111,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         binding.appBarChannel.toolBar.setOnMenuItemClickListener { menuItem ->
             when(menuItem.itemId) {
                 R.id.search -> {
+                    binding.appBarChannel.toolBar.setNavigationIcon(R.drawable.ic_cancel)
                     val searchView : SearchView = menuItem.actionView as SearchView
                     searchView.queryHint = "Search Event..."
                     searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{

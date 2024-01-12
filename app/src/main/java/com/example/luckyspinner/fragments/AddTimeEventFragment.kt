@@ -358,6 +358,12 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
                 list.add(it)
             }
         }
+
+        randomSpinnerAdapter.spinners = list.apply {
+            add(Spinner(idSpin = Constants.ID_ADD_MORE))
+        }
+
+
         if (list.isEmpty()) {
             binding.rvSpinnerList.isVisible = false
             binding.tvTitleStatusSpinner.isVisible = true
@@ -386,6 +392,10 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
                 list.add(it)
             }
         }
+        memberInEventAdapter.members = list.apply {
+            add(Member(idMember = Constants.ID_ADD_MORE))
+        }
+
         if (list.isEmpty()) {
             binding.rvMemberList.isVisible = false
             binding.tvTitleStatusMember.isVisible = true
@@ -665,7 +675,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
             randomSpinnerAdapter.spinners = it.toMutableList().apply {
                 add(Spinner(idSpin = Constants.ID_ADD_MORE))
             }
-            randomSpinnerAdapter.notifyDataSetChanged()
 
             if (it.size > 2 && binding.rvSpinnerList.layoutManager !is GridLayoutManager) {
                 binding.rvSpinnerList.layoutManager =
@@ -696,7 +705,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
             memberInEventAdapter.members = it.toMutableList().apply {
                 add(Member(idMember = Constants.ID_ADD_MORE))
             }
-            memberInEventAdapter.notifyDataSetChanged()
 
             if (it.size > 2 && binding.rvMemberList.layoutManager !is GridLayoutManager) {
                 binding.rvMemberList.layoutManager =
