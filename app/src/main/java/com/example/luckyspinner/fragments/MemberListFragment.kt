@@ -62,10 +62,12 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         binding = FragmentMemberListBinding.inflate(inflater , container, false)
         progressDialog = ProgressDialog(requireContext())
 
-        binding.appBarMemberList.apply {
-            tvTitleAppBar.text = "List Member"
-            btnSpinnerList.visibility = View.GONE
-            btnMemberList.visibility = View.GONE
+        binding.appBarMemberList.toolBar.apply {
+            title = "List Member"
+            menu.apply {
+                findItem(R.id.spinnerListFragment).isVisible = false
+                findItem(R.id.memberListFragment).isVisible = false
+            }
         }
 
         // Inflate the layout for this fragment
@@ -90,9 +92,33 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             openAddMemberDiaLog(Gravity.CENTER)
         }
 
-        binding.appBarMemberList.apply {
-            btnBack.setOnClickListener {
-                findNavController().popBackStack()
+        binding.appBarMemberList.toolBar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        binding.appBarMemberList.toolBar.setOnMenuItemClickListener { menuItem ->
+            val searchView : androidx.appcompat.widget.SearchView = menuItem.actionView as androidx.appcompat.widget.SearchView
+            searchView.queryHint = "Search Member..."
+            when(menuItem.itemId) {
+                R.id.search -> {
+                    searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
+                        override fun onQueryTextSubmit(query: String?): Boolean {
+                            return false
+                        }
+
+                        override fun onQueryTextChange(newText: String): Boolean {
+                            if (viewModel.memberList.value != null){
+                                memberAdapter.members = viewModel.memberList.value!!.filter {
+                                    it.nameMember.contains(newText)
+                                }
+                            }
+                            return false
+                        }
+                    })
+                    true
+                }
+
+                else -> false
             }
         }
 

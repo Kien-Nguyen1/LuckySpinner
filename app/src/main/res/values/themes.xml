@@ -20,5 +20,13 @@
     <style name="TextAppearance" parent="TextAppearance.AppCompat.Medium">
         <item name="android:textColor">@color/purple</item>
     </style>
+    
+    <style name="BackGroundSearchView" parent="Widget.AppCompat.SearchView">
+        <item name="android:imeOptions">actionSearch</item>
+        <item name="android:background">@drawable/background_search_view</item>
+        <item name="iconifiedByDefault">false</item>
+        <item name="queryBackground">@android:color/transparent</item>
+        <item name="submitBackground">@android:color/transparent</item>
+    </style>
 
 </resources>

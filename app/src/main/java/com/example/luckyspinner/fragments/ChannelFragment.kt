@@ -3,10 +3,13 @@ package com.example.luckyspinner.fragments
 import android.app.ProgressDialog
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView.OnQueryTextListener
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
@@ -73,8 +76,8 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
             isFirstLoad = false
         }
 
-        binding.appBarChannel.apply {
-            tvTitleAppBar.text = nameChannel
+        binding.appBarChannel.toolBar.apply {
+            title = nameChannel
         }
 
         println("channelss oncreateview")
@@ -101,27 +104,50 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
             })
         }
 
-        binding.appBarChannel.apply {
-            btnBack.setOnClickListener {
-                findNavController().popBackStack()
-            }
+        binding.appBarChannel.toolBar.setNavigationOnClickListener {
+            findNavController().popBackStack()
         }
 
-        binding.appBarChannel.apply {
-            btnSpinnerList.setOnClickListener {
-                val direction = ChannelFragmentDirections
-                    .actionChannelFragmentToSpinnerListFragment()
-                    .actionId
+        binding.appBarChannel.toolBar.setOnMenuItemClickListener { menuItem ->
+            when(menuItem.itemId) {
+                R.id.search -> {
+                    val searchView : SearchView = menuItem.actionView as SearchView
+                    searchView.queryHint = "Search Event..."
+                    searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+                        override fun onQueryTextSubmit(query: String?): Boolean {
+                            return false
+                        }
 
-                findNavController().navigate(direction, bundle)
-            }
+                        override fun onQueryTextChange(newText: String): Boolean {
+                            if (viewModel.eventList.value != null){
+                                eventAdapter.events = viewModel.eventList.value!!.filter {
+                                    it.nameEvent.contains(newText)
+                                }
+                            }
 
-            btnMemberList.setOnClickListener {
-                val direction = ChannelFragmentDirections
-                    .actionChannelFragmentToMemberListFragment()
-                    .actionId
+                            return false
+                        }
+                    })
+                    true
+                }
+                R.id.spinnerListFragment -> {
+                    val direction = ChannelFragmentDirections
+                        .actionChannelFragmentToSpinnerListFragment()
+                        .actionId
 
-                findNavController().navigate(direction, bundle)
+                    findNavController().navigate(direction, bundle)
+                    true
+                }
+                R.id.memberListFragment -> {
+                    val direction = ChannelFragmentDirections
+                        .actionChannelFragmentToMemberListFragment()
+                        .actionId
+
+                    findNavController().navigate(direction, bundle)
+                    true
+                }
+
+                else -> false
             }
         }
 

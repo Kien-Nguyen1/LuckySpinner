@@ -2,9 +2,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/person"
-        android:title="Person"
-        android:icon="@drawable/ic_person"
-        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/search"
+        android:title="Search"
+        android:icon="@drawable/ic_search"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView" />
+
+    <item android:id="@+id/spinnerListFragment"
+        android:title="Spinner List"
+        app:showAsAction="ifRoom|collapseActionView"
+        android:icon="@drawable/ic_spinner_list"/>
+
+    <item android:id="@+id/memberListFragment"
+        android:title="Member List"
+        app:showAsAction="ifRoom|collapseActionView"
+        android:icon="@drawable/ic_member_list"/>
 
 </menu>

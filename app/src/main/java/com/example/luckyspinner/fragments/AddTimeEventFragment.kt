@@ -35,6 +35,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.DateListAdapter
 import com.example.luckyspinner.adapter.MemberInEventListAdapter
 import com.example.luckyspinner.adapter.RandomSpinnerListAdapter
@@ -48,6 +49,7 @@ import com.example.luckyspinner.util.Constants.EMPTY_STRING
 import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
 import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.util.Function.addMarginToLastItem
+import com.example.luckyspinner.util.Function.addMarginToLastItemHorizontal
 import com.example.luckyspinner.util.Function.changeTheNumberOfDay
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
@@ -103,9 +105,10 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
 
         telegramChannelId = arguments?.getString(Constants.ID_TELEGRAM_CHANNEL_KEY)!!
 
-        binding.appBarAddTimeEvent.apply {
-            btnSpinnerList.visibility = View.GONE
-            btnMemberList.visibility = View.GONE
+        binding.appBarAddTimeEvent.toolBar.menu.apply {
+            findItem(R.id.search).isVisible = false
+            findItem(R.id.spinnerListFragment).isVisible = false
+            findItem(R.id.memberListFragment).isVisible = false
         }
         workManager = WorkManager.getInstance(requireContext())
         if (eventId == null) {
@@ -113,9 +116,9 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
         }
 
         if (isAdd) {
-            binding.appBarAddTimeEvent.tvTitleAppBar.text = "Time Event"
+            binding.appBarAddTimeEvent.toolBar.title = "Time Event"
         } else {
-            binding.appBarAddTimeEvent.tvTitleAppBar.text = "Time Event"
+            binding.appBarAddTimeEvent.toolBar.title = "Time Event"
         }
 
         binding.edtEventName.doAfterTextChanged {
@@ -180,22 +183,12 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
         binding.searchViewSpinner.setupWithSearchBar(binding.searchBarSpinner)
         binding.searchViewMember.setupWithSearchBar(binding.searchBarMember)
 
-        
 
 
-        binding.appBarAddTimeEvent.apply {
-            btnBack.setOnClickListener {
-                findNavController().popBackStack()
-            }
+        binding.appBarAddTimeEvent.toolBar.setNavigationOnClickListener {
+            findNavController().popBackStack()
         }
 
-//        searchView
-//            .getEditText()
-//            .setOnEditorActionListener { v, actionId, event ->
-//                searchBar.setText(searchView.getText())
-//                searchView.hide()
-//                false
-//            }
 
         binding.searchViewSpinner.addTransitionListener { searchView, previousState, newState ->
             println("Here come $previousState , $newState")
@@ -410,6 +403,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
             randomSpinnerAdapter = RandomSpinnerListAdapter(this@AddTimeEventFragment, eventId!!)
             adapter = randomSpinnerAdapter
             layoutManager = LinearLayoutManager(context)
+            addMarginToLastItemHorizontal(binding.rvSpinnerList, 5)
             setHasFixedSize(true)
         }
 
@@ -420,6 +414,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
             memberInEventAdapter = MemberInEventListAdapter(this@AddTimeEventFragment, eventId!!)
             adapter = memberInEventAdapter
             layoutManager = LinearLayoutManager(context)
+            addMarginToLastItemHorizontal(binding.rvMemberList, 5)
         }
 
     }
