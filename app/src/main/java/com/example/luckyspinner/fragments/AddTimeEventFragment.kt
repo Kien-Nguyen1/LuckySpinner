@@ -180,8 +180,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
 
         binding.timePicker.setIs24HourView(true)
 
-        binding.searchViewSpinner.setupWithSearchBar(binding.searchBarSpinner)
-        binding.searchViewMember.setupWithSearchBar(binding.searchBarMember)
 
 
 
@@ -190,34 +188,54 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
         }
 
 
-        binding.searchViewSpinner.addTransitionListener { searchView, previousState, newState ->
-            println("Here come $previousState , $newState")
-            if (newState == TransitionState.HIDDEN) {
-                binding.searchViewSpinner.editText.setText("")
-                binding.checkBoxAllSpinner.isVisible = true
+//        binding.searchViewSpinner.addTransitionListener { searchView, previousState, newState ->
+//            println("Here come $previousState , $newState")
+//            if (newState == TransitionState.HIDDEN) {
+//                binding.searchViewSpinner.editText.setText("")
+//                binding.checkBoxAllSpinner.isVisible = true
+//            }
+//            if (newState == TransitionState.SHOWING) {
+//                binding.checkBoxAllSpinner.isVisible = false
+//            }
+//        }
+//        binding.searchViewMember.addTransitionListener { searchView, previousState, newState ->
+//            if (newState == TransitionState.HIDDEN) {
+//                binding.searchViewMember.editText.setText("")
+//                binding.checkBoxAllMember.isVisible = true
+//            }
+//            if (newState == TransitionState.SHOWING) {
+//                binding.checkBoxAllMember.isVisible = false
+//            }
+//        }
+//        binding.searchViewSpinner.editText.setOnEditorActionListener { v, actionId, event ->
+//            false
+//        }
+//        binding.searchViewSpinner.editText.doOnTextChanged { text, start, before, count ->
+//            filterSpinner(text.toString())
+//        }
+//        binding.searchViewMember.editText.doOnTextChanged { text, start, before, count ->
+//            filterMember(text.toString())
+//        }
+        binding.searchViewSpinner.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
             }
-            if (newState == TransitionState.SHOWING) {
-                binding.checkBoxAllSpinner.isVisible = false
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                filterSpinner(newText)
+                return false
             }
-        }
-        binding.searchViewMember.addTransitionListener { searchView, previousState, newState ->
-            if (newState == TransitionState.HIDDEN) {
-                binding.searchViewMember.editText.setText("")
-                binding.checkBoxAllMember.isVisible = true
+        })
+        binding.searchViewMember.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
             }
-            if (newState == TransitionState.SHOWING) {
-                binding.checkBoxAllMember.isVisible = false
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                filterMember(newText)
+                return false
             }
-        }
-        binding.searchViewSpinner.editText.setOnEditorActionListener { v, actionId, event ->
-            false
-        }
-        binding.searchViewSpinner.editText.doOnTextChanged { text, start, before, count ->
-            filterSpinner(text.toString())
-        }
-        binding.searchViewMember.editText.doOnTextChanged { text, start, before, count ->
-            filterMember(text.toString())
-        }
+        })
     }
 
 
