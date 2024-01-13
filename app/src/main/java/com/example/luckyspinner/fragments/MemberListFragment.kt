@@ -274,7 +274,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             }
         }
         viewModel.isDeletingMemberSuccess.observe(viewLifecycleOwner) {
-            println("Here the observer delete come")
             it?.let {
                 if(it) {
                     Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT).show()
@@ -289,6 +288,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         viewModel.isEdtingMemberSuccess.observe(viewLifecycleOwner) {
             it?.let {
                 if (it) {
+                    Toast.makeText(requireContext(), "Edit successful!", Toast.LENGTH_SHORT).show()
                     editMemberDiaLog.dismiss()
                 } else {
                     Toast.makeText(requireContext(), "Edit failed!", Toast.LENGTH_SHORT).show()

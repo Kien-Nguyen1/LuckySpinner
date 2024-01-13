@@ -71,6 +71,7 @@ class ChannelListViewModel : ViewModel() {
                 Log.d(Constants.FIRE_STORE, "DocumentSnapshot successfully deleted!")
                 message.value = Constants.MESSAGE_DELETE_SUCCESSFUL
                 isDeleteSuccess.value = true
+                isShowProgressDialog.value = false
                 WorkManager.getInstance().cancelAllWorkByTag(channelId)
             }
             .addOnFailureListener { e ->
@@ -87,14 +88,13 @@ class ChannelListViewModel : ViewModel() {
             .addOnSuccessListener {
                 message.value = MESSAGE_SAVE_SUCCESSFUL
                 isAddingSuccess.value = true
-
+                isShowProgressDialog.value = false
             }
             .addOnFailureListener { e ->
                 Log.e("error", e.message.toString())
                 message.value = MESSAGE_SAVE_FAILED
                 isAddingSuccess.value = false
                 isShowProgressDialog.value = false
-
             }
     }
     fun editChannel(channel: Channel) = viewModelScope.launch {
@@ -104,6 +104,7 @@ class ChannelListViewModel : ViewModel() {
             .addOnSuccessListener {
                 message.value = MESSAGE_SAVE_SUCCESSFUL
                 isEditingSuccess.value = true
+                isShowProgressDialog.value = false
 
             }
             .addOnFailureListener { e ->

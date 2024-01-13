@@ -108,7 +108,7 @@ class MemberListAdapter(
                 true
             }
             root.setOnClickListener {
-                listener.onItemClick(member.idMember)
+                onEditClickListener.onEditClick(position)
             }
         }
     }
