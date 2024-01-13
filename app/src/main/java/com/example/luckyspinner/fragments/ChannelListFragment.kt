@@ -169,10 +169,20 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
 
         binding.rvChannelList.addFabScrollListener(binding.btnAddChannel)
 
+//        binding.toolBarChannelList.setOnClickListener {
+//            false
+//        }
+//
+//        binding.toolBarChannelList.menu.getItem(R.id.search).setOnMenuItemClickListener {
+//
+//            false
+//        }
+
         binding.toolBarChannelList.setOnMenuItemClickListener { menuItem ->
             when(menuItem.itemId) {
                 R.id.search -> {
                     val searchView : androidx.appcompat.widget.SearchView = menuItem.actionView as androidx.appcompat.widget.SearchView
+//                    searchView.show
                     searchView.queryHint = "Search Channel..."
                     searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
                         override fun onQueryTextSubmit(query: String?): Boolean {
@@ -184,7 +194,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                             return false
                         }
                     })
-                    true
+                    false
                 }
 
                 else -> false
