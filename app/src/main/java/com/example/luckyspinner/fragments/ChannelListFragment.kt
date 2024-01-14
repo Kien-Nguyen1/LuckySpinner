@@ -175,6 +175,8 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         searchView.isVisible = false
         binding.close.isVisible = false
 
+        binding.toolBarChannelList.navigationIcon = null
+
         binding.close.setOnClickListener {
             println("Here come")
             binding.toolBarChannelList.menu.findItem(R.id.search).isVisible = true
@@ -197,10 +199,11 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             when(menuItem.itemId) {
                 R.id.search -> {
 //                    searchView.show
-//                    val searchView : androidx.appcompat.widget.SearchView = menuItem.actionView as androidx.appcompat.widget.SearchView
+                    val searchView : androidx.appcompat.widget.SearchView = menuItem.actionView as androidx.appcompat.widget.SearchView
+                    binding.toolBarChannelList.navigationIcon = null
 
                     searchView.isVisible = true
-                    binding.close.isVisible = true
+//                    binding.close.isVisible = true
                     searchView.queryHint = "Search Channel..."
                     searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
                         override fun onQueryTextSubmit(query: String?): Boolean {

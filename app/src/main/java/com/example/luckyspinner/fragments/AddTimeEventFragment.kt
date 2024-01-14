@@ -226,6 +226,16 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
                 return false
             }
         })
+        binding.searchViewSpinner.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                Function.hideKeyBoard(context, v)
+            }
+        }
+        binding.searchViewMember.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                Function.hideKeyBoard(context, v)
+            }
+        }
         binding.searchViewMember.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
@@ -236,6 +246,14 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
                 return false
             }
         })
+        binding.linearLayoutRoot.setOnClickListener {
+            println("let go")
+//            activity?.currentFocus?.clearFocus()
+//            println(activity?.currentFocus)
+            binding.searchViewSpinner.clearFocus()
+            binding.searchViewMember.clearFocus()
+        }
+
     }
 
 

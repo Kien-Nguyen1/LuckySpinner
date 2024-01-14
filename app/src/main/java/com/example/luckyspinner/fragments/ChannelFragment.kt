@@ -1,5 +1,6 @@
 package com.example.luckyspinner.fragments
 
+import android.app.ActionBar
 import android.app.ProgressDialog
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -9,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView.OnQueryTextListener
 import android.widget.Toast
+import android.widget.Toolbar
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -103,17 +105,27 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
                 putString(Constants.ID_TELEGRAM_CHANNEL_KEY, idTelegramChannel)
             })
         }
+//        requireActivity().actionBar.setDisplayHomeAsUpEnabled()
+//        requireActivity().setActionBar(binding.appBarChannel.toolBar as Toolbar)
 
         binding.appBarChannel.toolBar.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
 
+        binding.appBarChannel.toolBar
         binding.appBarChannel.toolBar.setOnMenuItemClickListener { menuItem ->
             when(menuItem.itemId) {
                 R.id.search -> {
-                    binding.appBarChannel.toolBar.setNavigationIcon(R.drawable.ic_cancel)
+//                    binding.appBarChannel.toolBar.setNavigationIcon(R.drawable.ic_cancel)
                     val searchView : SearchView = menuItem.actionView as SearchView
+
+                    binding.appBarChannel.toolBar.setNavigationOnClickListener {
+                        println("Here we go")
+                    }
+
                     searchView.queryHint = "Search Event..."
+                    searchView.maxWidth = Int.MAX_VALUE
+
                     searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
                         override fun onQueryTextSubmit(query: String?): Boolean {
                             return false
