@@ -331,6 +331,10 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     }
 
     fun setupStateObserver() {
+        viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
+            if (it) progressDialog.show()
+            else progressDialog.dismiss()
+        }
         viewModel.channelList.observe(viewLifecycleOwner) {
             channelListAdapter.channels = it
             channelListAdapter.notifyDataSetChanged()

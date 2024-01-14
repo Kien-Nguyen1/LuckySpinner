@@ -252,6 +252,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         viewModel.isEditingSuccess.observe(viewLifecycleOwner) {
             it?.let {
                 if (it) {
+                    Toast.makeText(requireContext(), "Edit successful!", Toast.LENGTH_SHORT).show()
                     editElementDialog.dismiss()
                 } else {
                     Toast.makeText(requireContext(), "Edit failed!", Toast.LENGTH_SHORT).show()

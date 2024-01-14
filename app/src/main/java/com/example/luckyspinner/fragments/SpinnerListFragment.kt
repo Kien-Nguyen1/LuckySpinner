@@ -238,6 +238,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
             it?.let {
                 if (it) {
                     Toast.makeText(context, "Edit Spinner Successfully!", Toast.LENGTH_SHORT).show()
+                    editSpinnerDiaLog.dismiss()
                 }
                 else {
                     Toast.makeText(context, "Edit Spinner Fail!!", Toast.LENGTH_SHORT).show()
