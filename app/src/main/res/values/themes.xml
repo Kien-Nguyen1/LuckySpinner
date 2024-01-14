@@ -4,14 +4,14 @@
 
         <item name="android:statusBarColor">#DFD5EC</item>
         <item name="android:windowLightStatusBar">true</item>
-<!--        <item name="android:timePickerStyle">@style/TimePicker</item>-->
+        <!--        <item name="android:timePickerStyle">@style/TimePicker</item>-->
     </style>
 
     <style name="TimePicker"  parent="Widget.MaterialComponents.TimePicker">
-<!--        <item name="android:headerAmPmTextAppearance">@style/TextAppearance.AppCompat.Medium</item>-->
-<!--        <item name="android:headerBackground">@color/red</item>-->
+        <!--        <item name="android:headerAmPmTextAppearance">@style/TextAppearance.AppCompat.Medium</item>-->
+        <!--        <item name="android:headerBackground">@color/red</item>-->
         <item name="android:textColorPrimary">@color/black</item>
-<!--        <item name="clockNumberTextColor">@color/red</item>-->
+        <!--        <item name="clockNumberTextColor">@color/red</item>-->
         <item name="android:textColor">@color/black</item>
         <item name="android:headerTimeTextAppearance">@style/TextAppearance</item>
         <item name="subheaderColor">@color/black</item>
@@ -20,11 +20,18 @@
     <style name="TextAppearance" parent="TextAppearance.AppCompat.Medium">
         <item name="android:textColor">@color/purple</item>
     </style>
-    
+
     <style name="BackGroundSearchView" parent="Widget.AppCompat.SearchView">
         <item name="android:imeOptions">actionSearch</item>
         <item name="android:background">@drawable/background_search_view</item>
-        <item name="iconifiedByDefault">false</item>
+        <item name="iconifiedByDefault">true</item>
+        <item name="queryBackground">@android:color/transparent</item>
+        <item name="submitBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="BackGroundSearchViewAppBar" parent="Widget.AppCompat.SearchView">
+        <item name="android:imeOptions">actionSearch</item>
+        <item name="iconifiedByDefault">true</item>
         <item name="queryBackground">@android:color/transparent</item>
         <item name="submitBackground">@android:color/transparent</item>
     </style>

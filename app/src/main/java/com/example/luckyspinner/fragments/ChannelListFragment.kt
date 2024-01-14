@@ -88,10 +88,10 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             println("listchannel Here come get channels")
         }
 
-        binding.toolBarChannelList.menu.apply {
-            findItem(R.id.spinnerListFragment).isVisible = false
-            findItem(R.id.memberListFragment).isVisible = false
-        }
+//        binding.toolBarChannelList.menu.apply {
+//            findItem(R.id.spinnerListFragment).isVisible = false
+//            findItem(R.id.memberListFragment).isVisible = false
+//        }
 
         // Inflate the layout for this fragment
         return binding.root
@@ -170,20 +170,68 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         }
 
         binding.rvChannelList.addFabScrollListener(binding.btnAddChannel)
-        val searchView = binding.searchViewCustom
+
+
+        val searchView = binding.appBarChannelList.searchView
 
         searchView.isVisible = false
-        binding.close.isVisible = false
 
-        binding.toolBarChannelList.navigationIcon = null
-
-        binding.close.setOnClickListener {
-            println("Here come")
-            binding.toolBarChannelList.menu.findItem(R.id.search).isVisible = true
+        searchView.setOnCloseListener {
             searchView.isVisible = false
-            searchView.setQuery("", false)
-            it.isVisible = false
+            binding.appBarChannelList.apply {
+                btnSearchView.isVisible = true
+                tvTitleAppBar.isVisible = true
+            }
+            false
         }
+
+        searchView.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                Function.hideKeyBoard(context, v)
+                searchView.isVisible = false
+                binding.appBarChannelList.apply {
+                    btnSearchView.isVisible = true
+                    tvTitleAppBar.isVisible = true
+                }
+            }
+        }
+
+        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                filterChannel(newText)
+                return false
+            }
+
+        })
+        binding.appBarChannelList.btnSearchView.setOnClickListener {
+            searchView.showContextMenu()
+            searchView.isVisible = true
+            searchView.setIconifiedByDefault(true);
+
+            searchView.setFocusable(true);
+            searchView.setIconified(false);
+            searchView.requestFocusFromTouch();
+            searchView.clearFocus()
+            binding.appBarChannelList.apply {
+                btnSearchView.isVisible = false
+                tvTitleAppBar.isVisible = false
+            }
+        }
+
+
+
+// Close dung ham nay
+//        binding.close.setOnClickListener {
+//            println("Here come")
+//            binding.toolBarChannelList.menu.findItem(R.id.search).isVisible = true
+//            searchView.isVisible = false
+//            searchView.setQuery("", false)
+//            it.isVisible = false
+//        }
 
 //        binding.toolBarChannelList.setOnClickListener {
 //            false
@@ -194,33 +242,33 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
 //            false
 //        }
 
-        binding.toolBarChannelList.setOnMenuItemClickListener { menuItem ->
-
-            when(menuItem.itemId) {
-                R.id.search -> {
-//                    searchView.show
-                    val searchView : androidx.appcompat.widget.SearchView = menuItem.actionView as androidx.appcompat.widget.SearchView
-                    binding.toolBarChannelList.navigationIcon = null
-
-                    searchView.isVisible = true
-//                    binding.close.isVisible = true
-                    searchView.queryHint = "Search Channel..."
-                    searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
-                        override fun onQueryTextSubmit(query: String?): Boolean {
-                            return false
-                        }
-
-                        override fun onQueryTextChange(newText: String): Boolean {
-                            filterChannel(newText)
-                            return false
-                        }
-                    })
-                    false
-                }
-
-                else -> false
-            }
-        }
+//        binding.toolBarChannelList.setOnMenuItemClickListener { menuItem ->
+//
+//            when(menuItem.itemId) {
+//                R.id.search -> {
+////                    searchView.show
+//                    val searchView : androidx.appcompat.widget.SearchView = menuItem.actionView as androidx.appcompat.widget.SearchView
+//                    binding.toolBarChannelList.navigationIcon = null
+//
+//                    searchView.isVisible = true
+////                    binding.close.isVisible = true
+//                    searchView.queryHint = "Search Channel..."
+//                    searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
+//                        override fun onQueryTextSubmit(query: String?): Boolean {
+//                            return false
+//                        }
+//
+//                        override fun onQueryTextChange(newText: String): Boolean {
+//                            filterChannel(newText)
+//                            return false
+//                        }
+//                    })
+//                    false
+//                }
+//
+//                else -> false
+//            }
+//        }
     }
 
     fun filterChannel(text : String) {

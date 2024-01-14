@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Rect
 import android.os.CountDownTimer
 import android.util.DisplayMetrics
+import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -39,10 +40,10 @@ object Function {
         return day - 2
     }
 
-    fun showKeyBoard(activity : FragmentActivity, editText : EditText) {
-        editText.requestFocus()
+    fun showKeyBoard(activity : FragmentActivity, view: View) {
+        view.requestFocus()
 
-        WindowCompat.getInsetsController(activity.window, editText).show(WindowInsetsCompat.Type.ime())
+        WindowCompat.getInsetsController(activity.window, view).show(WindowInsetsCompat.Type.ime())
     }
 
     fun hideKeyBoard(context: Context?, view : android.view.View ) {
