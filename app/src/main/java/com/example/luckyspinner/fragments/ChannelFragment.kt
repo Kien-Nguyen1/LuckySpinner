@@ -12,6 +12,7 @@ import android.widget.SearchView.OnQueryTextListener
 import android.widget.Toast
 import android.widget.Toolbar
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
@@ -133,8 +134,69 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
                     findNavController().navigate(direction, bundle)
                 }
             }
-
+        handleSearch()
         binding.rvEventListOfChannel.addFabScrollListener(binding.btnAddEventOfChannel)
+    }
+
+    fun handleSearch() {
+        fun isShowMenu(isShow : Boolean) {
+            binding.appBarChannel.apply {
+                btnSearch.isVisible = isShow
+                tvTitleAppBar.isVisible = isShow
+                btnBack.isVisible = isShow
+                btnMemberList.isVisible = isShow
+                btnSpinnerList.isVisible = isShow
+            }
+        }
+        val searchView = binding.appBarChannel.searchView
+
+        searchView.isVisible = false
+
+        searchView.setOnCloseListener {
+            searchView.isVisible = false
+            isShowMenu(true)
+
+            false
+        }
+
+        searchView.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                Function.hideKeyBoard(context, v)
+                searchView.isVisible = false
+                isShowMenu(true)
+            }
+        }
+
+        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                filterEvent(newText)
+                return false
+            }
+
+        })
+        binding.appBarChannel.btnSearch.setOnClickListener {
+            searchView.showContextMenu()
+            searchView.isVisible = true
+            searchView.setIconifiedByDefault(true);
+
+            searchView.isFocusable = true;
+            searchView.isIconified = false;
+            searchView.requestFocusFromTouch();
+            searchView.clearFocus()
+            isShowMenu(false)
+        }
+    }
+
+    fun filterEvent(text : String) {
+        if (!viewModel.eventList.isInitialized) return
+        val  list = viewModel.eventList.value!!.filter {
+            it.nameEvent.contains(text)
+        }
+        eventAdapter.events = list
     }
 
     private fun setupRecycleView() {

@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="64dp"
-    android:background="#DFD5EC"
-    android:orientation="horizontal">
+    android:background="#DFD5EC">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -81,12 +80,13 @@
             tools:ignore="RtlSymmetry" />
     </LinearLayout>
 
-    <com.google.android.material.search.SearchView
-        android:id="@+id/search_view_custom"
-        style="?attr/materialSearchViewStyle"
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/search_view"
+        style="@style/BackGroundSearchViewAppBar"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="match_parent"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

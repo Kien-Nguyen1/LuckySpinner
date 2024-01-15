@@ -7,7 +7,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.os.Handler
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -21,16 +20,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.MemberListAdapter
 import com.example.luckyspinner.databinding.AddChannelLayoutBinding
 import com.example.luckyspinner.databinding.EditDialogBinding
 import com.example.luckyspinner.databinding.FragmentMemberListBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
-import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Member
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.DialogUtil
@@ -100,9 +95,81 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             }
         }
 
+        binding.appBarMemberList.apply {
+            btnSpinnerList.isVisible = false
+            btnMemberList.isVisible = false
+        }
+
+        handleSearch()
         binding.rvMemberList.addFabScrollListener(binding.btnAddMemberList)
     }
+    fun handleSearch() {
+        if (!viewModel.memberList.isInitialized) return
+        fun isShowMenu(isShow : Boolean) {
+            binding.appBarMemberList.apply {
+                btnSearch.isVisible = isShow
+                tvTitleAppBar.isVisible = isShow
+                btnBack.isVisible = isShow
+            }
+        }
+        val searchView = binding.appBarMemberList.searchView
 
+        searchView.isVisible = false
+
+        searchView.setOnCloseListener {
+            searchView.isVisible = false
+            isShowMenu(true)
+
+            false
+        }
+
+        searchView.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                Function.hideKeyBoard(context, v)
+                searchView.isVisible = false
+                isShowMenu(true)
+            }
+        }
+
+        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                filterMember(newText)
+                return false
+            }
+
+        })
+        binding.appBarMemberList.btnSearch.setOnClickListener {
+            searchView.showContextMenu()
+            searchView.isVisible = true
+            searchView.setIconifiedByDefault(true);
+
+            searchView.isFocusable = true;
+            searchView.isIconified = false;
+            searchView.requestFocusFromTouch();
+            searchView.clearFocus()
+            isShowMenu(false)
+        }
+    }
+
+    fun filterMember(text: String) {
+        if (text == "") {
+            viewModel.memberList.value = viewModel.memberList.value
+            println("Let go")
+            return
+        }
+        val list: MutableList<Member> = ArrayList()
+
+        viewModel.memberList.value?.forEach {
+            if (it.nameMember.contains(text, true)) {
+                list.add(it)
+            }
+        }
+        memberAdapter.members = list
+    }
     fun createEditListener() {
         memberAdapter.onEditClickListener = object : OnEditClickListener{
             override fun onEditClick(position: Int) {

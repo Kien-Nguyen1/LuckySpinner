@@ -171,59 +171,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
 
         binding.rvChannelList.addFabScrollListener(binding.btnAddChannel)
 
-
-        val searchView = binding.appBarChannelList.searchView
-
-        searchView.isVisible = false
-
-        searchView.setOnCloseListener {
-            searchView.isVisible = false
-            binding.appBarChannelList.apply {
-                btnSearchView.isVisible = true
-                tvTitleAppBar.isVisible = true
-            }
-            false
-        }
-
-        searchView.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) {
-                Function.hideKeyBoard(context, v)
-                searchView.isVisible = false
-                binding.appBarChannelList.apply {
-                    btnSearchView.isVisible = true
-                    tvTitleAppBar.isVisible = true
-                }
-            }
-        }
-
-        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String): Boolean {
-                filterChannel(newText)
-                return false
-            }
-
-        })
-        binding.appBarChannelList.btnSearchView.setOnClickListener {
-            searchView.showContextMenu()
-            searchView.isVisible = true
-            searchView.setIconifiedByDefault(true);
-
-            searchView.setFocusable(true);
-            searchView.setIconified(false);
-            searchView.requestFocusFromTouch();
-            searchView.clearFocus()
-            binding.appBarChannelList.apply {
-                btnSearchView.isVisible = false
-                tvTitleAppBar.isVisible = false
-            }
-        }
-
-
-
+        handleSearch()
 // Close dung ham nay
 //        binding.close.setOnClickListener {
 //            println("Here come")
@@ -269,6 +217,57 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
 //                else -> false
 //            }
 //        }
+    }
+     private fun handleSearch() {
+        val searchView = binding.appBarChannelList.searchView
+
+        searchView.isVisible = false
+
+        searchView.setOnCloseListener {
+            searchView.isVisible = false
+            binding.appBarChannelList.apply {
+                btnSearchView.isVisible = true
+                tvTitleAppBar.isVisible = true
+            }
+            false
+        }
+
+        searchView.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                Function.hideKeyBoard(context, v)
+                searchView.isVisible = false
+                binding.appBarChannelList.apply {
+                    btnSearchView.isVisible = true
+                    tvTitleAppBar.isVisible = true
+                }
+            }
+        }
+
+        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                filterChannel(newText)
+                return false
+            }
+
+        })
+        binding.appBarChannelList.btnSearchView.setOnClickListener {
+            searchView.showContextMenu()
+            searchView.isVisible = true
+            searchView.setIconifiedByDefault(true);
+
+            searchView.isFocusable = true;
+            searchView.isIconified = false;
+            searchView.requestFocusFromTouch();
+            searchView.clearFocus()
+            binding.appBarChannelList.apply {
+                btnSearchView.isVisible = false
+                tvTitleAppBar.isVisible = false
+            }
+        }
     }
 
     fun filterChannel(text : String) {

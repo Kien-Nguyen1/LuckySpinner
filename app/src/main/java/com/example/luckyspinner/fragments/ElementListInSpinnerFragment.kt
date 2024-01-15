@@ -28,6 +28,7 @@ import com.example.luckyspinner.databinding.EditDialogBinding
 import com.example.luckyspinner.databinding.FragmentElementListInSpinnerBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.models.ElementSpinner
+import com.example.luckyspinner.models.Spinner
 import com.example.luckyspinner.util.Constants.EMPTY_STRING
 import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
 import com.example.luckyspinner.util.Constants.ID_SPINNER_KEY
@@ -69,8 +70,84 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
             btnMemberList.visibility = View.GONE
         }
 
+
+        binding.appBarElementListSpinner.apply {
+            btnSpinnerList.isVisible = false
+            btnMemberList.isVisible = false
+        }
+        handleSearch()
+
         return binding.root
     }
+
+    fun handleSearch() {
+        if (!viewModel.elementList.isInitialized) return
+        fun isShowMenu(isShow : Boolean) {
+            binding.appBarElementListSpinner.apply {
+                btnSearch.isVisible = isShow
+                tvTitleAppBar.isVisible = isShow
+                btnBack.isVisible = isShow
+            }
+        }
+        val searchView = binding.appBarElementListSpinner.searchView
+
+        searchView.isVisible = false
+
+        searchView.setOnCloseListener {
+            searchView.isVisible = false
+            isShowMenu(true)
+
+            false
+        }
+
+        searchView.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                Function.hideKeyBoard(context, v)
+                searchView.isVisible = false
+                isShowMenu(true)
+            }
+        }
+
+        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                filterSpinner(newText)
+                return false
+            }
+
+        })
+        binding.appBarElementListSpinner.btnSearch.setOnClickListener {
+            searchView.showContextMenu()
+            searchView.isVisible = true
+            searchView.setIconifiedByDefault(true);
+
+            searchView.isFocusable = true;
+            searchView.isIconified = false;
+            searchView.requestFocusFromTouch();
+            searchView.clearFocus()
+            isShowMenu(false)
+        }
+    }
+
+    fun filterSpinner(text: String) {
+        if (text == "") {
+            viewModel.elementList.value = viewModel.elementList.value
+            println("Let go")
+            return
+        }
+        val list: MutableList<ElementSpinner> = ArrayList()
+
+        viewModel.elementList.value?.forEach {
+            if (it.nameElement.contains(text, true)) {
+                list.add(it)
+            }
+        }
+        elementAdapter.elementSpinners = list
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
