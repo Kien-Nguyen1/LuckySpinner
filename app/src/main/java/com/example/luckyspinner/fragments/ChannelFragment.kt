@@ -78,8 +78,8 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
             isFirstLoad = false
         }
 
-        binding.appBarChannel.toolBar.apply {
-            title = nameChannel
+        binding.appBarChannel.apply {
+            tvTitleAppBar.text = nameChannel
         }
 
         println("channelss oncreateview")
@@ -108,61 +108,31 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
 //        requireActivity().actionBar.setDisplayHomeAsUpEnabled()
 //        requireActivity().setActionBar(binding.appBarChannel.toolBar as Toolbar)
 
-        binding.appBarChannel.toolBar.setNavigationOnClickListener {
+        binding.appBarChannel.btnBack.setOnClickListener {
             findNavController().popBackStack()
         }
 
-        binding.appBarChannel.toolBar
-        binding.appBarChannel.toolBar.setOnMenuItemClickListener { menuItem ->
-            when(menuItem.itemId) {
-                R.id.search -> {
-//                    binding.appBarChannel.toolBar.setNavigationIcon(R.drawable.ic_cancel)
-                    val searchView : SearchView = menuItem.actionView as SearchView
+        binding.appBarChannel.apply {
+            btnSearch.setOnClickListener {
+                //
+            }
 
-                    binding.appBarChannel.toolBar.setNavigationOnClickListener {
-                        println("Here we go")
-                    }
-
-                    searchView.queryHint = "Search Event..."
-                    searchView.maxWidth = Int.MAX_VALUE
-
-                    searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-                        override fun onQueryTextSubmit(query: String?): Boolean {
-                            return false
-                        }
-
-                        override fun onQueryTextChange(newText: String): Boolean {
-                            if (viewModel.eventList.value != null){
-                                eventAdapter.events = viewModel.eventList.value!!.filter {
-                                    it.nameEvent.contains(newText)
-                                }
-                            }
-
-                            return false
-                        }
-                    })
-                    true
-                }
-                R.id.spinnerListFragment -> {
+            btnSpinnerList.setOnClickListener {
                     val direction = ChannelFragmentDirections
                         .actionChannelFragmentToSpinnerListFragment()
                         .actionId
 
                     findNavController().navigate(direction, bundle)
-                    true
-                }
-                R.id.memberListFragment -> {
+            }
+
+            btnMemberList.setOnClickListener {
                     val direction = ChannelFragmentDirections
                         .actionChannelFragmentToMemberListFragment()
                         .actionId
 
                     findNavController().navigate(direction, bundle)
-                    true
                 }
-
-                else -> false
             }
-        }
 
         binding.rvEventListOfChannel.addFabScrollListener(binding.btnAddEventOfChannel)
     }

@@ -1,13 +1,16 @@
 package com.example.luckyspinner.util
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Rect
+import android.os.Build
 import android.os.CountDownTimer
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TimePicker
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.FragmentActivity
@@ -101,22 +104,33 @@ object Function {
     }
 
     fun addMarginToLastItemHorizontal(recyclerView: RecyclerView, marginInDp: Int) {
-        recyclerView.addItemDecoration(
-            object : RecyclerView.ItemDecoration() {
-                override fun getItemOffsets(
-                    outRect: Rect,
-                    view: android.view.View,
-                    parent: RecyclerView,
-                    state: RecyclerView.State
-                ) {
-                    val position = parent.getChildAdapterPosition(view)
-                    if (position == parent.adapter?.itemCount?.minus(1)) {
-                        val marginInPx = dpToPx(view.context, marginInDp)
-                        (view.layoutParams as ViewGroup.MarginLayoutParams).marginEnd = marginInPx
+        recyclerView.layoutManager?.let { layoutManager ->
+            recyclerView.addItemDecoration(
+                object : RecyclerView.ItemDecoration() {
+                    override fun getItemOffsets(
+                        outRect: Rect,
+                        view: View,
+                        parent: RecyclerView,
+                        state: RecyclerView.State
+                    ) {
+                        val position = parent.getChildAdapterPosition(view)
+                        val itemCount = parent.adapter?.itemCount ?: 0
+
+                        if (itemCount % 2 == 1) {
+                            if (position == itemCount - 1) {
+                                val marginInPx = dpToPx(view.context, marginInDp)
+                                (view.layoutParams as ViewGroup.MarginLayoutParams).rightMargin = marginInPx
+                            }
+                        } else {
+                            if (position == itemCount - 2 || position == itemCount - 1) {
+                                val marginInPx = dpToPx(view.context, marginInDp)
+                                (view.layoutParams as ViewGroup.MarginLayoutParams).rightMargin = marginInPx
+                            }
+                        }
                     }
                 }
-            }
-        )
+            )
+        }
     }
 
     private fun dpToPx(context: Context, dp: Int): Int {
@@ -128,5 +142,26 @@ object Function {
         return if (number < 10) {
             "0$number"
         } else number.toString()
+    }
+
+    fun hideKeyboardInputInTimePicker(orientation: Int, timePicker: TimePicker)
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            try
+            {
+                if (orientation == Configuration.ORIENTATION_PORTRAIT)
+                {
+                    ((timePicker.getChildAt(0) as LinearLayout).getChildAt(4) as LinearLayout).getChildAt(0).visibility = View.GONE
+                }
+                else
+                {
+                    (((timePicker.getChildAt(0) as LinearLayout).getChildAt(2) as LinearLayout).getChildAt(2) as LinearLayout).getChildAt(0).visibility = View.GONE
+                }
+            }
+            catch (ex: Exception)
+            {
+            }
+        }
     }
 }

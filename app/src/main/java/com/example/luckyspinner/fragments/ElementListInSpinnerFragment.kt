@@ -63,12 +63,10 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
         idSpinner = arguments?.getString(ID_SPINNER_KEY)!!
         titleSpinner = arguments?.getString(SPINNER_TITLE)
 
-        binding.appBarElementListSpinner.toolBar.apply {
-            title = titleSpinner
-            menu.apply {
-                findItem(R.id.spinnerListFragment).isVisible = false
-                findItem(R.id.memberListFragment).isVisible = false
-            }
+        binding.appBarElementListSpinner.apply {
+            tvTitleAppBar.text = titleSpinner
+            btnSpinnerList.visibility = View.GONE
+            btnMemberList.visibility = View.GONE
         }
 
         return binding.root
@@ -134,7 +132,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
             }
         }
 
-        binding.appBarElementListSpinner.toolBar.setNavigationOnClickListener {
+        binding.appBarElementListSpinner.btnBack.setOnClickListener {
             findNavController().popBackStack()
         }
 
@@ -142,29 +140,9 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
             openAddElementInSpinnerDiaLog(Gravity.CENTER)
         }
 
-        binding.appBarElementListSpinner.toolBar.setOnMenuItemClickListener { menuItem ->
-            val searchView : androidx.appcompat.widget.SearchView = menuItem.actionView as androidx.appcompat.widget.SearchView
-            searchView.queryHint = "Search Element..."
-            when(menuItem.itemId) {
-                R.id.search -> {
-                    searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
-                        override fun onQueryTextSubmit(query: String?): Boolean {
-                            return false
-                        }
-
-                        override fun onQueryTextChange(newText: String): Boolean {
-                            if (viewModel.elementList.value != null){
-                                elementAdapter.elementSpinners = viewModel.elementList.value!!.filter {
-                                    it.nameElement.contains(newText)
-                                }
-                            }
-                            return false
-                        }
-                    })
-                    true
-                }
-
-                else -> false
+        binding.appBarElementListSpinner.apply {
+            btnSearch.setOnClickListener {
+                //
             }
         }
 

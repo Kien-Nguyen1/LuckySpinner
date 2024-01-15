@@ -6,19 +6,14 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Gravity
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
-import android.view.inputmethod.EditorInfo
-import android.widget.TextView
-import android.widget.TextView.OnEditorActionListener
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
@@ -35,7 +30,6 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.DateListAdapter
 import com.example.luckyspinner.adapter.MemberInEventListAdapter
 import com.example.luckyspinner.adapter.RandomSpinnerListAdapter
@@ -51,10 +45,10 @@ import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.util.Function.addMarginToLastItem
 import com.example.luckyspinner.util.Function.addMarginToLastItemHorizontal
 import com.example.luckyspinner.util.Function.changeTheNumberOfDay
+import com.example.luckyspinner.util.Function.hideKeyboardInputInTimePicker
 import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.search.SearchView.TransitionState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.Duration
@@ -105,10 +99,10 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
 
         telegramChannelId = arguments?.getString(Constants.ID_TELEGRAM_CHANNEL_KEY)!!
 
-        binding.appBarAddTimeEvent.toolBar.menu.apply {
-            findItem(R.id.search).isVisible = false
-            findItem(R.id.spinnerListFragment).isVisible = false
-            findItem(R.id.memberListFragment).isVisible = false
+        binding.appBarAddTimeEvent.apply {
+            btnSpinnerList.visibility = View.GONE
+            btnSearch.visibility = View.GONE
+            btnMemberList.visibility = View.GONE
         }
         workManager = WorkManager.getInstance(requireContext())
         if (eventId == null) {
@@ -116,9 +110,9 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
         }
 
         if (isAdd) {
-            binding.appBarAddTimeEvent.toolBar.title = "Time Event"
+            binding.appBarAddTimeEvent.tvTitleAppBar.text = "Time Event"
         } else {
-            binding.appBarAddTimeEvent.toolBar.title = "Time Event"
+            binding.appBarAddTimeEvent.tvTitleAppBar.text = "Time Event"
         }
 
         binding.edtEventName.doAfterTextChanged {
@@ -177,16 +171,12 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
             handleTestNow()
         }
 
-
         binding.timePicker.setIs24HourView(true)
+        hideKeyboardInputInTimePicker(this.resources.configuration.orientation, binding.timePicker)
 
-
-
-
-        binding.appBarAddTimeEvent.toolBar.setNavigationOnClickListener {
+        binding.appBarAddTimeEvent.btnBack.setOnClickListener {
             findNavController().popBackStack()
         }
-
 
 //        binding.searchViewSpinner.addTransitionListener { searchView, previousState, newState ->
 //            println("Here come $previousState , $newState")
@@ -226,16 +216,19 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
                 return false
             }
         })
+
         binding.searchViewSpinner.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
                 Function.hideKeyBoard(context, v)
             }
         }
+
         binding.searchViewMember.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
                 Function.hideKeyBoard(context, v)
             }
         }
+
         binding.searchViewMember.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
@@ -246,6 +239,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
                 return false
             }
         })
+
         binding.linearLayoutRoot.setOnClickListener {
             println("let go")
 //            activity?.currentFocus?.clearFocus()
@@ -253,7 +247,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
             binding.searchViewSpinner.clearFocus()
             binding.searchViewMember.clearFocus()
         }
-
     }
 
 
