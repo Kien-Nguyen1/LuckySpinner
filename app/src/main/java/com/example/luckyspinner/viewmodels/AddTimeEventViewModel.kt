@@ -57,6 +57,7 @@ class AddTimeEventViewModel : ViewModel() {
                         }
                     }
                     memberList.value = list
+                    println("Here come list $list")
                     if (isNewEvent){
                         allCheckboxMember(false)
                     }
