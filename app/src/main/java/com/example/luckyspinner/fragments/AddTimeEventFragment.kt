@@ -126,18 +126,15 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
                 if (eventId == null) {
                     val timeInMillis = Calendar.getInstance().timeInMillis
                     eventId = "$channelId $timeInMillis"
-                    viewModel.getMembers(channelId, isAdd)
-                    viewModel.getSpinnerFromChannel(channelId, isAdd)
+//                    viewModel.getMembers(channelId, isAdd)
+//                    viewModel.getSpinnerFromChannel(channelId, isAdd)
                     viewModel.getEvent(channelId, null, newEventId = eventId!!)
                 } else {
                     viewModel.getEvent(channelId, eventId)
-                    viewModel.getMembers(channelId, isAdd)
-                    viewModel.getSpinnerFromChannel(channelId, isAdd)
+//                    viewModel.getMembers(channelId, isAdd)
+//                    viewModel.getSpinnerFromChannel(channelId, isAdd)
                 }
                 isFirstLoad = false
-            } else {
-                viewModel.getMembers(channelId, isAdd)
-                viewModel.getSpinnerFromChannel(channelId, isAdd)
             }
 
         setUpRecycleView()
@@ -171,6 +168,10 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
 
         binding.appBarAddTimeEvent.btnBack.setOnClickListener {
             findNavController().popBackStack()
+        }
+        if (!isFirstLoad) {
+            viewModel.getMembers(channelId, isAdd)
+            viewModel.getSpinnerFromChannel(channelId, isAdd)
         }
 
         binding.searchViewSpinner.setOnCloseListener {
