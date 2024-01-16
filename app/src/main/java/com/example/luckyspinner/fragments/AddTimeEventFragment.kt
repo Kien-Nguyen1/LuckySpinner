@@ -50,6 +50,7 @@ import com.example.luckyspinner.viewmodels.AddTimeEventViewModel
 import com.example.luckyspinner.work.SendMessageWorker
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.util.Calendar
@@ -169,7 +170,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
         binding.appBarAddTimeEvent.btnBack.setOnClickListener {
             findNavController().popBackStack()
         }
-        if (!isFirstLoad) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            delay(1000)
             viewModel.getMembers(channelId, isAdd)
             viewModel.getSpinnerFromChannel(channelId, isAdd)
         }
@@ -861,6 +863,11 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
             tempList[position] = dayNumber
             listDay = tempList
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
     }
 
     override fun onDestroyView() {
