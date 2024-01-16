@@ -90,12 +90,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         }
 
         binding.appBarMemberList.apply {
-            btnSearch.setOnClickListener {
-                //
-            }
-        }
-
-        binding.appBarMemberList.apply {
             btnSpinnerList.isVisible = false
             btnMemberList.isVisible = false
         }
@@ -104,7 +98,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         binding.rvMemberList.addFabScrollListener(binding.btnAddMemberList)
     }
     fun handleSearch() {
-        if (!viewModel.memberList.isInitialized) return
+//        if (!viewModel.memberList.isInitialized) return
         fun isShowMenu(isShow : Boolean) {
             binding.appBarMemberList.apply {
                 btnSearch.isVisible = isShow
@@ -146,11 +140,12 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             searchView.showContextMenu()
             searchView.isVisible = true
             searchView.setIconifiedByDefault(true);
+            searchView.queryHint = "Search Member..."
 
             searchView.isFocusable = true;
             searchView.isIconified = false;
-            searchView.requestFocusFromTouch();
-            searchView.clearFocus()
+//            searchView.requestFocusFromTouch();
+//            searchView.clearFocus()
             isShowMenu(false)
         }
     }

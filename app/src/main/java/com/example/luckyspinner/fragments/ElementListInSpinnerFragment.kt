@@ -81,7 +81,7 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
     }
 
     fun handleSearch() {
-        if (!viewModel.elementList.isInitialized) return
+//        if (!viewModel.elementList.isInitialized) return
         fun isShowMenu(isShow : Boolean) {
             binding.appBarElementListSpinner.apply {
                 btnSearch.isVisible = isShow
@@ -123,11 +123,12 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
             searchView.showContextMenu()
             searchView.isVisible = true
             searchView.setIconifiedByDefault(true);
+            searchView.queryHint = "Search Element..."
 
             searchView.isFocusable = true;
             searchView.isIconified = false;
-            searchView.requestFocusFromTouch();
-            searchView.clearFocus()
+//            searchView.requestFocusFromTouch();
+//            searchView.clearFocus()
             isShowMenu(false)
         }
     }
@@ -215,12 +216,6 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
 
         binding.btnAddElementListInSpinner.setOnClickListener {
             openAddElementInSpinnerDiaLog(Gravity.CENTER)
-        }
-
-        binding.appBarElementListSpinner.apply {
-            btnSearch.setOnClickListener {
-                //
-            }
         }
 
         binding.rvElementListInSpinner.addFabScrollListener(binding.btnAddElementListInSpinner)

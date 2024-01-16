@@ -37,6 +37,7 @@ import com.example.luckyspinner.util.Constants.SPINNER_TITLE
 import com.example.luckyspinner.util.DialogUtil
 import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.util.Function.addFabScrollListener
+import com.example.luckyspinner.util.Function.showKeyBoard
 import com.example.luckyspinner.viewmodels.SpinnerListViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -104,7 +105,7 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
     }
 
     fun handleSearch() {
-        if (!viewModel.spinnerList.isInitialized) return
+//        if (!viewModel.spinnerList.isInitialized) return
         fun isShowMenu(isShow : Boolean) {
             binding.appBarSpinnerList.apply {
                 btnSearch.isVisible = isShow
@@ -146,11 +147,12 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
             searchView.showContextMenu()
             searchView.isVisible = true
             searchView.setIconifiedByDefault(true);
+            searchView.queryHint = "Search Spinner..."
 
             searchView.isFocusable = true;
             searchView.isIconified = false;
-            searchView.requestFocusFromTouch();
-            searchView.clearFocus()
+//            searchView.requestFocusFromTouch();
+//            searchView.clearFocus()
             isShowMenu(false)
         }
     }

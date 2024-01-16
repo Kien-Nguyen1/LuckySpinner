@@ -40,6 +40,7 @@ import com.example.luckyspinner.util.Constants.ID_TELEGRAM_CHANNEL_KEY
 import com.example.luckyspinner.util.DialogUtil
 import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.util.Function.addFabScrollListener
+import com.example.luckyspinner.util.Function.showKeyBoard
 import com.example.luckyspinner.viewmodels.ChannelViewModel
 import com.example.luckyspinner.work.SendMessageWorker
 import kotlinx.coroutines.launch
@@ -114,32 +115,28 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         }
 
         binding.appBarChannel.apply {
-            btnSearch.setOnClickListener {
-                //
-            }
-
             btnSpinnerList.setOnClickListener {
-                    val direction = ChannelFragmentDirections
-                        .actionChannelFragmentToSpinnerListFragment()
-                        .actionId
+                val direction = ChannelFragmentDirections
+                    .actionChannelFragmentToSpinnerListFragment()
+                    .actionId
 
-                    findNavController().navigate(direction, bundle)
+                findNavController().navigate(direction, bundle)
             }
 
             btnMemberList.setOnClickListener {
-                    val direction = ChannelFragmentDirections
-                        .actionChannelFragmentToMemberListFragment()
-                        .actionId
+                val direction = ChannelFragmentDirections
+                    .actionChannelFragmentToMemberListFragment()
+                    .actionId
 
-                    findNavController().navigate(direction, bundle)
-                }
+                findNavController().navigate(direction, bundle)
             }
+        }
         handleSearch()
         binding.rvEventListOfChannel.addFabScrollListener(binding.btnAddEventOfChannel)
     }
 
     fun handleSearch() {
-        fun isShowMenu(isShow : Boolean) {
+        fun isShowMenu(isShow: Boolean) {
             binding.appBarChannel.apply {
                 btnSearch.isVisible = isShow
                 tvTitleAppBar.isVisible = isShow
@@ -148,6 +145,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
                 btnSpinnerList.isVisible = isShow
             }
         }
+
         val searchView = binding.appBarChannel.searchView
 
         searchView.isVisible = false
@@ -161,13 +159,14 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
 
         searchView.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
-                Function.hideKeyBoard(context, v)
+//                Function.hideKeyBoard(context, v)
                 searchView.isVisible = false
                 isShowMenu(true)
             }
         }
 
-        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
+        searchView.setOnQueryTextListener(object :
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
@@ -182,18 +181,19 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
             searchView.showContextMenu()
             searchView.isVisible = true
             searchView.setIconifiedByDefault(true);
+            searchView.queryHint = "Search Event..."
 
             searchView.isFocusable = true;
             searchView.isIconified = false;
-            searchView.requestFocusFromTouch();
-            searchView.clearFocus()
+//            searchView.requestFocusFromTouch();
+//            searchView.clearFocus()
             isShowMenu(false)
         }
     }
 
-    fun filterEvent(text : String) {
+    fun filterEvent(text: String) {
         if (!viewModel.eventList.isInitialized) return
-        val  list = viewModel.eventList.value!!.filter {
+        val list = viewModel.eventList.value!!.filter {
             it.nameEvent.contains(text)
         }
         eventAdapter.events = list

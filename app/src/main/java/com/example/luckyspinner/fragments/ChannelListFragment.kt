@@ -49,6 +49,8 @@ import com.example.luckyspinner.util.Constants.ID_TELEGRAM_CHANNEL_KEY
 import com.example.luckyspinner.util.DialogUtil
 import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.util.Function.addFabScrollListener
+import com.example.luckyspinner.util.Function.hideKeyBoard
+import com.example.luckyspinner.util.Function.showKeyBoard
 import com.example.luckyspinner.viewmodels.ChannelListViewModel
 import com.google.android.material.search.SearchView
 import kotlinx.coroutines.Dispatchers
@@ -58,11 +60,11 @@ import java.util.Calendar
 
 
 class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
-    private lateinit var binding : FragmentChannelListBinding
-    private val viewModel : ChannelListViewModel by viewModels()
-    private lateinit var channelListAdapter : ChannelListAdapter
-    private lateinit var addDialog : Dialog
-    private lateinit var editChannelDiaLog : Dialog
+    private lateinit var binding: FragmentChannelListBinding
+    private val viewModel: ChannelListViewModel by viewModels()
+    private lateinit var channelListAdapter: ChannelListAdapter
+    private lateinit var addDialog: Dialog
+    private lateinit var editChannelDiaLog: Dialog
     private lateinit var progressDialog: ProgressDialog
     var isFirstLoad = true
 
@@ -218,7 +220,8 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
 //            }
 //        }
     }
-     private fun handleSearch() {
+
+    private fun handleSearch() {
         val searchView = binding.appBarChannelList.searchView
 
         searchView.isVisible = false
@@ -242,8 +245,9 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 }
             }
         }
-
-        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
+        
+        searchView.setOnQueryTextListener(object :
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
@@ -258,11 +262,13 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             searchView.showContextMenu()
             searchView.isVisible = true
             searchView.setIconifiedByDefault(true);
+            searchView.queryHint = "Search Channel..."
 
             searchView.isFocusable = true;
             searchView.isIconified = false;
-            searchView.requestFocusFromTouch();
-            searchView.clearFocus()
+//            searchView.requestFocusFromTouch();
+//            searchView.clearFocus()
+//            showKeyBoard(requireActivity(), it)
             binding.appBarChannelList.apply {
                 btnSearchView.isVisible = false
                 tvTitleAppBar.isVisible = false
@@ -270,26 +276,29 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         }
     }
 
-    fun filterChannel(text : String) {
+    fun filterChannel(text: String) {
         if (!viewModel.channelList.isInitialized) return
-        val  list = viewModel.channelList.value!!.filter {
+        val list = viewModel.channelList.value!!.filter {
             it.nameChannel.contains(text)
         }
         channelListAdapter.channels = list
     }
 
     private fun openAddChannelDialog(gravity: Int) {
-        val binding : AddChannelLayoutBinding = AddChannelLayoutBinding.inflate(layoutInflater)
+        val binding: AddChannelLayoutBinding = AddChannelLayoutBinding.inflate(layoutInflater)
         addDialog = Dialog(requireContext())
 
         addDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         addDialog.setContentView(binding.root)
 
-        val window : Window = addDialog.window!!
-        window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+        val window: Window = addDialog.window!!
+        window.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        val windowAttribute : WindowManager.LayoutParams = window.attributes
+        val windowAttribute: WindowManager.LayoutParams = window.attributes
         windowAttribute.gravity = gravity
         window.attributes = windowAttribute
 
@@ -307,7 +316,8 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 }
             }
             if (channelTelegramId == EMPTY_STRING) {
-                binding.edtEnterChannelId.error = "Please fill your TelegramId of channel/group to receive the bot message!"
+                binding.edtEnterChannelId.error =
+                    "Please fill your TelegramId of channel/group to receive the bot message!"
                 isValidated = false
             }
             if (!isValidated) {
@@ -360,8 +370,9 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         viewModel.isDeleteSuccess.observe(viewLifecycleOwner) {
             println("Here the observer delete come")
             it?.let {
-                if(it) {
-                    Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT).show()
+                if (it) {
+                    Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT)
+                        .show()
                 } else {
                     Toast.makeText(context, "Delete Channel Fail!!", Toast.LENGTH_SHORT).show()
                 }
@@ -380,6 +391,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             }
         }
     }
+
     private fun setupRecycleView() {
         binding.rvChannelList.apply {
             channelListAdapter = ChannelListAdapter(this@ChannelListFragment)
@@ -411,9 +423,10 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             }
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
-        val list : MutableList<MutableLiveData<*>> = ArrayList()
+        val list: MutableList<MutableLiveData<*>> = ArrayList()
         list.add(viewModel.isEditingSuccess)
         list.add(viewModel.isAddingSuccess)
         list.add(viewModel.isDeleteSuccess)
