@@ -1,6 +1,7 @@
 package com.example.luckyspinner.adapter
 
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -11,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.luckyspinner.R
 import com.example.luckyspinner.databinding.RandomSpinnerListItemBinding
 import com.example.luckyspinner.models.Spinner
 import com.example.luckyspinner.util.Constants
@@ -59,6 +61,7 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
         ))
     }
 
+    @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(holder: SpinnerListViewHolder, position: Int) {
         holder.binding.apply {
             val spinner = spinners[position]
@@ -67,7 +70,7 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
                 checkBoxSpinner.isVisible = false
                 tvTitle.text = "+ Add More"
                 tvTitle.gravity = Gravity.CENTER
-                linearRandomSpinnerListItem.background = ColorDrawable(Color.TRANSPARENT)
+                linearRandomSpinnerListItem.background = ColorDrawable(R.color.purple_light)
                 root.setOnClickListener {
                     listener.onSpinnerClick(spinner)
                 }
@@ -77,7 +80,6 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
                 tvTitle.text = spinner.titleSpin
                 tvTitle.gravity = Gravity.NO_GRAVITY
                 tvTitle.isSelected = true
-                linearRandomSpinnerListItem.background = ColorDrawable(Color.WHITE)
 
 
                 checkBoxSpinner.isChecked = spinner.listEvent.contains(eventId)

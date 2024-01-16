@@ -1,6 +1,7 @@
 package com.example.luckyspinner.adapter
 
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -15,6 +16,7 @@ import androidx.core.view.marginTop
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.luckyspinner.R
 import com.example.luckyspinner.databinding.MemberListItemInEventBinding
 import com.example.luckyspinner.models.Member
 import com.example.luckyspinner.util.Constants
@@ -60,6 +62,7 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
         ))
     }
 
+    @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(holder: MemberListViewHolder, position: Int) {
         holder.binding.apply {
             val member = members[position]
@@ -68,7 +71,7 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
                 imgMember.isVisible = false
                 tvTitle.text = "+ Add More"
                 tvTitle.gravity = Gravity.CENTER
-                linearMemberInEvent.background = ColorDrawable(Color.TRANSPARENT)
+                linearMemberInEvent.background = ColorDrawable(R.color.purple_light)
                 root.setOnClickListener {
                     listener.onMemberItemClick(member)
                 }
@@ -80,7 +83,6 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
                 checkBoxSpinner.isVisible = true
 
                 checkBoxSpinner.isChecked = member.listEvent.contains(eventId)
-                linearMemberInEvent.background = ColorDrawable(Color.WHITE)
 
                 checkBoxSpinner.setOnClickListener {
                     listener.onCheckboxClickMember(member.idMember, position, member.hasSelected)

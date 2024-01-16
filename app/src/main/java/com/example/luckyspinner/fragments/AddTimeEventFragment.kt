@@ -147,15 +147,13 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
 
         setupObservers()
 
-
         setUpDatePicker()
 
         setupChooseSpinnerDialog()
+
         setupMemberDialog()
 
         dayOfWeekClickEvent()
-
-
 
         return binding.root
     }
@@ -705,7 +703,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
                 add(Spinner(idSpin = Constants.ID_ADD_MORE))
             }
 
-            if (it.size > 2 && binding.rvSpinnerList.layoutManager !is GridLayoutManager) {
+            if (it.size > 1 && binding.rvSpinnerList.layoutManager !is GridLayoutManager) {
                 binding.rvSpinnerList.layoutManager =
                     GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
             }
@@ -735,7 +733,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
                 add(Member(idMember = Constants.ID_ADD_MORE))
             }
 
-            if (it.size > 2 && binding.rvMemberList.layoutManager !is GridLayoutManager) {
+            if (it.size > 1 && binding.rvMemberList.layoutManager !is GridLayoutManager) {
                 binding.rvMemberList.layoutManager =
                     GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
             }
