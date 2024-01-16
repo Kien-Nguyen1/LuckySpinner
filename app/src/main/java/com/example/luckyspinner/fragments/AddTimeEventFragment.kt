@@ -72,8 +72,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
     private var isAdd = false
     private lateinit var chooseSpinnerDialog: Dialog
     private lateinit var chooseMemberDialog: Dialog
-    private lateinit var editSpinnerDiaLog: Dialog
-    private lateinit var addSpinnerDiaLog: Dialog
+    private var isCloseSpinner = false
     private lateinit var dateDialog: Dialog
     private lateinit var randomSpinnerAdapter: RandomSpinnerListAdapter
     private lateinit var memberInEventAdapter: MemberInEventListAdapter
@@ -123,7 +122,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
             }
         }
 
-        lifecycleScope.launch(Dispatchers.IO) {
             if (isFirstLoad) {
                 if (eventId == null) {
                     val timeInMillis = Calendar.getInstance().timeInMillis
@@ -141,7 +139,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
                 viewModel.getMembers(channelId, isAdd)
                 viewModel.getSpinnerFromChannel(channelId, isAdd)
             }
-        }
 
         setUpRecycleView()
 
@@ -176,34 +173,23 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
             findNavController().popBackStack()
         }
 
-//        binding.searchViewSpinner.addTransitionListener { searchView, previousState, newState ->
-//            println("Here come $previousState , $newState")
-//            if (newState == TransitionState.HIDDEN) {
-//                binding.searchViewSpinner.editText.setText("")
-//                binding.checkBoxAllSpinner.isVisible = true
-//            }
-//            if (newState == TransitionState.SHOWING) {
-//                binding.checkBoxAllSpinner.isVisible = false
-//            }
-//        }
-//        binding.searchViewMember.addTransitionListener { searchView, previousState, newState ->
-//            if (newState == TransitionState.HIDDEN) {
-//                binding.searchViewMember.editText.setText("")
-//                binding.checkBoxAllMember.isVisible = true
-//            }
-//            if (newState == TransitionState.SHOWING) {
-//                binding.checkBoxAllMember.isVisible = false
-//            }
-//        }
-//        binding.searchViewSpinner.editText.setOnEditorActionListener { v, actionId, event ->
-//            false
-//        }
-//        binding.searchViewSpinner.editText.doOnTextChanged { text, start, before, count ->
-//            filterSpinner(text.toString())
-//        }
-//        binding.searchViewMember.editText.doOnTextChanged { text, start, before, count ->
-//            filterMember(text.toString())
-//        }
+        binding.searchViewSpinner.setOnCloseListener {
+            println("Here come on close")
+            binding.checkBoxAllSpinner.isVisible = true
+            false
+        }
+
+        binding.searchViewSpinner.setOnSearchClickListener {
+            binding.checkBoxAllSpinner.isVisible = false
+        }
+
+        binding.searchViewSpinner.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                Function.hideKeyBoard(context, v)
+            }
+        }
+
+
         binding.searchViewSpinner.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
@@ -215,15 +201,22 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
             }
         })
 
-        binding.searchViewSpinner.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) {
-                Function.hideKeyBoard(context, v)
-            }
+
+
+
+        binding.searchViewMember.setOnCloseListener { 
+            binding.checkBoxAllMember.isVisible = true
+            false
         }
 
-        binding.searchViewMember.setOnFocusChangeListener { v, hasFocus ->
+
+
+        binding.searchViewMember.setOnQueryTextFocusChangeListener { v, hasFocus ->
+            println("Here come focus text")
             if (!hasFocus) {
                 Function.hideKeyBoard(context, v)
+            } else {
+                binding.checkBoxAllMember.isVisible = false
             }
         }
 
@@ -441,7 +434,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
             adapter = randomSpinnerAdapter
             layoutManager = LinearLayoutManager(context)
             addMarginToLastItemHorizontal(binding.rvSpinnerList, 5)
-            setHasFixedSize(true)
         }
 
         bindingMemberDialog = ChooseRandomSpinnerListLayoutBinding.inflate(layoutInflater)
