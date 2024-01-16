@@ -25,6 +25,7 @@
         android:layout_height="match_parent"
         android:padding="16dp"
         app:icon="@drawable/ic_search"
+        app:iconSize="24dp"
         app:iconTint="#1D1B20"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

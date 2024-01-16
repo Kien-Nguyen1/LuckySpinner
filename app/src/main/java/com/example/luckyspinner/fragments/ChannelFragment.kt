@@ -40,6 +40,7 @@ import com.example.luckyspinner.util.Constants.ID_TELEGRAM_CHANNEL_KEY
 import com.example.luckyspinner.util.DialogUtil
 import com.example.luckyspinner.util.Function
 import com.example.luckyspinner.util.Function.addFabScrollListener
+import com.example.luckyspinner.util.Function.hideKeyBoard
 import com.example.luckyspinner.util.Function.showKeyBoard
 import com.example.luckyspinner.viewmodels.ChannelViewModel
 import com.example.luckyspinner.work.SendMessageWorker
@@ -132,6 +133,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
             }
         }
         handleSearch()
+
         binding.rvEventListOfChannel.addFabScrollListener(binding.btnAddEventOfChannel)
     }
 
@@ -177,6 +179,7 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
             }
 
         })
+
         binding.appBarChannel.btnSearch.setOnClickListener {
             searchView.showContextMenu()
             searchView.isVisible = true

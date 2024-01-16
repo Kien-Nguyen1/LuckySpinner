@@ -261,7 +261,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         binding.appBarChannelList.btnSearchView.setOnClickListener {
             searchView.showContextMenu()
             searchView.isVisible = true
-            searchView.setIconifiedByDefault(true);
+            searchView.setIconifiedByDefault(true)
             searchView.queryHint = "Search Channel..."
 
             searchView.isFocusable = true;
