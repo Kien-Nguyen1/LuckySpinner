@@ -61,7 +61,6 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
         ))
     }
 
-    @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(holder: SpinnerListViewHolder, position: Int) {
         holder.binding.apply {
             val spinner = spinners[position]
@@ -70,7 +69,7 @@ class RandomSpinnerListAdapter(private val listener: Listener, private val event
                 checkBoxSpinner.isVisible = false
                 tvTitle.text = "+ Add More"
                 tvTitle.gravity = Gravity.CENTER
-                linearRandomSpinnerListItem.background = ColorDrawable(R.color.purple_light)
+                linearRandomSpinnerListItem.background = ColorDrawable(Color.parseColor("#F7F2FA"))
                 root.setOnClickListener {
                     listener.onSpinnerClick(spinner)
                 }

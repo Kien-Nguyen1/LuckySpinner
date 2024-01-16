@@ -62,7 +62,6 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
         ))
     }
 
-    @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(holder: MemberListViewHolder, position: Int) {
         holder.binding.apply {
             val member = members[position]
@@ -71,7 +70,7 @@ class MemberInEventListAdapter(private val listener: Listener, private val event
                 imgMember.isVisible = false
                 tvTitle.text = "+ Add More"
                 tvTitle.gravity = Gravity.CENTER
-                linearMemberInEvent.background = ColorDrawable(R.color.purple_light)
+                linearMemberInEvent.background = ColorDrawable(Color.parseColor("#F7F2FA"))
                 root.setOnClickListener {
                     listener.onMemberItemClick(member)
                 }
