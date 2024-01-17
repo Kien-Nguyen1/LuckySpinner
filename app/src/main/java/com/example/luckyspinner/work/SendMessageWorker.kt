@@ -6,6 +6,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.example.luckyspinner.controller.DataController
 import com.example.luckyspinner.models.ElementSpinner
 import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Member
@@ -79,6 +80,14 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                         }
                         outputData = workDataOf(CHAT_ID to telegramChannelId, MESSAGE to message)
                         makeStatusNotification("Send message successfully!", applicationContext)
+                        if (event!!.typeEvent == null) {
+                            DataController.deleteEvent(db, channelId!!, eventId!!)
+                        }
+                        if (event!!.typeEvent == Constants.ONCE) {
+                            DataController.saveEvent(db, channelId!!, event!!.apply {
+                                isTurnOn = false
+                            })
+                        }
                         return@withContext Result.success(outputData)
                     } else {
                         return@withContext Result.failure()
@@ -98,7 +107,7 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
 
     fun isSendMessageToDay() : Boolean {
         val today = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
-        return true//moke
+//        return true//moke
         return listDay.contains(today)
     }
     suspend fun  getElement(idChannel : String?, idSpinner : String?, spinnerName : String, isLast : Boolean) : Boolean {
@@ -211,7 +220,7 @@ class SendMessageWorker(context: Context, params: WorkerParameters) : CoroutineW
                 event = document.toObject<Event>()
 
                 listDay = if (event != null) {
-                    if (event!!.typeEvent == null) {
+                    if (event!!.typeEvent == null || event!!.typeEvent == Constants.ONCE) {
                         arrayListOf(2,3,4,5,6,7,1)
                     }
                     else event!!.listDay

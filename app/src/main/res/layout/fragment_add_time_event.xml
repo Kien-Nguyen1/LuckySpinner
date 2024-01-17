@@ -3,98 +3,237 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragments.AddTimeEventFragment">
+    android:layout_height="match_parent">
 
     <include
         android:id="@+id/app_bar_add_time_event"
-        layout="@layout/app_bar_layout"
+        layout="@layout/custom_app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/block_list"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="10dp"
-        android:orientation="horizontal"
+    <ScrollView
+        android:id="@+id/scroll_view_add_time"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/linear_layout_button"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/app_bar_add_time_event">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_choose_random_spinner"
-            style="?attr/materialIconButtonFilledTonalStyle"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/linear_layout_root"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Spinner List"
-            app:icon="@drawable/ic_spinner_list" />
+            android:orientation="vertical">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_member_list"
-            style="?attr/materialIconButtonFilledTonalStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:text="Member List"
-            app:icon="@drawable/ic_member_list" />
-    </LinearLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_field_event_name"
+                style="?attr/textInputOutlinedDenseStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center_horizontal"
+                android:hint="Event Name"
+                app:endIconMode="clear_text">
 
-    <TimePicker
-        android:id="@+id/time_picker_add_time_event"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edt_event_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textColor="@color/black" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TimePicker
+                android:id="@+id/time_picker"
+                android:layout_width="250dp"
+                android:layout_height="340dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_gravity="center_horizontal"
+                android:headerBackground="@android:color/transparent"
+                android:headerTimeTextAppearance="@style/TextAppearance"
+                android:numbersBackgroundColor="#ECE6F0"
+                android:numbersSelectorColor="#6750A4"
+                android:numbersTextColor="@color/black"
+                android:timePickerMode="clock" />
+
+            <include
+                android:id="@+id/date_picker"
+                layout="@layout/day_of_week_layout"
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="50dp">
+
+                <TextView
+                    android:id="@+id/tv_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="Spinner"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.SearchView
+                    android:id="@+id/search_view_spinner"
+                    style="@style/BackGroundSearchView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:maxWidth="250dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="10dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/tv_spinner"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:queryHint="Search Spinner..." />
+
+                <CheckBox
+                    android:id="@+id/check_box_all_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="All"
+                    android:layout_marginStart="10dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/search_view_spinner"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_spinner_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                tools:itemCount="1"
+                tools:listitem="@layout/random_spinner_list_item" />
+
+            <TextView
+                android:id="@+id/tv_title_status_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="15dp"
+                android:layout_marginTop="15dp"
+                android:gravity="center_horizontal"
+                android:text="Title Status"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="50dp">
+
+                <TextView
+                    android:id="@+id/tv_member"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="Member"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <androidx.appcompat.widget.SearchView
+                    android:id="@+id/search_view_member"
+                    style="@style/BackGroundSearchView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:maxWidth="250dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="10dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/tv_member"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:queryHint="Search Member..." />
+
+                <CheckBox
+                    android:id="@+id/check_box_all_member"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/search_view_member"
+                    android:layout_marginStart="10dp"
+                    android:text="All" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_member_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                tools:itemCount="1"
+                tools:listitem="@layout/member_list_item_in_event" />
+
+            <TextView
+                android:id="@+id/tv_title_status_member"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="15dp"
+                android:layout_marginTop="15dp"
+                android:gravity="center_horizontal"
+                android:text="Title Status"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/linear_layout_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:timePickerMode="spinner"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/block_list" />
-
-    <include
-        android:id="@+id/day_of_week"
-        layout="@layout/day_of_week_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/time_picker_add_time_event" />
-
-    <EditText
-        android:id="@+id/edt_event_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="30dp"
-        android:layout_marginTop="20dp"
         android:gravity="center_horizontal"
-        android:hint="Enter Event Name"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/day_of_week" />
-
-    <Button
-        android:id="@+id/btn_spinner_now"
-        style="?attr/materialIconButtonFilledTonalStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="30dp"
-        android:layout_marginTop="20dp"
-        android:text="Test Now"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edt_event_name" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btn_done_add_time_event"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_done"
+        android:orientation="horizontal"
+        android:paddingVertical="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_spinner_now"
+            style="?attr/materialIconButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:layout_weight="1"
+            android:text="Test Now" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_done_add_time_event"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_done"
+            android:text="Save" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

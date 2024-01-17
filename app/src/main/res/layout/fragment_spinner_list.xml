@@ -2,13 +2,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.SpinnerListFragment">
 
     <include
         android:id="@+id/app_bar_spinner_list"
-        layout="@layout/app_bar_layout"
+        layout="@layout/custom_app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintHorizontal_bias="0.5"
@@ -32,12 +33,12 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="20dp"
+        android:src="@drawable/image_empty_list"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:visibility="gone"
-        android:src="@drawable/image_empty_list"
         app:layout_constraintTop_toBottomOf="@+id/app_bar_spinner_list"
         tools:listitem="@layout/title_spinner_or_channel_item" />
 
@@ -46,7 +47,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:src="@drawable/ic_add"
+        android:contentDescription="Add Spinner"
+        android:src="@drawable/ic_add_spinner"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 

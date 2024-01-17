@@ -1,11 +1,15 @@
 package com.example.luckyspinner.adapter
 
 
+import android.content.Context
 import android.graphics.Color
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +17,8 @@ import com.example.luckyspinner.R
 import com.example.luckyspinner.databinding.TitleSpinnerOrChannelItemBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.models.Channel
+import kotlin.math.roundToInt
+import kotlin.math.sign
 
 class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter<ChannelListAdapter.ChannelListViewHolder>() {
     interface Listener {
@@ -52,20 +58,29 @@ class ChannelListAdapter(private val listener : Listener) : RecyclerView.Adapter
     }
 
     override fun onBindViewHolder(holder: ChannelListViewHolder, position: Int) {
+        val channel = channels[position]
+
         holder.binding.apply {
-            val channel = channels[position]
             tvTitleListOrChannelItem.text = channel.nameChannel
+
+            tvTitleListOrChannelItem.isSelected = true
+
+            tvSubTitle.text = "Telegram ID Channel: ${channel.idTelegramChannel}"
+
             btnEditSpinnerOrChannel.setOnClickListener {
                 onEditClickListener.onEditClick(position)
             }
+
+            btnDeleteSpinnerOrChannel.isVisible = false
             root.setOnClickListener {
                 listener.onItemClick(channel)
             }
+            root.setOnLongClickListener {
+                listener.onDeleteItem(channel.idChannel)
+                true
+            }
             btnDeleteSpinnerOrChannel.setOnClickListener {
                 listener.onDeleteItem(channel.idChannel)
-            }
-            if (position % 2 != 0) {
-                titleSpinnerOrChannelLayout.setBackgroundColor(Color.parseColor("#DFD5EC"))
             }
         }
     }

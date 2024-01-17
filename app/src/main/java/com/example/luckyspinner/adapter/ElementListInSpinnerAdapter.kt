@@ -1,15 +1,19 @@
 package com.example.luckyspinner.adapter
 
 
+import android.content.Context
 import android.graphics.Color
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.luckyspinner.databinding.ElementInSpinnerItemBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
 import com.example.luckyspinner.models.ElementSpinner
+import kotlin.math.roundToInt
 
 class ElementListInSpinnerAdapter(private val listener: Listener) : RecyclerView.Adapter<ElementListInSpinnerAdapter.ElementListInSpinner>() {
     lateinit var onEditClickListener: OnEditClickListener
@@ -52,19 +56,21 @@ class ElementListInSpinnerAdapter(private val listener: Listener) : RecyclerView
         holder.binding.apply {
             val element = elementSpinners[position]
             tvElementInSpinner.text = element.nameElement
+            tvElementInSpinner.isSelected = true
             root.setOnClickListener {
                 listener.onItemClick(element.idElement)
             }
+            root.setOnLongClickListener {
+                listener.onDeleteItem(element.idElement)
+                true
+            }
+            btnDeleteElementTitle.isVisible = false
 
-            btnEditElementTitle.setOnClickListener {
+            root.setOnClickListener {
                 onEditClickListener.onEditClick(position)
             }
             btnDeleteElementTitle.setOnClickListener {
                 listener.onDeleteItem(element.idElement)
-            }
-
-            if (position % 2 != 0) {
-                root.setBackgroundColor(Color.parseColor("#DFD5EC"))
             }
         }
     }

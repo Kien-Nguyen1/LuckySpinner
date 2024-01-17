@@ -42,6 +42,8 @@ object Constants {
     const val MESSAGE_GET_FAILED = "Get failed"
     const val MESSAGE_DELETE_SUCCESSFUL = "Delete successful"
     const val MESSAGE_DELETE_FAILED = "Delete failed"
+
+    const val ONCE = 0
     const val EVERY_WEEK: Int = 1
 
 
@@ -53,6 +55,18 @@ object Constants {
     const val SATURDAY = 7
     const val SUNDAY = 1
 
+    const val MONDAY_POSITION = 0
+    const val TUESDAY_POSITION = 1
+    const val WEDNESDAY_POSITION = 2
+    const val THURSDAY_POSITION = 3
+    const val FRIDAY_POSITION = 4
+    const val SATURDAY_POSITION = 5
+    const val SUNDAY_POSITION = 6
+
     const val DELAY_TIME_MILLIS: Long = 3000
     lateinit var DEVICE_ID : String
+
+    val LIST_DAY_ALL_WEEK = mutableListOf(2,3,4,5,6,7,1)
+    val LIST_DAY_EMPTY = mutableListOf(0,0,0,0,0,0,0)
+    const val ID_ADD_MORE = "Add more"
 }

@@ -6,6 +6,7 @@ import android.app.ProgressDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -19,23 +20,21 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.MemberListAdapter
 import com.example.luckyspinner.databinding.AddChannelLayoutBinding
 import com.example.luckyspinner.databinding.EditDialogBinding
 import com.example.luckyspinner.databinding.FragmentMemberListBinding
 import com.example.luckyspinner.interfaces.OnEditClickListener
-import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.models.Member
 import com.example.luckyspinner.util.Constants
 import com.example.luckyspinner.util.DialogUtil
 import com.example.luckyspinner.util.Function
+import com.example.luckyspinner.util.Function.addFabScrollListener
 import com.example.luckyspinner.viewmodels.MemberListViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -48,6 +47,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     private lateinit var addMemberDialog : Dialog
     private lateinit var progressDialog : ProgressDialog
     private lateinit var editMemberDiaLog : Dialog
+    var isFirstLoad = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,12 +55,11 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     ): View? {
         binding = FragmentMemberListBinding.inflate(inflater , container, false)
         progressDialog = ProgressDialog(requireContext())
-//        binding.ckbChooseAllMember.isVisible = false
 
         binding.appBarMemberList.apply {
-            toolBar.title = "List Member"
-            toolBar.menu.findItem(R.id.spinnerListFragment)?.isVisible = false
-            toolBar.menu.findItem(R.id.memberListFragment)?.isVisible = false
+            tvTitleAppBar.text = "List Member"
+            btnSpinnerList.visibility = View.GONE
+            btnMemberList.visibility = View.GONE
         }
 
         // Inflate the layout for this fragment
@@ -74,24 +73,94 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         setupObserver()
 
         lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.getEvents(idChannel)
-            viewModel.getMembers(idChannel)
+            if (isFirstLoad) {
+                viewModel.getEvents(idChannel)
+                viewModel.getMembers(idChannel)
+                isFirstLoad = false
+            }
         }
 
         binding.btnAddMemberList.setOnClickListener {
             openAddMemberDiaLog(Gravity.CENTER)
         }
 
+        binding.appBarMemberList.btnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
         binding.appBarMemberList.apply {
-            toolBar.setNavigationOnClickListener {
-                findNavController().popBackStack()
+            btnSpinnerList.isVisible = false
+            btnMemberList.isVisible = false
+        }
+
+        handleSearch()
+        binding.rvMemberList.addFabScrollListener(binding.btnAddMemberList)
+    }
+    fun handleSearch() {
+        fun isShowMenu(isShow : Boolean) {
+            binding.appBarMemberList.apply {
+                btnSearch.isVisible = isShow
+                tvTitleAppBar.isVisible = isShow
+                btnBack.isVisible = isShow
+            }
+        }
+        val searchView = binding.appBarMemberList.searchView
+
+        searchView.isVisible = false
+
+        searchView.setOnCloseListener {
+            searchView.isVisible = false
+            isShowMenu(true)
+
+            false
+        }
+
+        searchView.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                Function.hideKeyBoard(context, v)
+                searchView.isVisible = false
+                isShowMenu(true)
             }
         }
 
-//        binding.ckbChooseAllMember.setOnClickListener {
-//            handleChooseAllMember()
-//        }
+        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
 
+            override fun onQueryTextChange(newText: String): Boolean {
+                filterMember(newText)
+                return false
+            }
+
+        })
+        binding.appBarMemberList.btnSearch.setOnClickListener {
+            searchView.showContextMenu()
+            searchView.isVisible = true
+            searchView.setIconifiedByDefault(true);
+            searchView.queryHint = "Search Member..."
+
+            searchView.isFocusable = true;
+            searchView.isIconified = false;
+            isShowMenu(false)
+        }
+    }
+
+    fun filterMember(text: String) {
+        if (text == "") {
+            viewModel.memberList.value = viewModel.memberList.value
+            return
+        }
+        val list: MutableList<Member> = ArrayList()
+
+        viewModel.memberList.value?.forEach {
+            if (it.nameMember.contains(text, true)) {
+                list.add(it)
+            }
+        }
+        memberAdapter.members = list
+    }
+    fun createEditListener() {
         memberAdapter.onEditClickListener = object : OnEditClickListener{
             override fun onEditClick(position: Int) {
                 val binding : EditDialogBinding = EditDialogBinding.inflate(layoutInflater)
@@ -102,14 +171,21 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
                 val member = memberAdapter.members[position]
 
                 binding.tvNameTitleAddElement.text = "Edit Member"
+                binding.edtId.isVisible = false
 
                 binding.edtEnterElement.setText(member.nameMember)
+
+                binding.edtEnterElement.setSelection(binding.edtEnterElement.text.length)
 
                 binding.btnCancelElement.setOnClickListener {
                     editMemberDiaLog.dismiss()
                 }
 
                 binding.btnDoneAddElement.setOnClickListener {
+                    if (binding.edtEnterElement.text.toString().isEmpty()) {
+                        binding.edtEnterElement.error = "Please fill this filed"
+                        return@setOnClickListener
+                    }
                     member.nameMember = binding.edtEnterElement.text.toString()
                     viewModel.editMember(
                         idChannel,
@@ -126,10 +202,12 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
                 window.attributes = windowAttribute
 
                 editMemberDiaLog.show()
+                lifecycleScope.launch {
+                    delay(1)
+                    Function.showKeyBoard(requireActivity(), binding.edtEnterElement)
+                }
             }
         }
-
-
     }
 
     private fun openAddMemberDiaLog(gravity: Int) {
@@ -153,49 +231,36 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
 
         binding.btnDoneAddChannel.setOnClickListener {
             val edt = binding.edtEnterChannelName
-            if (edt.text.toString() == Constants.EMPTY_STRING) {
+            if (edt.text.toString().trim() == Constants.EMPTY_STRING) {
                 edt.error = "Please fill this field"
                 return@setOnClickListener
             }
             val memberName = binding.edtEnterChannelName.text.toString()
-            progressDialog.show()
             viewModel.addMember(idChannel, Member(Calendar.getInstance().timeInMillis.toString(), memberName))
         }
         binding.btnCancelAddChannel.setOnClickListener {
             addMemberDialog.dismiss()
         }
-    }
-    private fun handleChooseAllMember() {
-        val list = viewModel.memberList.value ?: return
-        progressDialog.show()
-        var isAllSelected = true
-        run breaking@{
-            list.forEach { member ->
-                if (!member.hasSelected) {
-                    isAllSelected = false
-                    return@breaking
-                }
-            }
-        }
         lifecycleScope.launch {
-            viewModel.updateForChooseAllMember(idChannel, list, !isAllSelected)
+            delay(1)
+            Function.showKeyBoard(requireActivity(), binding.edtEnterChannelName)
         }
     }
 
     private fun setupRecycleView() {
-        val decorationItem : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.rvMemberList.apply {
             memberAdapter = MemberListAdapter(this@MemberListFragment)
+            createEditListener()
             adapter = memberAdapter
             layoutManager = LinearLayoutManager(context)
-            addItemDecoration(decorationItem)
+            Function.addMarginToLastItem(binding.rvMemberList, 10)
         }
         viewModel.eventList.observe(viewLifecycleOwner) {
             binding.rvMemberList.apply {
                 memberAdapter = MemberListAdapter(this@MemberListFragment, it)
+                createEditListener()
                 adapter = memberAdapter
                 layoutManager = LinearLayoutManager(context)
-                addItemDecoration(decorationItem)
                 if (viewModel.memberList.isInitialized) {
                     viewModel.memberList.value = viewModel.memberList.value
                 }
@@ -228,7 +293,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
             }
         }
         viewModel.isDeletingMemberSuccess.observe(viewLifecycleOwner) {
-            println("Here the observer delete come")
             it?.let {
                 if(it) {
                     Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT).show()
@@ -243,6 +307,7 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         viewModel.isEdtingMemberSuccess.observe(viewLifecycleOwner) {
             it?.let {
                 if (it) {
+                    Toast.makeText(requireContext(), "Edit successful!", Toast.LENGTH_SHORT).show()
                     editMemberDiaLog.dismiss()
                 } else {
                     Toast.makeText(requireContext(), "Edit failed!", Toast.LENGTH_SHORT).show()
@@ -266,7 +331,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         lifecycleScope.launch {
             val isDelete = DialogUtil.showYesNoDialog(context)
             if (isDelete) {
-                progressDialog.show()
                 viewModel.deleteMember(idChannel, id)
             }
         }

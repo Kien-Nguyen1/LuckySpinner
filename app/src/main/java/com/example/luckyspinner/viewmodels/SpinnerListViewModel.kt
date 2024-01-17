@@ -31,7 +31,6 @@ class SpinnerListViewModel : ViewModel() {
 
 
     fun  getSpinners(idChannel : String) {
-        isShowProgressDialog.value = true
         val sList : MutableList<Spinner> = ArrayList()
 
         DataController.getSpinners(db, idChannel)
@@ -49,7 +48,6 @@ class SpinnerListViewModel : ViewModel() {
 
                     }
                     spinnerList.value = sList
-                    isShowProgressDialog.value = false
 
                 } else {
                     Log.w(
@@ -57,7 +55,6 @@ class SpinnerListViewModel : ViewModel() {
                         "Error getting documents.",
                         it.exception
                     )
-                    isShowProgressDialog.value = false
                 }
 
             }
@@ -81,7 +78,6 @@ class SpinnerListViewModel : ViewModel() {
                         }
                     }
                     eventList.value = list
-
                 } else {
                     Log.w(
                         Constants.FIRE_STORE,
@@ -102,6 +98,7 @@ class SpinnerListViewModel : ViewModel() {
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     isAddingSpinnerSuccess.value = true
+                    isShowProgressDialog.value = false
                 }
             }
             .addOnFailureListener { e ->
@@ -118,6 +115,7 @@ class SpinnerListViewModel : ViewModel() {
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     isEditingSuccess.value = true
+                    isShowProgressDialog.value = false
                 }
             }
             .addOnFailureListener { e ->
@@ -136,6 +134,7 @@ class SpinnerListViewModel : ViewModel() {
                     "DocumentSnapshot successfully deleted!"
                 )
                 isDeletingSuccess.value = true
+                isShowProgressDialog.value = false
             }
             .addOnFailureListener {
                 e ->

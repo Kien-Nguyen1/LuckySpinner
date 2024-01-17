@@ -1,19 +1,33 @@
 package com.example.luckyspinner.fragments
 
 import android.app.Dialog
+import android.app.Notification.Action
 import android.app.ProgressDialog
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.Gravity
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import android.view.WindowManager.LayoutParams
+import android.view.inputmethod.InputMethodManager
+import android.widget.SearchView.OnQueryTextListener
 import android.widget.Toast
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.ContextCompat.getSystemServiceName
+import androidx.core.view.MenuItemCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.get
+import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
@@ -21,6 +35,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.luckyspinner.R
 import com.example.luckyspinner.adapter.ChannelListAdapter
 import com.example.luckyspinner.databinding.AddChannelLayoutBinding
 import com.example.luckyspinner.databinding.EditDialogBinding
@@ -33,27 +48,40 @@ import com.example.luckyspinner.util.Constants.ID_CHANNEL_KEY
 import com.example.luckyspinner.util.Constants.ID_TELEGRAM_CHANNEL_KEY
 import com.example.luckyspinner.util.DialogUtil
 import com.example.luckyspinner.util.Function
+import com.example.luckyspinner.util.Function.addFabScrollListener
+import com.example.luckyspinner.util.Function.hideKeyBoard
+import com.example.luckyspinner.util.Function.showKeyBoard
 import com.example.luckyspinner.viewmodels.ChannelListViewModel
+import com.google.android.material.search.SearchView
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Calendar
 
+
 class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
-    private lateinit var binding : FragmentChannelListBinding
-    private val viewModel : ChannelListViewModel by viewModels()
-    private lateinit var channelListAdapter : ChannelListAdapter
-    private lateinit var addDialog : Dialog
-    private lateinit var editChannelDiaLog : Dialog
+    private lateinit var binding: FragmentChannelListBinding
+    private val viewModel: ChannelListViewModel by viewModels()
+    private lateinit var channelListAdapter: ChannelListAdapter
+    private lateinit var addDialog: Dialog
+    private lateinit var editChannelDiaLog: Dialog
     private lateinit var progressDialog: ProgressDialog
+    var isFirstLoad = true
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        println("HHere come oncreateview")
         binding = FragmentChannelListBinding.inflate(inflater, container, false)
         progressDialog = ProgressDialog(context)
+        setupStateObserver()
+
         setupRecycleView()
+
+        if (isFirstLoad) {
+            viewModel.getChannels()
+            isFirstLoad = false
+        }
 
         // Inflate the layout for this fragment
         return binding.root
@@ -61,13 +89,6 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupStateObserver()
-
-        viewModel.message.observe(viewLifecycleOwner) {
-//            Toast.makeText(requireContext(), it , Toast.LENGTH_SHORT).show()
-        }
-        viewModel.getChannels()
-
 
         binding.btnAddChannel.setOnClickListener {
             Log.d("kien", "click add channel")
@@ -87,12 +108,16 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 binding.edtEnterElement.setText(channel.nameChannel)
                 binding.edtId.setText(channel.idTelegramChannel)
 
+                binding.edtId.setSelection(channel.idTelegramChannel.length)
+                binding.edtEnterElement.setSelection(binding.edtEnterElement.selectionEnd)
+
+
                 binding.btnDoneAddElement.setOnClickListener {
-                    if (binding.edtEnterElement.text.toString() == EMPTY_STRING) {
+                    if (binding.edtEnterElement.text.toString().trim() == EMPTY_STRING) {
                         binding.edtEnterElement.error = " Please fill this filed!"
                         return@setOnClickListener
                     }
-                    if (binding.edtId.text.toString() == EMPTY_STRING) {
+                    if (binding.edtId.text.toString().trim() == EMPTY_STRING) {
                         binding.edtId.error = " Please fill this filed!"
                         return@setOnClickListener
                     }
@@ -119,22 +144,94 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 window.attributes = windowAttribute
 
                 editChannelDiaLog.show()
+
+                lifecycleScope.launch {
+                    delay(1)
+                    Function.showKeyBoard(requireActivity(), binding.edtId)
+                }
+            }
+        }
+
+        binding.rvChannelList.addFabScrollListener(binding.btnAddChannel)
+
+        handleSearch()
+    }
+
+    private fun handleSearch() {
+        val searchView = binding.appBarChannelList.searchView
+
+        searchView.isVisible = false
+
+        searchView.setOnCloseListener {
+            searchView.isVisible = false
+            binding.appBarChannelList.apply {
+                btnSearchView.isVisible = true
+                tvTitleAppBar.isVisible = true
+            }
+            false
+        }
+
+        searchView.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                Function.hideKeyBoard(context, v)
+                searchView.isVisible = false
+                binding.appBarChannelList.apply {
+                    btnSearchView.isVisible = true
+                    tvTitleAppBar.isVisible = true
+                }
+            }
+        }
+        
+        searchView.setOnQueryTextListener(object :
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                filterChannel(newText)
+                return false
+            }
+
+        })
+        binding.appBarChannelList.btnSearchView.setOnClickListener {
+            searchView.showContextMenu()
+            searchView.isVisible = true
+            searchView.setIconifiedByDefault(true)
+            searchView.queryHint = "Search Channel..."
+
+            searchView.isFocusable = true;
+            searchView.isIconified = false;
+            binding.appBarChannelList.apply {
+                btnSearchView.isVisible = false
+                tvTitleAppBar.isVisible = false
             }
         }
     }
 
+    fun filterChannel(text: String) {
+        if (!viewModel.channelList.isInitialized) return
+        val list = viewModel.channelList.value!!.filter {
+            it.nameChannel.contains(text)
+        }
+        channelListAdapter.channels = list
+    }
+
     private fun openAddChannelDialog(gravity: Int) {
-        val binding : AddChannelLayoutBinding = AddChannelLayoutBinding.inflate(layoutInflater)
+        val binding: AddChannelLayoutBinding = AddChannelLayoutBinding.inflate(layoutInflater)
         addDialog = Dialog(requireContext())
 
         addDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         addDialog.setContentView(binding.root)
 
-        val window : Window = addDialog.window!!
-        window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT)
+        val window: Window = addDialog.window!!
+        window.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        val windowAttribute : WindowManager.LayoutParams = window.attributes
+        val windowAttribute: WindowManager.LayoutParams = window.attributes
         windowAttribute.gravity = gravity
         window.attributes = windowAttribute
 
@@ -146,13 +243,14 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             val channelName = binding.edtEnterChannelName.text.toString()
             var isValidated = true
             binding.edtEnterChannelName.apply {
-                if (text.toString() == EMPTY_STRING) {
+                if (text.toString().trim() == EMPTY_STRING) {
                     error = "Please fill your channel name!"
                     isValidated = false
                 }
             }
             if (channelTelegramId == EMPTY_STRING) {
-                binding.edtEnterChannelId.error = "Please fill your TelegramId of channel/group to receive the bot message!"
+                binding.edtEnterChannelId.error =
+                    "Please fill your TelegramId of channel/group to receive the bot message!"
                 isValidated = false
             }
             if (!isValidated) {
@@ -168,9 +266,17 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         binding.btnCancelAddChannel.setOnClickListener {
             addDialog.dismiss()
         }
+        lifecycleScope.launch {
+            delay(1)
+            Function.showKeyBoard(requireActivity(), binding.edtEnterChannelId)
+        }
     }
 
     fun setupStateObserver() {
+        viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
+            if (it) progressDialog.show()
+            else progressDialog.dismiss()
+        }
         viewModel.channelList.observe(viewLifecycleOwner) {
             channelListAdapter.channels = it
             channelListAdapter.notifyDataSetChanged()
@@ -180,11 +286,9 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             } else {
                 binding.rvChannelList.visibility = View.VISIBLE
                 binding.imgEmptyList.visibility = View.GONE
-
             }
         }
         viewModel.isAddingSuccess.observe(viewLifecycleOwner) {
-            println("Here come adding")
             it?.let {
                 if (it) {
                     Toast.makeText(requireContext(), "Add successful!", Toast.LENGTH_SHORT).show()
@@ -198,8 +302,9 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         viewModel.isDeleteSuccess.observe(viewLifecycleOwner) {
             println("Here the observer delete come")
             it?.let {
-                if(it) {
-                    Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT).show()
+                if (it) {
+                    Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT)
+                        .show()
                 } else {
                     Toast.makeText(context, "Delete Channel Fail!!", Toast.LENGTH_SHORT).show()
                 }
@@ -217,18 +322,14 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
                 viewModel.getChannels()
             }
         }
-        viewModel.isShowProgressDialog.observe(viewLifecycleOwner) {
-            if (it) progressDialog.show()
-            else progressDialog.dismiss()
-        }
     }
+
     private fun setupRecycleView() {
-        val itemDecoration : RecyclerView.ItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.rvChannelList.apply {
             channelListAdapter = ChannelListAdapter(this@ChannelListFragment)
             adapter = channelListAdapter
             layoutManager = LinearLayoutManager(context)
-            addItemDecoration(itemDecoration)
+            Function.addMarginToLastItem(binding.rvChannelList, 10)
         }
     }
 
@@ -254,9 +355,10 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             }
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
-        val list : MutableList<MutableLiveData<*>> = ArrayList()
+        val list: MutableList<MutableLiveData<*>> = ArrayList()
         list.add(viewModel.isEditingSuccess)
         list.add(viewModel.isAddingSuccess)
         list.add(viewModel.isDeleteSuccess)

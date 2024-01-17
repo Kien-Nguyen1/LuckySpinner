@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.WorkManager
 import com.example.luckyspinner.controller.DataController
 import com.example.luckyspinner.models.Channel
 import com.example.luckyspinner.util.Constants
@@ -22,6 +23,7 @@ import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.launch
 
 class ChannelListViewModel : ViewModel() {
+
     val db = FirebaseFirestore.getInstance()
 
     var channelList = MutableLiveData<List<Channel>>()
@@ -32,9 +34,9 @@ class ChannelListViewModel : ViewModel() {
     var isEditingSuccess : MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
     val isShowProgressDialog = MutableLiveData<Boolean>()
 
+
     fun  getChannels() {
         val cList : MutableList<Channel> = ArrayList()
-        isShowProgressDialog.value = true
         DataController.getChannels(db)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
@@ -49,7 +51,6 @@ class ChannelListViewModel : ViewModel() {
                         }
                     }
                     channelList.value = cList
-                    isShowProgressDialog.value = false
 
                 } else {
                     Log.w(
@@ -58,7 +59,6 @@ class ChannelListViewModel : ViewModel() {
                         it.exception
                     )
                     message.value = Constants.MESSAGE_GET_FAILED
-                    isShowProgressDialog.value = false
                 }
             }
 
@@ -71,6 +71,8 @@ class ChannelListViewModel : ViewModel() {
                 Log.d(Constants.FIRE_STORE, "DocumentSnapshot successfully deleted!")
                 message.value = Constants.MESSAGE_DELETE_SUCCESSFUL
                 isDeleteSuccess.value = true
+                isShowProgressDialog.value = false
+                WorkManager.getInstance().cancelAllWorkByTag(channelId)
             }
             .addOnFailureListener { e ->
                 Log.w(Constants.FIRE_STORE, "Error deleting document", e)
@@ -86,14 +88,13 @@ class ChannelListViewModel : ViewModel() {
             .addOnSuccessListener {
                 message.value = MESSAGE_SAVE_SUCCESSFUL
                 isAddingSuccess.value = true
-
+                isShowProgressDialog.value = false
             }
             .addOnFailureListener { e ->
                 Log.e("error", e.message.toString())
                 message.value = MESSAGE_SAVE_FAILED
                 isAddingSuccess.value = false
                 isShowProgressDialog.value = false
-
             }
     }
     fun editChannel(channel: Channel) = viewModelScope.launch {
@@ -103,6 +104,7 @@ class ChannelListViewModel : ViewModel() {
             .addOnSuccessListener {
                 message.value = MESSAGE_SAVE_SUCCESSFUL
                 isEditingSuccess.value = true
+                isShowProgressDialog.value = false
 
             }
             .addOnFailureListener { e ->

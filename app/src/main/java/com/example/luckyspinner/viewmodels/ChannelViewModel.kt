@@ -3,6 +3,7 @@ package com.example.luckyspinner.viewmodels
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.work.WorkManager
 import com.example.luckyspinner.controller.DataController
 import com.example.luckyspinner.models.Event
 import com.example.luckyspinner.util.Constants
@@ -12,14 +13,12 @@ import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.toObject
 
 class ChannelViewModel : ViewModel() {
-    var channelList = MutableLiveData<List<Event>>()
+    var eventList = MutableLiveData<List<Event>>()
     val db = FirebaseFirestore.getInstance()
     val isShowProgressDialog = MutableLiveData<Boolean>()
     val isDeleteEventSuccess = MutableLiveData<Boolean?>()
 
-
     fun  getEvents(idChannel : String) {
-        isShowProgressDialog.value = true
         val list : MutableList<Event> = ArrayList()
 
         DataController.getEvents(db, idChannel)
@@ -37,8 +36,7 @@ class ChannelViewModel : ViewModel() {
                             }
                         }
                     }
-                    channelList.value = list
-                    isShowProgressDialog.value = false
+                    eventList.value = list
 
                 } else {
                     Log.w(
@@ -46,18 +44,25 @@ class ChannelViewModel : ViewModel() {
                         "Error getting documents.",
                         it.exception
                     )
-                    isShowProgressDialog.value = false
                 }
 
             }
     }
+    fun saveEvent(idChannel: String, event : Event)  {
+        DataController.saveEvent(db, idChannel, event)
+            .addOnSuccessListener {
+            }
+            .addOnFailureListener {
 
+            }
+    }
     fun deleteEvent(idChannel: String, idEvent : String) {
         isShowProgressDialog.value = true
         DataController.deleteEvent(db, idChannel, idEvent)
             .addOnSuccessListener {
                 isDeleteEventSuccess.value = true
                 isShowProgressDialog.value = false
+                WorkManager.getInstance().cancelUniqueWork(idEvent)
             }
             .addOnFailureListener {
                 isDeleteEventSuccess.value = false
