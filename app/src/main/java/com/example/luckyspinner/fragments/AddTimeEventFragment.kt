@@ -73,7 +73,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
     private var isAdd = false
     private lateinit var chooseSpinnerDialog: Dialog
     private lateinit var chooseMemberDialog: Dialog
-    private var isCloseSpinner = false
     private lateinit var dateDialog: Dialog
     private lateinit var randomSpinnerAdapter: RandomSpinnerListAdapter
     private lateinit var memberInEventAdapter: MemberInEventListAdapter
@@ -84,7 +83,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        println("addtime HHere come oncreateview")
         binding = FragmentAddTimeEventBinding.inflate(inflater, container, false)
 
         progressDialog = ProgressDialog(context)
@@ -108,12 +106,7 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
         if (eventId == null) {
             isAdd = true
         }
-
-        if (isAdd) {
-            binding.appBarAddTimeEvent.tvTitleAppBar.text = "Time Event"
-        } else {
-            binding.appBarAddTimeEvent.tvTitleAppBar.text = "Time Event"
-        }
+        binding.appBarAddTimeEvent.tvTitleAppBar.text = "Time Event"
 
         binding.edtEventName.doAfterTextChanged {
             if (hasSetNameAndTime) {
@@ -127,13 +120,9 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
                 if (eventId == null) {
                     val timeInMillis = Calendar.getInstance().timeInMillis
                     eventId = "$channelId $timeInMillis"
-//                    viewModel.getMembers(channelId, isAdd)
-//                    viewModel.getSpinnerFromChannel(channelId, isAdd)
                     viewModel.getEvent(channelId, null, newEventId = eventId!!)
                 } else {
                     viewModel.getEvent(channelId, eventId)
-//                    viewModel.getMembers(channelId, isAdd)
-//                    viewModel.getSpinnerFromChannel(channelId, isAdd)
                 }
                 isFirstLoad = false
             }
@@ -215,7 +204,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
 
 
         binding.searchViewMember.setOnQueryTextFocusChangeListener { v, hasFocus ->
-            println("Here come focus text")
             if (!hasFocus) {
                 Function.hideKeyBoard(context, v)
             } else {
@@ -235,9 +223,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
         })
 
         binding.linearLayoutRoot.setOnClickListener {
-            println("let go")
-//            activity?.currentFocus?.clearFocus()
-//            println(activity?.currentFocus)
             binding.searchViewSpinner.clearFocus()
             binding.searchViewMember.clearFocus()
         }
@@ -335,7 +320,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
             it?.let { isSave ->
                 if (isSave) {
                     fun navigate() {
-                        println("Here come navigate")
                         progressDialog.dismiss()
                         Toast.makeText(context, "Saving successful", Toast.LENGTH_LONG).show()
                         findNavController().popBackStack()
@@ -370,7 +354,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
             binding.rvSpinnerList.isVisible = true
             binding.tvTitleStatusSpinner.isVisible = false
             viewModel.spinnerList.value = viewModel.spinnerList.value
-            println("Let go")
             return
         }
         viewModel.isSearchingSpinner.value = true
@@ -469,7 +452,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
             viewModel.event.value = viewModel.event.value?.apply {
                 listDay =
                     if (bindingDateDialog.checkBoxAll.isChecked) Constants.LIST_DAY_ALL_WEEK else Constants.LIST_DAY_EMPTY
-                println("Here come listday $listDay")
             }
         }
         bindingDateDialog.btnAddElement.isVisible = false
@@ -669,7 +651,6 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
                 if (it.size != 0) {
                     if (it[0].state == WorkInfo.State.SUCCEEDED) {
                         progressDialog.dismiss()
-                        println("Success from workInfor ${it[0].outputData.getString("")}")
                     }
                     if (it[0].state == WorkInfo.State.FAILED) {
                         progressDialog.dismiss()
@@ -678,14 +659,8 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                         }
                     }
-                } else {
-                    println("WorkInfo is null")
                 }
             }
-    }
-
-    fun handleMemberList() {
-
     }
 
     fun setupObservers() {
@@ -857,17 +832,11 @@ class AddTimeEventFragment : Fragment(), RandomSpinnerListAdapter.Listener,
 
     override fun onDateClick(position: Int, isChecked: Boolean) {
         val dayNumber = if (isChecked) changeTheNumberOfDay(position) else 0
-        println("Here come daynumber $dayNumber")
         viewModel.event.value = viewModel.event.value?.apply {
             val tempList = listDay.toMutableList()
             tempList[position] = dayNumber
             listDay = tempList
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-
     }
 
     override fun onDestroyView() {

@@ -34,7 +34,6 @@ class AddTimeEventViewModel : ViewModel() {
     val isSaveListSpinnerSuccess = MutableLiveData<Boolean>()
     val isSaveEventSuccess = MutableLiveData<Boolean?>()
     val isAddingSpinnerSuccess = MutableLiveData<Boolean?>()
-    val isDeleteEventSuccess = MutableLiveData<Boolean>()
 
 
 
@@ -57,7 +56,6 @@ class AddTimeEventViewModel : ViewModel() {
                         }
                     }
                     memberList.value = list
-                    println("Here come list $list")
                     if (isNewEvent){
                         allCheckboxMember(false)
                     }
@@ -107,9 +105,11 @@ class AddTimeEventViewModel : ViewModel() {
             }
     }
     fun saveListSpinner(idChannel: String, idEvent: String) {
+        if (!spinnerList.isInitialized) {
+            isSaveListSpinnerSuccess.value = false
+            return
+        }
         val sList  = spinnerList.value!!
-        println("Here come list $sList")
-        println("Here come list"+idEvent)
         isShowProgressDialog.value = true
         sList.forEachIndexed { index, spinner ->
             DataController.saveSpinner(db, idChannel, spinner)
@@ -158,7 +158,6 @@ class AddTimeEventViewModel : ViewModel() {
     }
     fun checkBoxMember(position : Int, hasSelected : Boolean) {
         val members = memberList.value!!
-        println("Here come $members")
         members[position].hasSelected = !hasSelected
         if (hasSelected) {
             members[position].listEvent = members[position].listEvent.filter {
@@ -167,7 +166,6 @@ class AddTimeEventViewModel : ViewModel() {
         } else {
             members[position].listEvent.add(event.value!!.idEvent)
         }
-        println("Here come $members")
         memberList.value = members
     }
 
@@ -193,7 +191,6 @@ class AddTimeEventViewModel : ViewModel() {
                     if (it.isSuccessful) {
                         if (it.result.exists()) {
                             val e = it.result.toObject<Event>()
-                            println("Here we come $e")
                             CoroutineScope(Dispatchers.Main).launch {
                                 event.value = e ?: Event()
                                 isGettingEventSuccess.value = true
@@ -205,26 +202,6 @@ class AddTimeEventViewModel : ViewModel() {
                     isGettingEventSuccess.value = false
                 }
         }
-    }
-
-    fun editSpinner(idChannel: String, spinner: Spinner) {
-
-    }
-
-    fun addSpinner(idChannel: String, spinner: Spinner) {
-        isShowProgressDialog.value = true
-        DataController.saveSpinner(db, idChannel, spinner)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    isAddingSpinnerSuccess.value = true
-                    isShowProgressDialog.value = false
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("error", e.message.toString())
-                isAddingSpinnerSuccess.value = false
-                isShowProgressDialog.value = false
-            }
     }
     fun handleClickDay(position: Int) {
         val event = event.value ?: return

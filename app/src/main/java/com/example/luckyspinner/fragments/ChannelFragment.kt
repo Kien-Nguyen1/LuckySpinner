@@ -63,7 +63,6 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        println("channelss oncreateview")
         binding = FragmentChannelBinding.inflate(inflater, container, false)
 
         idChannel = arguments?.getString(ID_CHANNEL_KEY)!!
@@ -85,14 +84,12 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
             tvTitleAppBar.text = nameChannel
         }
 
-        println("channelss oncreateview")
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        println("channelss onviewcreated")
 
 
         val bundle = Bundle().apply {
@@ -108,8 +105,6 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
                 putString(Constants.ID_TELEGRAM_CHANNEL_KEY, idTelegramChannel)
             })
         }
-//        requireActivity().actionBar.setDisplayHomeAsUpEnabled()
-//        requireActivity().setActionBar(binding.appBarChannel.toolBar as Toolbar)
 
         binding.appBarChannel.btnBack.setOnClickListener {
             findNavController().popBackStack()
@@ -161,7 +156,6 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
 
         searchView.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
-//                Function.hideKeyBoard(context, v)
                 searchView.isVisible = false
                 isShowMenu(true)
             }
@@ -188,8 +182,6 @@ class ChannelFragment : Fragment(), EventListAdapter.Listener {
 
             searchView.isFocusable = true;
             searchView.isIconified = false;
-//            searchView.requestFocusFromTouch();
-//            searchView.clearFocus()
             isShowMenu(false)
         }
     }

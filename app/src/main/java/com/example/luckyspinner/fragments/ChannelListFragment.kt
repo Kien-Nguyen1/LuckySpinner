@@ -68,16 +68,10 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
     private lateinit var progressDialog: ProgressDialog
     var isFirstLoad = true
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        println("listchannel HHere come oncreate")
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        println("listchannel HHere come oncreateview")
         binding = FragmentChannelListBinding.inflate(inflater, container, false)
         progressDialog = ProgressDialog(context)
         setupStateObserver()
@@ -87,13 +81,7 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         if (isFirstLoad) {
             viewModel.getChannels()
             isFirstLoad = false
-            println("listchannel Here come get channels")
         }
-
-//        binding.toolBarChannelList.menu.apply {
-//            findItem(R.id.spinnerListFragment).isVisible = false
-//            findItem(R.id.memberListFragment).isVisible = false
-//        }
 
         // Inflate the layout for this fragment
         return binding.root
@@ -101,13 +89,6 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        println("listchannel HHere come onviewcreated")
-
-
-        viewModel.message.observe(viewLifecycleOwner) {
-//            Toast.makeText(requireContext(), it , Toast.LENGTH_SHORT).show()
-        }
-
 
         binding.btnAddChannel.setOnClickListener {
             Log.d("kien", "click add channel")
@@ -174,51 +155,6 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
         binding.rvChannelList.addFabScrollListener(binding.btnAddChannel)
 
         handleSearch()
-// Close dung ham nay
-//        binding.close.setOnClickListener {
-//            println("Here come")
-//            binding.toolBarChannelList.menu.findItem(R.id.search).isVisible = true
-//            searchView.isVisible = false
-//            searchView.setQuery("", false)
-//            it.isVisible = false
-//        }
-
-//        binding.toolBarChannelList.setOnClickListener {
-//            false
-//        }
-//
-//        binding.toolBarChannelList.menu.getItem(R.id.search).setOnMenuItemClickListener {
-//
-//            false
-//        }
-
-//        binding.toolBarChannelList.setOnMenuItemClickListener { menuItem ->
-//
-//            when(menuItem.itemId) {
-//                R.id.search -> {
-////                    searchView.show
-//                    val searchView : androidx.appcompat.widget.SearchView = menuItem.actionView as androidx.appcompat.widget.SearchView
-//                    binding.toolBarChannelList.navigationIcon = null
-//
-//                    searchView.isVisible = true
-////                    binding.close.isVisible = true
-//                    searchView.queryHint = "Search Channel..."
-//                    searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
-//                        override fun onQueryTextSubmit(query: String?): Boolean {
-//                            return false
-//                        }
-//
-//                        override fun onQueryTextChange(newText: String): Boolean {
-//                            filterChannel(newText)
-//                            return false
-//                        }
-//                    })
-//                    false
-//                }
-//
-//                else -> false
-//            }
-//        }
     }
 
     private fun handleSearch() {
@@ -266,9 +202,6 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
 
             searchView.isFocusable = true;
             searchView.isIconified = false;
-//            searchView.requestFocusFromTouch();
-//            searchView.clearFocus()
-//            showKeyBoard(requireActivity(), it)
             binding.appBarChannelList.apply {
                 btnSearchView.isVisible = false
                 tvTitleAppBar.isVisible = false
@@ -356,7 +289,6 @@ class ChannelListFragment : Fragment(), ChannelListAdapter.Listener {
             }
         }
         viewModel.isAddingSuccess.observe(viewLifecycleOwner) {
-            println("Here come adding")
             it?.let {
                 if (it) {
                     Toast.makeText(requireContext(), "Add successful!", Toast.LENGTH_SHORT).show()

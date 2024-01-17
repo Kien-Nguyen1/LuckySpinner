@@ -105,7 +105,6 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
     }
 
     fun handleSearch() {
-//        if (!viewModel.spinnerList.isInitialized) return
         fun isShowMenu(isShow : Boolean) {
             binding.appBarSpinnerList.apply {
                 btnSearch.isVisible = isShow
@@ -151,8 +150,6 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
 
             searchView.isFocusable = true;
             searchView.isIconified = false;
-//            searchView.requestFocusFromTouch();
-//            searchView.clearFocus()
             isShowMenu(false)
         }
     }
@@ -160,7 +157,6 @@ class SpinnerListFragment : Fragment(), SpinnerListAdapter.Listener {
     fun filterSpinner(text: String) {
         if (text == "") {
             viewModel.spinnerList.value = viewModel.spinnerList.value
-            println("Let go")
             return
         }
         val list: MutableList<Spinner> = ArrayList()

@@ -48,7 +48,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     private lateinit var progressDialog : ProgressDialog
     private lateinit var editMemberDiaLog : Dialog
     var isFirstLoad = true
-    var countDownTimer : CountDownTimer ?= null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -98,7 +97,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         binding.rvMemberList.addFabScrollListener(binding.btnAddMemberList)
     }
     fun handleSearch() {
-//        if (!viewModel.memberList.isInitialized) return
         fun isShowMenu(isShow : Boolean) {
             binding.appBarMemberList.apply {
                 btnSearch.isVisible = isShow
@@ -144,8 +142,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
 
             searchView.isFocusable = true;
             searchView.isIconified = false;
-//            searchView.requestFocusFromTouch();
-//            searchView.clearFocus()
             isShowMenu(false)
         }
     }
@@ -153,7 +149,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
     fun filterMember(text: String) {
         if (text == "") {
             viewModel.memberList.value = viewModel.memberList.value
-            println("Let go")
             return
         }
         val list: MutableList<Member> = ArrayList()
@@ -249,22 +244,6 @@ class MemberListFragment : Fragment(), MemberListAdapter.Listener {
         lifecycleScope.launch {
             delay(1)
             Function.showKeyBoard(requireActivity(), binding.edtEnterChannelName)
-        }
-    }
-    private fun handleChooseAllMember() {
-        val list = viewModel.memberList.value ?: return
-        progressDialog.show()
-        var isAllSelected = true
-        run breaking@{
-            list.forEach { member ->
-                if (!member.hasSelected) {
-                    isAllSelected = false
-                    return@breaking
-                }
-            }
-        }
-        lifecycleScope.launch {
-            viewModel.updateForChooseAllMember(idChannel, list, !isAllSelected)
         }
     }
 

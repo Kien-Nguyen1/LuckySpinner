@@ -81,7 +81,6 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
     }
 
     fun handleSearch() {
-//        if (!viewModel.elementList.isInitialized) return
         fun isShowMenu(isShow : Boolean) {
             binding.appBarElementListSpinner.apply {
                 btnSearch.isVisible = isShow
@@ -127,8 +126,6 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
 
             searchView.isFocusable = true;
             searchView.isIconified = false;
-//            searchView.requestFocusFromTouch();
-//            searchView.clearFocus()
             isShowMenu(false)
         }
     }
@@ -136,7 +133,6 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
     fun filterSpinner(text: String) {
         if (text == "") {
             viewModel.elementList.value = viewModel.elementList.value
-            println("Let go")
             return
         }
         val list: MutableList<ElementSpinner> = ArrayList()
@@ -287,7 +283,6 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
             }
         }
         viewModel.isDeleteSuccess.observe(viewLifecycleOwner) {
-            println("Here the observer delete come")
             it?.let {
                 if (it) {
                     Toast.makeText(context, "Deleted Channel Successfully!", Toast.LENGTH_SHORT)
@@ -324,7 +319,6 @@ class ElementListInSpinnerFragment : Fragment(), ElementListInSpinnerAdapter.Lis
     }
 
     override fun onItemClick(id: String) {
-//        TODO("Not yet implemented")
     }
 
     override fun onDeleteItem(id: String) {
